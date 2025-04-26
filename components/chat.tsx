@@ -2,11 +2,11 @@
 
 import type { Attachment, UIMessage } from 'ai';
 import { useChat } from '@ai-sdk/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 import { ChatHeader } from '@/components/chat-header';
 import type { Vote } from '@/lib/db/schema';
-import { fetcher, generateUUID } from '@/lib/utils';
+import { fetcher, generateUUID, saveChatModelToCookie } from '@/lib/utils';
 import { Artifact } from './artifact';
 import { MultimodalInput } from './multimodal-input';
 import { Messages } from './messages';
@@ -31,6 +31,13 @@ export function Chat({
 }) {
   const { mutate } = useSWRConfig();
 
+  const [internalSelectedChatModel, setInternalSelectedChatModel] =
+    useState(selectedChatModel);
+
+  useEffect(() => {
+    saveChatModelToCookie(internalSelectedChatModel);
+  }, [internalSelectedChatModel]);
+
   const {
     messages,
     setMessages,
@@ -43,7 +50,7 @@ export function Chat({
     reload,
   } = useChat({
     id,
-    body: { id, selectedChatModel: selectedChatModel },
+    body: { id, selectedChatModel: internalSelectedChatModel },
     initialMessages,
     experimental_throttle: 100,
     sendExtraMessageFields: true,
@@ -51,7 +58,8 @@ export function Chat({
     onFinish: () => {
       mutate(unstable_serialize(getChatHistoryPaginationKey));
     },
-    onError: () => {
+    onError: (e) => {
+      console.error('Error details from useChat:', e);
       toast.error('An error occurred, please try again!');
     },
   });
@@ -69,9 +77,10 @@ export function Chat({
       <div className="flex flex-col min-w-0 h-dvh bg-background">
         <ChatHeader
           chatId={id}
-          selectedModelId={selectedChatModel}
+          selectedModelId={internalSelectedChatModel}
           selectedVisibilityType={selectedVisibilityType}
           isReadonly={isReadonly}
+          setSelectedModelId={setInternalSelectedChatModel}
         />
 
         <Messages

@@ -1,90 +1,77 @@
 'use client';
-
-import { startTransition, useMemo, useOptimistic, useState } from 'react';
-
-import { saveChatModelAsCookie } from '@/app/(chat)/actions';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuGroup,
 } from '@/components/ui/dropdown-menu';
-import { chatModels } from '@/lib/ai/models';
+import { chatModelConfigurations } from '@/lib/ai/models';
 import { cn } from '@/lib/utils';
 
 import { CheckCircleFillIcon, ChevronDownIcon } from './icons';
 
+interface ModelSelectorProps {
+  selectedModelId: string;
+  setSelectedModelId: (modelId: string) => void;
+}
+
 export function ModelSelector({
   selectedModelId,
-  className,
-}: {
-  selectedModelId: string;
-} & React.ComponentProps<typeof Button>) {
-  const [open, setOpen] = useState(false);
-  const [optimisticModelId, setOptimisticModelId] =
-    useOptimistic(selectedModelId);
-
-  const selectedChatModel = useMemo(
-    () => chatModels.find((chatModel) => chatModel.id === optimisticModelId),
-    [optimisticModelId],
+  setSelectedModelId,
+}: ModelSelectorProps) {
+  const selectedModel = chatModelConfigurations.find(
+    (model) => model.id === selectedModelId,
   );
 
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger
-        asChild
-        className={cn(
-          'w-fit data-[state=open]:bg-accent data-[state=open]:text-accent-foreground',
-          className,
-        )}
-      >
-        <Button
-          data-testid="model-selector"
-          variant="outline"
-          className="md:px-2 md:h-[34px]"
-        >
-          {selectedChatModel?.name}
-          <ChevronDownIcon />
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="flex items-center gap-2 h-9 px-2">
+          {selectedModel ? (
+            <>
+              <span className="text-sm font-medium">{selectedModel.name}</span>
+              <ChevronDownIcon />
+            </>
+          ) : (
+            <span className="text-sm font-medium">Select Model</span> // Fallback
+          )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="min-w-[300px]">
-        {chatModels.map((chatModel) => {
-          const { id } = chatModel;
-
-          return (
+      <DropdownMenuContent className="w-64">
+        <DropdownMenuLabel>Available Models</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          {chatModelConfigurations.map((model) => (
             <DropdownMenuItem
-              data-testid={`model-selector-item-${id}`}
-              key={id}
-              onSelect={() => {
-                setOpen(false);
-
-                startTransition(() => {
-                  setOptimisticModelId(id);
-                  saveChatModelAsCookie(id);
-                });
-              }}
-              data-active={id === optimisticModelId}
-              asChild
+              key={model.id}
+              onSelect={() => setSelectedModelId(model.id)}
+              className={cn(
+                'cursor-pointer flex items-center justify-between',
+                model.id === selectedModelId && 'bg-accent',
+              )}
             >
-              <button
-                type="button"
-                className="gap-4 group/item flex flex-row justify-between items-center w-full"
-              >
-                <div className="flex flex-col gap-1 items-start">
-                  <div>{chatModel.name}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {chatModel.description}
-                  </div>
+              <div>
+                <div className="font-medium flex items-center gap-2">
+                  {model.name}
+                  {model.supportsReasoning && (
+                    <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 text-[10px] px-1.5 py-0.5 rounded-full font-semibold">
+                      Reasoning
+                    </span>
+                  )}
                 </div>
-
-                <div className="text-foreground dark:text-foreground opacity-0 group-data-[active=true]/item:opacity-100">
-                  <CheckCircleFillIcon />
+                <div className="text-xs text-muted-foreground">
+                  {model.description}
                 </div>
-              </button>
+              </div>
+              {model.id === selectedModelId && <CheckCircleFillIcon />}
             </DropdownMenuItem>
-          );
-        })}
+          ))}
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );

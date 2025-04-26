@@ -1,16 +1,16 @@
-import { config } from 'dotenv';
-import { defineConfig } from 'drizzle-kit';
+import type { Config } from 'drizzle-kit';
+import * as dotenv from 'dotenv';
 
-config({
-  path: '.env.local',
-});
+// Carga las variables de entorno desde .env.local
+dotenv.config({ path: '.env.local' });
 
-export default defineConfig({
-  schema: './lib/db/schema.ts',
-  out: './lib/db/migrations',
-  dialect: 'postgresql',
+export default {
+  schema: './lib/db/schema.ts', // Ruta a tu archivo de esquema
+  out: './lib/db/migrations', // Directorio donde se guardarán las migraciones
+  dialect: 'postgresql', // Especifica que usas PostgreSQL
   dbCredentials: {
-    // biome-ignore lint: Forbidden non-null assertion.
     url: process.env.POSTGRES_URL!,
   },
-});
+  verbose: true,
+  strict: true,
+} satisfies Config;

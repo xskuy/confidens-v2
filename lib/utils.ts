@@ -2,6 +2,7 @@ import type { CoreAssistantMessage, CoreToolMessage, UIMessage } from 'ai';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import type { Document } from '@/lib/db/schema';
+import Cookies from 'js-cookie';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -42,6 +43,21 @@ export function generateUUID(): string {
     const v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
+}
+
+// Function to save the selected chat model ID to a cookie
+export function saveChatModelToCookie(modelId: string) {
+  if (typeof window !== 'undefined') {
+    Cookies.set('chat-model', modelId, { expires: 30 }); // Expires in 30 days
+  }
+}
+
+// Function to clear the chat model cookie (useful for troubleshooting)
+export function clearChatModelCookie() {
+  if (typeof window !== 'undefined') {
+    Cookies.remove('chat-model');
+    console.log('Chat model cookie cleared');
+  }
 }
 
 type ResponseMessageWithoutId = CoreToolMessage | CoreAssistantMessage;

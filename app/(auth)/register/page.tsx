@@ -4,11 +4,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useActionState, useEffect, useState } from 'react';
 
-import { AuthForm } from '@/components/auth-form';
-import { SubmitButton } from '@/components/submit-button';
+import { AuthForm } from '../../../components/auth-form';
+import { SubmitButton } from '../../../components/submit-button';
+import { toast } from '../../../components/toast';
 
 import { register, type RegisterActionState } from '../actions';
-import { toast } from '@/components/toast';
 
 export default function Page() {
   const router = useRouter();
@@ -55,7 +55,24 @@ export default function Page() {
             Create an account with your email and password
           </p>
         </div>
-        <AuthForm action={handleSubmit} defaultEmail={email}>
+        <AuthForm
+          action={handleSubmit}
+          defaultEmail={email}
+          isRegisterForm={true}
+        >
+          {state.errors?.firstName && (
+            <p className="text-sm text-red-500">{state.errors.firstName}</p>
+          )}
+          {state.errors?.lastName && (
+            <p className="text-sm text-red-500">{state.errors.lastName}</p>
+          )}
+          {state.errors?.email && (
+            <p className="text-sm text-red-500">{state.errors.email}</p>
+          )}
+          {state.errors?.password && (
+            <p className="text-sm text-red-500">{state.errors.password}</p>
+          )}
+
           <SubmitButton isSuccessful={isSuccessful}>Sign Up</SubmitButton>
           <p className="text-center text-sm text-gray-600 mt-4 dark:text-zinc-400">
             {'Already have an account? '}

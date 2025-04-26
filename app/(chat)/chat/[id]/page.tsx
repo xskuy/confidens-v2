@@ -5,7 +5,7 @@ import { auth } from '@/app/(auth)/auth';
 import { Chat } from '@/components/chat';
 import { getChatById, getMessagesByChatId } from '@/lib/db/queries';
 import { DataStreamHandler } from '@/components/data-stream-handler';
-import { DEFAULT_CHAT_MODEL } from '@/lib/ai/models';
+import { DEFAULT_CHAT_MODEL_ID, getModelConfig } from '@/lib/ai/models';
 import type { DBMessage } from '@/lib/db/schema';
 import type { Attachment, UIMessage } from 'ai';
 
@@ -50,19 +50,15 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
   const cookieStore = await cookies();
   const chatModelFromCookie = cookieStore.get('chat-model');
 
-  if (!chatModelFromCookie) {
-    return (
-      <>
-        <Chat
-          id={chat.id}
-          initialMessages={convertToUIMessages(messagesFromDb)}
-          selectedChatModel={DEFAULT_CHAT_MODEL}
-          selectedVisibilityType={chat.visibility}
-          isReadonly={session?.user?.id !== chat.userId}
-        />
-        <DataStreamHandler id={id} />
-      </>
-    );
+  // Validar si el modelo en la cookie existe en la configuración
+  let selectedChatModel = DEFAULT_CHAT_MODEL_ID;
+  if (chatModelFromCookie) {
+    // Solo usar el valor de la cookie si el modelo existe en la configuración
+    const modelExists = getModelConfig(chatModelFromCookie.value);
+    if (modelExists) {
+      selectedChatModel = chatModelFromCookie.value;
+    }
+    // Si no existe, usamos el modelo por defecto (DEFAULT_CHAT_MODEL_ID)
   }
 
   return (
@@ -70,7 +66,7 @@ export default async function Page(props: { params: Promise<{ id: string }> }) {
       <Chat
         id={chat.id}
         initialMessages={convertToUIMessages(messagesFromDb)}
-        selectedChatModel={chatModelFromCookie.value}
+        selectedChatModel={selectedChatModel}
         selectedVisibilityType={chat.visibility}
         isReadonly={session?.user?.id !== chat.userId}
       />

@@ -11,6 +11,12 @@ export const authConfig = {
   ],
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
+      // Allow all requests to /api/auth/* routes
+      if (nextUrl.pathname.startsWith('/api/auth')) {
+        console.log(`[Auth] Allowing API route: ${nextUrl.pathname}`);
+        return true;
+      }
+
       const isLoggedIn = !!auth?.user;
       const isOnChat = nextUrl.pathname.startsWith('/');
       const isOnRegister = nextUrl.pathname.startsWith('/register');

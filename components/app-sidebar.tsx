@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { PlusIcon } from '@/components/icons';
 import { SidebarHistory } from '@/components/sidebar-history';
-import { SidebarUserNav } from '@/components/sidebar-user-nav';
+import { NavUser } from './nav-user';
 import { Button } from '@/components/ui/button';
 import {
   Sidebar,
@@ -21,6 +21,14 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 export function AppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
   const { setOpenMobile } = useSidebar();
+
+  const navUserData = user
+    ? {
+        name: user.name ?? 'User',
+        email: user.email ?? 'No Email',
+        avatar: user.image ?? '',
+      }
+    : null;
 
   return (
     <Sidebar className="group-data-[side=left]:border-r-0">
@@ -61,7 +69,9 @@ export function AppSidebar({ user }: { user: User | undefined }) {
       <SidebarContent>
         <SidebarHistory user={user} />
       </SidebarContent>
-      <SidebarFooter>{user && <SidebarUserNav user={user} />}</SidebarFooter>
+      <SidebarFooter>
+        {navUserData && <NavUser user={navUserData} />}
+      </SidebarFooter>
     </Sidebar>
   );
 }

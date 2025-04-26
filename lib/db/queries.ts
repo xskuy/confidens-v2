@@ -1,5 +1,3 @@
-import 'server-only';
-
 import {
   and,
   asc,
@@ -46,13 +44,35 @@ export async function getUser(email: string): Promise<Array<User>> {
   }
 }
 
-export async function createUser(email: string, password: string) {
-  const hashedPassword = generateHashedPassword(password);
+export async function createUser({
+  email,
+  password,
+  firstName,
+  lastName,
+}: {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+}) {
+  const hashedPassword = await generateHashedPassword(password);
+
+  console.log(`[CreateUser] Hashed password for ${email}: ${hashedPassword}`);
 
   try {
-    return await db.insert(user).values({ email, password: hashedPassword });
+    const [insertedUser] = await db
+      .insert(user)
+      .values({
+        email,
+        password: hashedPassword,
+        firstName,
+        lastName,
+      })
+      .returning();
+    console.log(`[CreateUser] User ${email} created successfully.`);
+    return insertedUser;
   } catch (error) {
-    console.error('Failed to create user in database');
+    console.error(`[CreateUser] Failed to create user ${email}:`, error);
     throw error;
   }
 }

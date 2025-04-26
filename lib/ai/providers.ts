@@ -3,14 +3,46 @@ import {
   extractReasoningMiddleware,
   wrapLanguageModel,
 } from 'ai';
-import { xai } from '@ai-sdk/xai';
 import { isTestEnvironment } from '../constants';
+import {
+  DEFAULT_CHAT_MODEL_ID,
+  getModelConfig,
+  chatModelConfigurations,
+} from './models';
+
 import {
   artifactModel,
   chatModel,
   reasoningModel,
   titleModel,
 } from './models.test';
+
+function getConfiguredChatModel(modelId: string = DEFAULT_CHAT_MODEL_ID) {
+  const config = getModelConfig(modelId);
+  if (!config) {
+    const defaultConfig = getModelConfig(DEFAULT_CHAT_MODEL_ID);
+    if (!defaultConfig) {
+      throw new Error('Default model configuration not found.');
+    }
+
+    // Si hay providerOptions, usarlas
+    if (defaultConfig.providerOptions) {
+      return defaultConfig.apiProvider(
+        defaultConfig.modelName,
+        defaultConfig.providerOptions,
+      );
+    }
+
+    return defaultConfig.apiProvider(defaultConfig.modelName);
+  }
+
+  // Si hay providerOptions, usarlas
+  if (config.providerOptions) {
+    return config.apiProvider(config.modelName, config.providerOptions);
+  }
+
+  return config.apiProvider(config.modelName);
+}
 
 export const myProvider = isTestEnvironment
   ? customProvider({
@@ -23,15 +55,19 @@ export const myProvider = isTestEnvironment
     })
   : customProvider({
       languageModels: {
-        'chat-model': xai('grok-2-1212'),
+        'chat-model': getConfiguredChatModel(),
         'chat-model-reasoning': wrapLanguageModel({
-          model: xai('grok-3-mini-beta'),
+          model: getConfiguredChatModel(
+            chatModelConfigurations.find((m) => m.supportsReasoning)?.id ||
+              DEFAULT_CHAT_MODEL_ID,
+          ),
           middleware: extractReasoningMiddleware({ tagName: 'think' }),
         }),
-        'title-model': xai('grok-2-1212'),
-        'artifact-model': xai('grok-2-1212'),
+        'title-model': getConfiguredChatModel('openai-o4-mini'),
+        'artifact-model': getConfiguredChatModel(),
       },
       imageModels: {
-        'small-model': xai.image('grok-2-image'),
+        // TODO: Manejar modelos de imagen si es necesario
+        // 'small-model': openai.image('o4-mini'),
       },
     });

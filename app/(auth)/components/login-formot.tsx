@@ -1,14 +1,44 @@
+'use client';
+
+import { useActionState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { toast } from '@/components/toast';
+import { login, type LoginActionState } from '../actions';
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'form'>) {
+  const router = useRouter();
+  const initialState: LoginActionState = { status: 'idle' };
+  const [state, formAction] = useActionState(login, initialState);
+
+  useEffect(() => {
+    if (state.status === 'credentials_error') {
+      toast({ type: 'error', description: 'Invalid email or password.' });
+    } else if (state.status === 'failed') {
+      toast({ type: 'error', description: 'Login failed. Please try again.' });
+    } else if (state.status === 'invalid_data') {
+      toast({ type: 'error', description: 'Invalid data format.' });
+    } else if (state.status === 'success') {
+      toast({
+        type: 'success',
+        description: 'Login successful! Redirecting...',
+      });
+      router.push('/');
+    }
+  }, [state, router]);
+
   return (
-    <form className={cn('flex flex-col gap-6', className)} {...props}>
+    <form
+      action={formAction}
+      className={cn('flex flex-col gap-6', className)}
+      {...props}
+    >
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Login to your account</h1>
         <p className="text-balance text-sm text-muted-foreground">
@@ -18,7 +48,13 @@ export function LoginForm({
       <div className="grid gap-6">
         <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" required />
+          <Input
+            name="email"
+            id="email"
+            type="email"
+            placeholder="m@example.com"
+            required
+          />
         </div>
         <div className="grid gap-2">
           <div className="flex items-center">
@@ -30,7 +66,7 @@ export function LoginForm({
               Forgot your password?
             </a>
           </div>
-          <Input id="password" type="password" required />
+          <Input name="password" id="password" type="password" required />
         </div>
         <Button type="submit" className="w-full">
           Login
@@ -52,7 +88,7 @@ export function LoginForm({
       </div>
       <div className="text-center text-sm">
         Don&apos;t have an account?{' '}
-        <a href="/" className="underline underline-offset-4">
+        <a href="/register" className="underline underline-offset-4">
           Sign up
         </a>
       </div>
