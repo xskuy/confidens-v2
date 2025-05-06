@@ -3,6 +3,7 @@ import { google, type GoogleGenerativeAIProviderOptions } from '@ai-sdk/google';
 import { anthropic } from '@ai-sdk/anthropic';
 import type { LanguageModel } from 'ai'; // Import LanguageModel type
 import type { AnthropicProviderOptions } from '@ai-sdk/anthropic';
+import { xai } from '@ai-sdk/xai';
 
 // Define un ID descriptivo como modelo por defecto
 export const DEFAULT_CHAT_MODEL_ID: string = 'openai-o4-mini';
@@ -14,7 +15,7 @@ type ProviderFn = (...args: any[]) => LanguageModel;
 export interface ChatModelConfig {
   id: string; // ID único (ej. 'openai-gpt-4o-mini')
   name: string; // Nombre para UI (ej. 'GPT-4o mini')
-  provider: 'openai' | 'google' | 'anthropic' | 'test'; // Nombre del proveedor
+  provider: 'openai' | 'google' | 'anthropic' | 'test' | 'xai'; // Nombre del proveedor
   apiProvider: ProviderFn; // La función real del proveedor (openai, google, etc.)
   modelName: string; // El nombre específico del modelo para la API (ej. 'gpt-4o-mini')
   description: string; // Descripción para UI
@@ -80,6 +81,22 @@ export const chatModelConfigurations: Array<ChatModelConfig> = [
       anthropic: {
         thinking: { type: 'enabled', budgetTokens: 12000 },
       } satisfies AnthropicProviderOptions,
+    },
+  },
+  {
+    id: 'grok-3-mini-beta',
+    name: 'Grok 3 Mini Beta',
+    provider: 'xai',
+    apiProvider: xai,
+    modelName: 'flash',
+    description: 'Fast and versatile model from XAI.',
+    supportsReasoning: true,
+    providerOptions: {
+      xai: {
+        thinkingConfig: {
+          thinkingBudget: 2048,
+        },
+      },
     },
   },
 ];
