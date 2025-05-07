@@ -3,8 +3,8 @@ import {
   CopyIcon,
   LineChartIcon,
   RedoIcon,
-  SparklesIcon,
   UndoIcon,
+  CircleLogoIcon,
 } from '@/components/icons';
 import { SpreadsheetEditor } from '@/components/sheet-editor';
 import { parse, unparse } from 'papaparse';
@@ -92,7 +92,7 @@ export const sheetArtifact = new Artifact<'sheet', Metadata>({
   toolbar: [
     {
       description: 'Format and clean data',
-      icon: <SparklesIcon />,
+      icon: <CircleLogoIcon size={18} />,
       onClick: ({ appendMessage }) => {
         appendMessage({
           role: 'user',
