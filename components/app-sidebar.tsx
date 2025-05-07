@@ -1,3 +1,4 @@
+// components/app-sidebar.tsx
 'use client';
 
 import type { User } from 'next-auth';
@@ -13,6 +14,7 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
+  SidebarRail,
   useSidebar,
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
@@ -31,8 +33,8 @@ export function AppSidebar({ user }: { user: User | undefined }) {
     : null;
 
   return (
-    <Sidebar className="group-data-[side=left]:border-r-0">
-      <SidebarHeader>
+    <Sidebar variant="inset" className="border-r-0 shadow-none">
+      <SidebarHeader className="border-b border-r-0">
         <SidebarMenu>
           <div className="flex flex-row justify-between items-center">
             <Link
@@ -66,12 +68,13 @@ export function AppSidebar({ user }: { user: User | undefined }) {
           </div>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="border-r-0">
         <SidebarHistory user={user} />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="border-r-0 border-t">
         {navUserData && <NavUser user={navUserData} />}
       </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   );
 }
