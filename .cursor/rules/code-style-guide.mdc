@@ -1,0 +1,170 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Guía de Estilo de Código
+
+> **Stack del proyecto**: React 19 · Next.js 15 · TypeScript · Drizzle ORM · Supabase · NextAuth · ai-sdk  
+> **Herramientas**: **Biome** (formateador + linter) · ESLint · Playwright
+
+## 1. Formato y Linting
+
+| Herramienta | Propósito | Reglas clave |
+|-------------|-----------|--------------|
+| **Biome** | Fuente única de verdad para formato **y** la mayoría de reglas de lint | • `lineWidth 100`<br>• `quoteStyle single`<br>• `semi always`<br>• `indentStyle space` (2)<br>• `trailingComma all` |
+| **ESLint** | Reglas complementarias que aún no están en Biome; depende de `@biome/eslint-plugin` | • Extiende `next/core-web-vitals`<br>• TypeScript: `@typescript-eslint/strict-boolean-expressions`<br>• Orden de importación vía `eslint-plugin-import` |
+
+Añadir un hook pre-commit (`husky`) que ejecute `biome check --apply` y `eslint --max-warnings 0`.
+
+```jsonc
+// biome.json
+{
+  "formatter": { "lineWidth": 100, "quoteStyle": "single", "indentStyle": "space" },
+  "linter": { "enabled": true }
+}
+```
+
+## 2. TypeScript
+
+* `"strict": true`, `"noImplicitAny": true`, `"exactOptionalPropertyTypes": true`.
+* Aliases de ruta definidos en **tsconfig.json**:
+
+  ```jsonc
+  "paths": {
+    "@/components/*": ["./src/components/*"],
+    "@/lib/*": ["./src/lib/*"],
+    "@/app/*": ["./src/app/*"]
+  }
+  ```
+* Preferir **types** sobre **interfaces** para formas de datos simples; reservar *interface* para props de componentes React.
+
+## 3. Convenciones de Nomenclatura
+
+| Objetivo | Estilo | Ejemplo |
+|----------|--------|---------|
+| Archivos y carpetas | **kebab-case** | `user-card.tsx`, `auth-provider/` |
+| Componentes React | **PascalCase** | `UserCard` |
+| Variables y funciones | **camelCase** | `fetchUser`, `isValid` |
+| Constantes | **UPPER_SNAKE_CASE** | `DEFAULT_TIMEOUT_MS` |
+| Variables de entorno | Prefijo `NEXT_PUBLIC_` para cliente, nombre simple para servidor | `NEXT_PUBLIC_API_URL` |
+
+## 4. Estructura del Proyecto (Next 15 App Router)
+
+```
+└─ src/
+   ├─ app/               # páginas con rutas y server actions
+   │  └─ (auth)/         # ejemplo de grupo de rutas
+   │     ├─ page.tsx
+   │     ├─ _actions/    # server actions para esta ruta
+   │     ├─ _data/       # funciones de carga
+   │     └─ _components/ # componentes co-localizados
+   ├─ components/        # UI compartida (diseño atómico)
+   ├─ lib/               # helpers, utils, clientes de API
+   ├─ db/                # Schemas de Drizzle y migraciones
+   ├─ tests/             # Archivos spec de Playwright e2e
+   └─ styles/            # Tailwind global / CSS
+```
+
+*Cada carpeta es autónoma* → co-localiza pruebas, stories y estilos junto al componente para maximizar la reutilización.
+
+## 5. Código Modular y Reutilizable
+
+1. **Componentes de responsabilidad única**: un propósito, sin efectos secundarios.
+2. Aceptar **props genéricos**; exponer callbacks en lugar de codificar comportamientos.
+3. Exportar **hooks factory** (`useX`) para compartir lógica.
+4. Mantener server actions puros y co-localizados bajo `_actions/` dentro de la ruta que sirven.
+
+## 6. Pruebas (Playwright)
+
+* Colocar specs en `tests/**/*.spec.ts`.
+* El nombre del archivo refleja la ruta o componente (`user-flow.spec.ts`).
+* Usar [test-ids] solo para elementos bajo prueba.
+* CI falla si la cobertura `< 80%`; generar con `playwright test --coverage`.
+
+## 7. Flujo de Trabajo Git
+
+* **Ramificación**: basada en trunk. Ramas de características: `feat/<scope>`; correcciones: `fix/<scope>`.
+* **Commits** siguen Conventional Commits **+ Gitmoji**:
+
+  | Tipo | Emoji | Ejemplo |
+  |------|-------|---------|
+  | feat | ✨ | `✨ feat(auth): OAuth with GitHub` |
+  | fix | 🐛 | `🐛 fix(db): correct PK type` |
+  | refactor | ♻️ | `♻️ refactor(ui): extract Table component` |
+  | docs | 📝 | `📝 docs(readme): add setup section` |
+
+Ejecutar `npm run commit` (impulsado por **commitizen** + **devmoji**) para aplicar el formato.
+
+## 8. CI / CD (GitHub Actions)
+
+```yaml
+name: CI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+        with: { version: 9 }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm biome check --apply
+      - run: pnpm eslint . --max-warnings 0
+      - run: pnpm typecheck
+      - run: pnpm build
+      - run: pnpm playwright install --with-deps
+      - run: pnpm test:e2e
+```
+
+*Fusión bloqueada* a menos que todos los pasos pasen y 1 revisión sea aprobada.
+
+## 9. Documentación y Comentarios
+
+* **TSDoc** en cada función/componente exportado. Ejemplo:
+
+  ```ts
+  /**
+   * Obtiene un usuario por ID.
+   * @param id – identificador numérico del usuario
+   */
+  export async function getUser(id: number) { ... }
+  ```
+* Mantener longitud de línea ≤ 100; ajustar prosa con saltos duros.
+* Usar `TODO(login) – …` con etiqueta de nombre de usuario; auto-limpiar antes del lanzamiento.
+
+## 10. Rendimiento y Accesibilidad
+
+* Preferir **React Server Components** para páginas con muchos datos.
+* Cargar componentes cliente con `dynamic()` de forma perezosa.
+* Auditoría con Lighthouse CI en PRs.
+* Todos los elementos interactivos requieren un nombre accesible; validar con `@axe-core/react` durante las pruebas.
+
+## 11. Entorno y Secretos
+
+* `.env.example` documenta cada variable.
+* Nunca commit de secretos reales. CI inyecta secretos a través de la configuración del repositorio.
+
+## 12. Dependencias
+
+* Gestor de paquetes: **pnpm** con soporte de workspace.
+* `pnpm audit` semanal en flujo de trabajo programado (no bloqueante).
+
+## 13. Lanzamiento y Versionado Semántico
+
+* `semantic-release` genera CHANGELOG y releases de GitHub a partir de Conventional Commits.
+* Despliegue vía Supabase Edge Functions o Vercel (Vista previa en PR, Producción en `main`).
+
+## 14. Agente Automático (ChatGPT)
+
+* El agente debe **hablar siempre en español**.
+* No debe preguntarme si puede realizar una acción; **si la acción aporta valor, ejecútela directamente** (por ejemplo, crear o modificar archivos).
+* No debe explicar lo que va a hacer ni pedir permiso - debe mostrar directamente el código que implementará.
+* No debe explicar los cambios realizados a menos que se le solicite específicamente.
+* Ante una pregunta sobre un problema, debe implementar los cambios necesarios inmediatamente sin pedir confirmación.
+* Cuando modifique código existente, **edite solo la sección necesaria** y evite reescribir el archivo completo si no es indispensable.
+* No debe solicitar información adicional con frases como "Si puedes proporcionar el contenido de X, podré darte una ayuda más específica" - debe trabajar con la información disponible.
+
+---
+
+### Mantén la coherencia — ejecuta las herramientas, haz commits con emojis, escribe código modular. ¡Feliz codificación! 🎉
