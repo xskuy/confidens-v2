@@ -23,6 +23,7 @@ import { Textarea } from './ui/textarea';
 import { SuggestedActions } from './suggested-actions';
 import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';
+import PowerSelector from '@/components/power-selector';
 
 function PureMultimodalInput({
   chatId,
@@ -53,6 +54,7 @@ function PureMultimodalInput({
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
+  const [selectedPower, setSelectedPower] = useState('medium');
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -98,6 +100,11 @@ function PureMultimodalInput({
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
     adjustHeight();
+  };
+
+  const handlePowerChange = (power: string) => {
+    setSelectedPower(power);
+    console.log('Selected power:', power);
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -248,17 +255,21 @@ function PureMultimodalInput({
         }}
       />
 
-      <div className="absolute bottom-0 p-2 w-fit flex flex-row justify-start">
-        <AttachmentsButton fileInputRef={fileInputRef} status={status} />
+      <div className="absolute bottom-3 left-3 flex items-center gap-2">
+        <PureAttachmentsButton fileInputRef={fileInputRef} status={status} />
+        <PowerSelector
+          selectedPower={selectedPower}
+          onPowerChange={handlePowerChange}
+        />
       </div>
 
-      <div className="absolute bottom-0 right-0 p-2 w-fit flex flex-row justify-end">
+      <div className="absolute bottom-3 right-3">
         {status === 'submitted' ? (
-          <StopButton stop={stop} setMessages={setMessages} />
+          <PureStopButton stop={stop} setMessages={setMessages} />
         ) : (
-          <SendButton
-            input={input}
+          <PureSendButton
             submitForm={submitForm}
+            input={input}
             uploadQueue={uploadQueue}
           />
         )}
@@ -288,7 +299,7 @@ function PureAttachmentsButton({
   return (
     <Button
       data-testid="attachments-button"
-      className="rounded-md rounded-bl-lg p-[7px] h-fit dark:border-zinc-700 hover:dark:bg-zinc-900 hover:bg-zinc-200"
+      className="h-9 px-3 py-1 rounded-full shadow-sm hover:shadow-md border border-gray-200 dark:border-zinc-700 flex items-center justify-center"
       onClick={(event) => {
         event.preventDefault();
         fileInputRef.current?.click();
@@ -296,7 +307,7 @@ function PureAttachmentsButton({
       disabled={status !== 'ready'}
       variant="ghost"
     >
-      <PaperclipIcon size={14} />
+      <PaperclipIcon size={18} />
     </Button>
   );
 }
@@ -313,14 +324,14 @@ function PureStopButton({
   return (
     <Button
       data-testid="stop-button"
-      className="rounded-full p-1.5 h-fit border dark:border-zinc-600"
+      className="h-9 px-3 py-1 rounded-full shadow-sm hover:shadow-md border border-gray-200 dark:border-zinc-700 flex items-center justify-center"
       onClick={(event) => {
         event.preventDefault();
         stop();
         setMessages((messages) => messages);
       }}
     >
-      <StopIcon size={14} />
+      <StopIcon size={18} />
     </Button>
   );
 }
@@ -339,14 +350,14 @@ function PureSendButton({
   return (
     <Button
       data-testid="send-button"
-      className="rounded-full p-1.5 h-fit border dark:border-zinc-600"
+      className="h-9 px-3 py-1 rounded-full shadow-sm hover:shadow-md border border-gray-200 dark:border-zinc-700 flex items-center justify-center"
       onClick={(event) => {
         event.preventDefault();
         submitForm();
       }}
       disabled={input.length === 0 || uploadQueue.length > 0}
     >
-      <ArrowUpIcon size={14} />
+      <ArrowUpIcon size={18} />
     </Button>
   );
 }
