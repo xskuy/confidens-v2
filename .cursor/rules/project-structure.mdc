@@ -1,0 +1,53 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Estructura del Proyecto
+
+Este proyecto sigue la estructura de directorios del App Router de Next.js 15, con algunas carpetas adicionales para organizar la lógica y componentes compartidos.
+
+## Estructura de Carpetas
+
+```
+└─ /
+   ├─ app/               # Páginas con rutas y server actions
+   │  └─ (auth)/         # Ejemplo de grupo de rutas
+   │     ├─ page.tsx     # Componente principal de la ruta
+   │     ├─ _actions/    # Server actions para esta ruta
+   │     ├─ _data/       # Funciones de carga de datos
+   │     └─ _components/ # Componentes co-localizados
+   ├─ components/        # UI compartida (diseño atómico)
+   ├─ lib/               # Helpers, utils, clientes de API
+   ├─ hooks/             # Hooks de React reutilizables
+   ├─ tests/             # Pruebas e2e con Playwright
+   └─ public/            # Activos estáticos
+```
+
+## Arquitectura de Componentes
+
+* **Cada carpeta es autónoma** → co-localiza pruebas, stories y estilos junto al componente para maximizar la reutilización.
+* Los componentes siguen un diseño atómico (átomos, moléculas, organismos, plantillas, páginas).
+* Para componentes específicos de rutas, usar carpetas _components dentro de la ruta correspondiente.
+
+## Archivos Clave
+
+* [package.json](mdc:package.json) - Dependencias del proyecto
+* [tsconfig.json](mdc:tsconfig.json) - Configuración de TypeScript con aliases de ruta
+* [biome.jsonc](mdc:biome.jsonc) - Configuración de formateo y linting
+* [tailwind.config.ts](mdc:tailwind.config.ts) - Configuración de estilos
+* [drizzle.config.ts](mdc:drizzle.config.ts) - Configuración de la base de datos ORM
+
+## Referencias Importantes
+
+* Usar los aliases de ruta definidos en tsconfig.json para importaciones:
+  ```typescript
+  // Correcto
+  import { Button } from '@/components/ui/button';
+  
+  // Incorrecto
+  import { Button } from '../../components/ui/button';
+  ```
+
+* Los componentes deben organizarse siguiendo el principio de responsabilidad única.
+* Server actions deben estar co-localizados bajo _actions/ dentro de la ruta que sirven.

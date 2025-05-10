@@ -1,0 +1,84 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Flujo de Trabajo Git
+
+Este proyecto sigue un flujo de trabajo Git basado en trunk con convenciones estrictas para ramas, commits y revisión de código.
+
+## Estructura de Ramas
+
+* **main**: Rama principal, siempre lista para producción
+* **feat/\<alcance\>**: Ramas para nuevas características (`feat/auth`, `feat/dashboard`)
+* **fix/\<alcance\>**: Ramas para correcciones de errores (`fix/login-validation`)
+* **refactor/\<alcance\>**: Ramas para refactorizaciones sin cambios funcionales
+* **docs/\<alcance\>**: Ramas para documentación y comentarios
+
+## Convención de Commits
+
+Todos los commits siguen **Conventional Commits + Gitmoji**:
+
+| Tipo | Emoji | Ejemplo | Uso |
+|------|-------|---------|-----|
+| feat | ✨ | `✨ feat(auth): implement OAuth with GitHub` | Nueva característica |
+| fix | 🐛 | `🐛 fix(db): correct PK type` | Corrección de errores |
+| refactor | ♻️ | `♻️ refactor(ui): extract Table component` | Refactorización |
+| docs | 📝 | `📝 docs(readme): add setup instructions` | Documentación |
+| test | ✅ | `✅ test(auth): add login flow tests` | Pruebas |
+| chore | 🧹 | `🧹 chore(deps): update dependencies` | Tareas de mantenimiento |
+| style | 💄 | `💄 style(buttons): update hover state` | Cambios de estilo |
+
+### Formato del Commit
+
+```
+<emoji> <tipo>(<alcance>): <descripción>
+
+[cuerpo opcional]
+
+[pie opcional]
+```
+
+* La **descripción** debe ser clara, concisa y en inglés
+* No usar puntos al final de la descripción
+* Usar imperativo presente: "add" en lugar de "added"
+* Mantener la primera línea ≤ 72 caracteres
+
+### Ejemplos de Commits Correctos
+
+```
+✨ feat(auth): implement GitHub login
+♻️ refactor(api): extract validation logic to middleware
+🐛 fix(form): fix address field validation
+📝 docs(readme): add installation instructions
+```
+
+## Flujo de Revisión
+
+1. Crear rama desde `main`
+2. Desarrollar cambios con commits atómicos
+3. Push a rama remota y crear PR
+4. Asegurar que CI pasa (tests, linting, tipos)
+5. Solicitar revisión de código
+6. Aplicar cambios solicitados
+7. Rebase con main si es necesario
+8. Merge a main (estrategia: squash y merge)
+
+## CI / CD
+
+El proyecto usa GitHub Actions para CI/CD:
+* Todos los PR tienen verificaciones automáticas
+* Despliegue automático a entorno de desarrollo en merge a main
+* Despliegue manual a producción vía releases
+
+## Herramientas Recomendadas
+
+* Ejecutar `npm run commit` para usar **commitizen** + **devmoji**
+* Usar hooks pre-commit para verificar código antes del commit
+* Configurar `git config` para firmar commits con GPG
+
+## Notas Importantes
+
+* No hacer force-push a main bajo ninguna circunstancia
+* Mantener PRs pequeños y enfocados en un solo cambio
+* No incluir archivos generados o secretos en commits

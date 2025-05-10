@@ -1,0 +1,88 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Convenciones de Nomenclatura
+
+En este proyecto se siguen convenciones de nomenclatura estrictas para mantener la consistencia y facilitar la comprensión del código.
+
+## Convenciones Básicas
+
+| Elemento | Convención | Ejemplos |
+|----------|------------|----------|
+| **Archivos y carpetas** | kebab-case | `user-card.tsx`, `auth-provider/` |
+| **Componentes React** | PascalCase | `UserCard`, `AuthProvider` |
+| **Variables y funciones** | camelCase | `fetchUser`, `isValid`, `handleSubmit` |
+| **Constantes** | UPPER_SNAKE_CASE | `DEFAULT_TIMEOUT_MS`, `API_ENDPOINTS` |
+| **Variables de entorno** | Prefijo específico | `NEXT_PUBLIC_API_URL` (cliente), `DATABASE_URL` (servidor) |
+
+## Convenciones Específicas
+
+### Componentes React
+
+* **Archivos de componentes**: Usar extensión `.tsx` y nombrar con PascalCase: `Button.tsx`
+* **Componentes cliente**: Nombrar archivo como `<nombre>.client.tsx` o usar directiva `'use client'`
+* **Props interfaces**: Nombrar como `<Componente>Props`: `interface ButtonProps {...}`
+* **Componentes atómicos**: Organizar por categoría usando carpetas: `ui/`, `form/`, `layout/`, etc.
+
+### Hooks
+
+* **Nombre de hooks**: Prefijo `use` + acción: `useForm`, `useAuth`, `usePosts`
+* **Archivos de hooks**: Usar kebab-case: `use-form.ts`, `use-auth.ts`
+* **Reutilización**: Para hooks grandes, crear carpeta dedicada: `hooks/use-form/`
+
+### API y Server Actions
+
+* **Server actions**: Nombrar con verbo + sustantivo: `createUser`, `updatePost`
+* **Archivos de actions**: Agrupar por funcionalidad: `_actions/users.ts`, `_actions/auth.ts`
+* **API handlers**: Nombrar por recurso: `app/api/users/route.ts`
+
+### Bases de Datos
+
+* **Tablas**: Plural, snake_case: `users`, `product_categories`
+* **Esquemas Drizzle**: kebab-case para archivos: `schema/users.ts`
+* **Columnas**: camelCase para código, snake_case para DB: `userId` en código, `user_id` en DB
+
+## Referencias y Ejemplos
+
+### Ejemplo de Estructura de Componente
+
+```typescript
+// UserCard.tsx
+interface UserCardProps {
+  userName: string;
+  avatarUrl?: string;
+  onProfileClick: () => void;
+}
+
+export function UserCard({ userName, avatarUrl, onProfileClick }: UserCardProps) {
+  // Implementación
+}
+```
+
+### Ejemplo de Hook Personalizado
+
+```typescript
+// hooks/use-auth.ts
+export function useAuth() {
+  // Implementación
+  return {
+    user,
+    login,
+    logout,
+    isLoading,
+  };
+}
+```
+
+### Ejemplo de Server Action
+
+```typescript
+// app/usuarios/_actions/auth.ts
+'use server';
+
+export async function authenticateUser(credentials: UserCredentials) {
+  // Implementación
+}
+```
