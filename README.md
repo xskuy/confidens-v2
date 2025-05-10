@@ -1,62 +1,149 @@
-<a href="https://chat.vercel.ai/">
-  <img alt="Next.js 14 and App Router-ready AI chatbot." src="app/(chat)/opengraph-image.png">
-  <h1 align="center">Chat SDK</h1>
-</a>
+# Confidens v2
 
 <p align="center">
-    Chat SDK is a free, open-source template built with Next.js and the AI SDK that helps you quickly build powerful chatbot applications.
+    Plataforma avanzada de chat y análisis de datos basada en Next.js 15 y la AI SDK que permite construir experiencias de IA conversacional potentes e intuitivas.
 </p>
 
 <p align="center">
-  <a href="https://chat-sdk.dev"><strong>Read Docs</strong></a> ·
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#model-providers"><strong>Model Providers</strong></a> ·
-  <a href="#deploy-your-own"><strong>Deploy Your Own</strong></a> ·
-  <a href="#running-locally"><strong>Running locally</strong></a>
+  <a href="#características"><strong>Características</strong></a> ·
+  <a href="#tecnologías"><strong>Tecnologías</strong></a> ·
+  <a href="#estructura-del-proyecto"><strong>Estructura</strong></a> ·
+  <a href="#instalación-y-desarrollo"><strong>Instalación</strong></a> ·
+  <a href="#convenciones-de-desarrollo"><strong>Convenciones</strong></a>
 </p>
 <br/>
 
-## Features
+## Características
 
-- [Next.js](https://nextjs.org) App Router
-  - Advanced routing for seamless navigation and performance
-  - React Server Components (RSCs) and Server Actions for server-side rendering and increased performance
-- [AI SDK](https://sdk.vercel.ai/docs)
-  - Unified API for generating text, structured objects, and tool calls with LLMs
-  - Hooks for building dynamic chat and generative user interfaces
-  - Supports xAI (default), OpenAI, Fireworks, and other model providers
-- [shadcn/ui](https://ui.shadcn.com)
-  - Styling with [Tailwind CSS](https://tailwindcss.com)
-  - Component primitives from [Radix UI](https://radix-ui.com) for accessibility and flexibility
-- Data Persistence
-  - [Neon Serverless Postgres](https://vercel.com/marketplace/neon) for saving chat history and user data
-  - [Vercel Blob](https://vercel.com/storage/blob) for efficient file storage
-- [Auth.js](https://authjs.dev)
-  - Simple and secure authentication
+- **Chat Avanzado** con modelos IA de última generación
+  - Conversaciones contextuales con historial persistente
+  - Soporte para carga y análisis de archivos
+  - Herramientas integradas para análisis de datos 
+- **Interfaz Moderna y Responsiva**
+  - Diseño accesible y mobile-first
+  - Temas claro/oscuro
+  - Componentes UI reutilizables con shadcn/ui
+- **Arquitectura Robusta**
+  - React Server Components (RSCs)
+  - Server Actions para operaciones seguras del lado del servidor
+  - ORM Drizzle con Supabase para persistencia de datos
+- **Flujo de Desarrollo Optimizado**
+  - Sistema de tipos estricto con TypeScript
+  - Linting y formateo con Biome
+  - Pruebas e2e con Playwright
 
-## Model Providers
+## Tecnologías
 
-This template ships with [xAI](https://x.ai) `grok-2-1212` as the default chat model. However, with the [AI SDK](https://sdk.vercel.ai/docs), you can switch LLM providers to [OpenAI](https://openai.com), [Anthropic](https://anthropic.com), [Cohere](https://cohere.com/), and [many more](https://sdk.vercel.ai/providers/ai-sdk-providers) with just a few lines of code.
+### Frontend
+- [Next.js 15](https://nextjs.org) con App Router
+- [React 19](https://react.dev)
+- [Tailwind CSS](https://tailwindcss.com) para estilos
+- [Shadcn/ui](https://ui.shadcn.com) para componentes de interfaz
+- [NextAuth](https://next-auth.js.org) para autenticación
 
-## Deploy Your Own
+### Backend
+- [Supabase](https://supabase.com) para base de datos
+- [Drizzle ORM](https://orm.drizzle.team) para acceso a datos
+- [AI SDK](https://sdk.vercel.ai/docs) para integración con modelos de IA
 
-You can deploy your own version of the Next.js AI Chatbot to Vercel with one click:
+### Herramientas de Desarrollo
+- [TypeScript](https://www.typescriptlang.org/) con configuración estricta
+- [Biome](https://biomejs.dev) para linting y formateo
+- [Playwright](https://playwright.dev) para pruebas e2e
+- [pnpm](https://pnpm.io) como gestor de paquetes
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fai-chatbot&env=AUTH_SECRET&envDescription=Generate%20a%20random%20secret%20to%20use%20for%20authentication&envLink=https%3A%2F%2Fgenerate-secret.vercel.app%2F32&project-name=my-awesome-chatbot&repository-name=my-awesome-chatbot&demo-title=AI%20Chatbot&demo-description=An%20Open-Source%20AI%20Chatbot%20Template%20Built%20With%20Next.js%20and%20the%20AI%20SDK%20by%20Vercel&demo-url=https%3A%2F%2Fchat.vercel.ai&products=%5B%7B%22type%22%3A%22integration%22%2C%22protocol%22%3A%22ai%22%2C%22productSlug%22%3A%22grok%22%2C%22integrationSlug%22%3A%22xai%22%7D%2C%7B%22type%22%3A%22integration%22%2C%22protocol%22%3A%22storage%22%2C%22productSlug%22%3A%22neon%22%2C%22integrationSlug%22%3A%22neon%22%7D%2C%7B%22type%22%3A%22blob%22%7D%5D)
+## Estructura del Proyecto
 
-## Running locally
+```
+└─ /
+   ├─ app/               # Páginas con rutas y server actions
+   │  └─ (auth)/         # Ejemplo de grupo de rutas
+   │     ├─ page.tsx     # Componente principal de la ruta
+   │     ├─ _actions/    # Server actions para esta ruta
+   │     ├─ _data/       # Funciones de carga de datos
+   │     └─ _components/ # Componentes co-localizados
+   ├─ components/        # UI compartida (diseño atómico)
+   ├─ lib/               # Helpers, utils, clientes de API
+   ├─ hooks/             # Hooks de React reutilizables
+   ├─ tests/             # Pruebas e2e con Playwright
+   └─ public/            # Activos estáticos
+```
 
-You will need to use the environment variables [defined in `.env.example`](.env.example) to run Next.js AI Chatbot. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/projects/environment-variables) for this, but a `.env` file is all that is necessary.
+## Instalación y Desarrollo
 
-> Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various AI and authentication provider accounts.
+### Requisitos Previos
 
-1. Install Vercel CLI: `npm i -g vercel`
-2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
-3. Download your environment variables: `vercel env pull`
+- Node.js 20+
+- pnpm 9.x
+
+### Variables de Entorno
+
+Copia `.env.example` a `.env.local` y configura las variables necesarias:
 
 ```bash
+cp .env.example .env.local
+```
+
+### Instalación
+
+```bash
+# Instalar dependencias
 pnpm install
+
+# Configurar la base de datos
+pnpm db:migrate
+
+# Iniciar servidor de desarrollo
 pnpm dev
 ```
 
-Your app template should now be running on [localhost:3000](http://localhost:3000).
+Tu aplicación estará disponible en [http://localhost:3000](http://localhost:3000).
+
+### Comandos Útiles
+
+```bash
+# Verificar código
+pnpm lint
+
+# Formatear código
+pnpm format
+
+# Ejecutar pruebas
+pnpm test
+
+# Construir para producción
+pnpm build
+```
+
+## Convenciones de Desarrollo
+
+### Código y Estilo
+
+- Usar **Biome** para formateo y linting
+- TypeScript con modo estricto
+- Preferir types sobre interfaces para datos simples
+
+### Nomenclatura
+
+- Archivos/carpetas: kebab-case (`user-card.tsx`)
+- Componentes React: PascalCase (`UserCard`)
+- Variables/funciones: camelCase (`fetchUser`)
+- Constantes: UPPER_SNAKE_CASE (`DEFAULT_TIMEOUT_MS`)
+
+### Git y Control de Código
+
+- Ramas: `feat/scope`, `fix/scope`, `refactor/scope`
+- Commits: Conventional Commits + Gitmoji en inglés
+  - Ejemplo: `✨ feat(auth): implement GitHub login`
+- PRs pequeños con verificaciones de CI
+
+### Rendimiento y Accesibilidad
+
+- Preferir React Server Components para páginas con datos
+- Usar `next/image` para imágenes optimizadas
+- Asegurar contraste de color mínimo de 4.5:1 (AA)
+- Implementar diseño mobile-first
+
+## Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
