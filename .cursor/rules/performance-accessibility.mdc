@@ -1,0 +1,109 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Rendimiento y Accesibilidad
+
+Este proyecto prioriza tanto el rendimiento como la accesibilidad para crear una experiencia de usuario óptima y universal.
+
+## Rendimiento
+
+### Estructura de Componentes
+
+* Preferir **React Server Components** para páginas con muchos datos
+* Cargar componentes cliente con peso significativo de forma perezosa mediante `dynamic()`
+* Mantener el JavaScript del lado del cliente al mínimo
+* Colocar la lógica de servidor en Server Components o Server Actions
+
+### Optimización de Imágenes
+
+* Usar siempre el componente `next/image` para imágenes
+* Especificar dimensiones explícitas (width/height)
+* Utilizar formatos modernos (WebP, AVIF) cuando sea posible
+* Implementar carga perezosa con `loading="lazy"`
+
+### Estrategias de Caché
+
+* Usar React Cache para datos que cambian poco
+* Implementar estrategias de revalidación apropiadas
+* Aprovechar el sistema de caché de Next.js para contenido estático
+
+### Medición y Monitoreo
+
+* Auditoría con Lighthouse CI en PRs
+* Presupuestos de rendimiento establecidos:
+  * First Contentful Paint: < 1.5s
+  * Time to Interactive: < 3s
+  * Total Blocking Time: < 300ms
+  * Largest Contentful Paint: < 2.5s
+* Monitorizar Core Web Vitals en producción
+
+## Accesibilidad (a11y)
+
+### Requisitos Mínimos
+
+* Contraste de color mínimo de 4.5:1 (AA)
+* Todos los elementos interactivos requieren un nombre accesible
+* Estructura de encabezados lógica y jerárquica
+* Soporte completo de navegación por teclado
+* Textos alternativos descriptivos para imágenes
+
+### Componentes Accesibles
+
+* Usar atributos ARIA adecuadamente y solo cuando sea necesario
+* Implementar manejo de focus apropiado
+* Asegurar que los formularios tengan etiquetas y mensajes de error accesibles
+* Mantener un orden de tabulación lógico
+
+### Herramientas de Verificación
+
+* Validar con `@axe-core/react` durante las pruebas
+* Implementar checks manuales con lectores de pantalla
+* Ejecutar validaciones automáticas en CI
+
+### Ejemplos de Implementación
+
+#### Componente de Botón Accesible
+
+```tsx
+// Correcto - Accesible
+<Button aria-label={label || undefined}>
+  {children}
+</Button>
+
+// Incorrecto - Inaccesible
+<div onClick={handleClick} className="button">
+  {children}
+</div>
+```
+
+#### Formulario Accesible
+
+```tsx
+// Correcto - Accesible
+<form>
+  <label htmlFor="name">Nombre</label>
+  <input 
+    id="name"
+    name="name" 
+    type="text"
+    aria-required="true"
+    aria-describedby="name-error"
+  />
+  {error && <p id="name-error" className="error">{error}</p>}
+</form>
+```
+
+## Diseño Responsivo
+
+* Implementar enfoque de "mobile-first"
+* Usar variables CSS o clases de Tailwind para puntos de ruptura consistentes
+* Probar en múltiples tamaños de pantalla y dispositivos
+* Asegurar funcionalidad en modo oscuro y claro
+
+## Pruebas de Rendimiento y Accesibilidad
+
+* Incluir pruebas automatizadas de accesibilidad en CI
+* Realizar pruebas de rendimiento antes de implementaciones importantes
+* Evaluar el impacto de rendimiento de nuevas dependencias

@@ -1,0 +1,83 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Guía de Pruebas
+
+Este proyecto usa Playwright para pruebas end-to-end. Las pruebas son un componente crítico del proceso de desarrollo y deben mantenerse con el mismo cuidado que el código de producción.
+
+## Estructura de Pruebas
+
+Las pruebas se encuentran en:
+
+* `tests/**/*.spec.ts` - Pruebas e2e con Playwright
+* Cada prueba debe enfocarse en un flujo de usuario o una funcionalidad específica
+* El nombre del archivo de prueba debe reflejar la funcionalidad que prueba: `user-registration.spec.ts`
+
+## Configuración
+
+La configuración de Playwright está en [playwright.config.ts](mdc:playwright.config.ts) y establece:
+
+* Navegadores de prueba
+* Directorio de grabación
+* Capturas de pantalla automáticas en fallos
+* Configuración de CI
+* Rutas de archivos ignorados
+
+## Convenciones de Pruebas
+
+### Nomenclatura
+
+* **Archivos de prueba**: `<funcionalidad>.spec.ts` usando kebab-case
+* **Bloques describe**: Describir la funcionalidad probada con claridad
+* **Bloques test**: Describir el comportamiento esperado en forma de: "debería hacer X cuando Y"
+* **Selectores**: Preferir test-ids sobre selectores CSS o texto directo
+
+### Estructura de Prueba
+
+```typescript
+// ejemplo: user-login.spec.ts
+import { test, expect } from '@playwright/test';
+
+test.describe('Autenticación de usuario', () => {
+  test('debería permitir iniciar sesión con credenciales válidas', async ({ page }) => {
+    // Arrange
+    await page.goto('/login');
+    
+    // Act
+    await page.fill('[data-testid="email-input"]', 'usuario@ejemplo.com');
+    await page.fill('[data-testid="password-input"]', 'contraseña123');
+    await page.click('[data-testid="login-button"]');
+    
+    // Assert
+    await expect(page).toHaveURL('/dashboard');
+    await expect(page.locator('[data-testid="user-greeting"]')).toContainText('Bienvenido');
+  });
+  
+  test('debería mostrar error con credenciales inválidas', async ({ page }) => {
+    // Implementación
+  });
+});
+```
+
+## Buenas Prácticas
+
+1. **Aislar pruebas**: Cada prueba debe ser independiente y no depender del estado de otras pruebas
+2. **Minimizar dependencias externas**: Usar mocks para APIs y servicios externos
+3. **Verificar con aserciones precisas**: Comprobar estados exactos, no aproximados
+4. **Evitar tiempo de espera fijo**: Usar `waitFor` o esperas basadas en eventos en lugar de `setTimeout`
+5. **Mantener pruebas limpias**: Limpiar datos de prueba después de su ejecución
+
+## Cobertura de Código
+
+* CI falla si la cobertura es menor al 80%
+* Generar informes de cobertura con `playwright test --coverage`
+* Priorizar cobertura de flujos críticos del usuario
+
+## Test IDs
+
+* Usar el atributo `data-testid` solo para elementos que necesitan ser probados
+* Seguir el formato: `<contexto>-<tipo>-<acción opcional>`: `user-input-email`, `submit-button`
+* Tratar test-ids como parte de la API pública del componente
+* No usar test-ids para lógica de la aplicación, solo para testing
