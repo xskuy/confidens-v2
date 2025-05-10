@@ -1172,3 +1172,35 @@ export const WarningIcon = ({ size = 16 }: { size?: number }) => {
     </svg>
   );
 };
+
+export const CircleLogoIcon = ({ size = 24 }: { size?: number }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 100 100"
+    width={size}
+    height={size}
+  >
+    <defs>
+      <radialGradient
+        id="circleLogoUniqueGradient"
+        cx="50%"
+        cy="50%"
+        r="50%"
+        fx="50%"
+        fy="50%"
+      >
+        <stop offset="0%" stopColor="#4169FF" />
+        <stop offset="100%" stopColor="#9370FF" />
+      </radialGradient>
+    </defs>
+    <circle cx="50" cy="50" r="45" fill="url(#circleLogoUniqueGradient)" />
+    <circle
+      cx="50"
+      cy="50"
+      r="45"
+      fill="none"
+      stroke="#8A9BFF"
+      strokeWidth="2"
+    />
+  </svg>
+);
