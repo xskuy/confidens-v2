@@ -47,25 +47,27 @@ export default function PowerSelector({
     }
   > = {
     low: {
-      label: 'Low',
-      description: 'For quick answers to everyday questions',
+      label: 'Rápido',
+      description:
+        'Ideal para preguntas rápidas, consultas generales y búsquedas en internet.',
       colorIcon: 'text-yellow-400',
       colorText: '',
       icon: <Zap className="size-6" />,
     },
     medium: {
-      label: 'Medium',
-      description: 'Balances speed and complexity for hard tasks',
+      label: 'Normal',
+      description:
+        'Equilibrio entre rapidez y profundidad, ideal para tareas complejas y respuestas elaboradas.',
       colorIcon: 'text-blue-500',
       colorText: '',
       icon: <Lightbulb className="size-6" />,
     },
     high: {
-      label: 'High',
-      description: 'Highest level of reasoning for hardest questions',
+      label: 'Avanzado',
+      description:
+        'Máxima profundidad para resolver preguntas complejas, especialmente matemáticas, lógica avanzada y generación de código.',
       colorIcon: 'text-purple-600',
-      colorText:
-        'bg-gradient-to-r from-blue-900 via-indigo-600 to-purple-600 bg-clip-text text-transparent',
+      colorText: '',
       icon: <Brain className="size-6" />,
     },
   };
