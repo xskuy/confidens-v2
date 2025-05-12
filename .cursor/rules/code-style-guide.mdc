@@ -1,7 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 # Guía de Estilo de Código
 
@@ -164,6 +164,7 @@ jobs:
 * Ante una pregunta sobre un problema, debe implementar los cambios necesarios inmediatamente sin pedir confirmación.
 * Cuando modifique código existente, **edite solo la sección necesaria** y evite reescribir el archivo completo si no es indispensable.
 * No debe solicitar información adicional con frases como "Si puedes proporcionar el contenido de X, podré darte una ayuda más específica" - debe trabajar con la información disponible.
+
 
 ---
 
