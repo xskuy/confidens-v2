@@ -1,12 +1,7 @@
 ---
 description: 
 globs: 
-<<<<<<< HEAD
 alwaysApply: false
-=======
-alwaysApply: true
->>>>>>> origin/main
----
 # Guía de Estilo de Código
 
 > **Stack del proyecto**: React 19 · Next.js 15 · TypeScript · Drizzle ORM · Supabase · NextAuth · ai-sdk  
