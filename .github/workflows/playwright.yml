@@ -63,6 +63,7 @@ jobs:
 
       # - name: Run Playwright tests
       #   run: pnpm test
+      #   # Temporarily disabled due to ongoing debugging of test failures. Re-enable once the issue is resolved.
 
       - uses: actions/upload-artifact@v4
         if: always() && !cancelled()
