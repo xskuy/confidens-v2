@@ -15,6 +15,8 @@ import { useArtifactSelector } from '@/hooks/use-artifact';
 import { toast } from 'sonner';
 import { unstable_serialize } from 'swr/infinite';
 import { getChatHistoryPaginationKey } from './sidebar-history';
+import type { PowerLevel } from '@/src/lib/ai-models.config';
+import { useDevMode } from '@/context/dev-mode';
 
 export function Chat({
   id,
@@ -33,6 +35,15 @@ export function Chat({
 
   const [internalSelectedChatModel, setInternalSelectedChatModel] =
     useState(selectedChatModel);
+  const [selectedPower, setSelectedPower] = useState<PowerLevel>('medium');
+  const { isDevMode } = useDevMode();
+
+  // Actualizar el modelo seleccionado cuando cambia el nivel de potencia
+  useEffect(() => {
+    if (!isReadonly && !isDevMode) {
+      setInternalSelectedChatModel(selectedPower);
+    }
+  }, [selectedPower, isReadonly, isDevMode]);
 
   useEffect(() => {
     saveChatModelToCookie(internalSelectedChatModel);
@@ -50,7 +61,11 @@ export function Chat({
     reload,
   } = useChat({
     id,
-    body: { id, selectedChatModel: internalSelectedChatModel },
+    body: {
+      id,
+      selectedChatModel: internalSelectedChatModel,
+      isDevModeActive: isDevMode,
+    },
     initialMessages,
     experimental_throttle: 100,
     sendExtraMessageFields: true,
@@ -81,6 +96,7 @@ export function Chat({
           selectedVisibilityType={selectedVisibilityType}
           isReadonly={isReadonly}
           setSelectedModelId={setInternalSelectedChatModel}
+          selectedPower={selectedPower}
         />
 
         <Messages
@@ -108,6 +124,8 @@ export function Chat({
               messages={messages}
               setMessages={setMessages}
               append={append}
+              selectedPower={selectedPower}
+              setSelectedPower={setSelectedPower}
             />
           )}
         </form>

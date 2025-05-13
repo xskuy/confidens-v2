@@ -24,6 +24,7 @@ import { SuggestedActions } from './suggested-actions';
 import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import PowerSelector from '@/components/power-selector';
+import type { PowerLevel } from '@/src/lib/ai-models.config';
 
 function PureMultimodalInput({
   chatId,
@@ -38,6 +39,8 @@ function PureMultimodalInput({
   append,
   handleSubmit,
   className,
+  selectedPower,
+  setSelectedPower,
 }: {
   chatId: string;
   input: UseChatHelpers['input'];
@@ -51,10 +54,11 @@ function PureMultimodalInput({
   append: UseChatHelpers['append'];
   handleSubmit: UseChatHelpers['handleSubmit'];
   className?: string;
+  selectedPower: PowerLevel;
+  setSelectedPower: (power: PowerLevel) => void;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
-  const [selectedPower, setSelectedPower] = useState('medium');
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -102,7 +106,7 @@ function PureMultimodalInput({
     adjustHeight();
   };
 
-  const handlePowerChange = (power: string) => {
+  const handlePowerChange = (power: PowerLevel) => {
     setSelectedPower(power);
     console.log('Selected power:', power);
   };
@@ -281,11 +285,14 @@ function PureMultimodalInput({
 export const MultimodalInput = memo(
   PureMultimodalInput,
   (prevProps, nextProps) => {
-    if (prevProps.input !== nextProps.input) return false;
-    if (prevProps.status !== nextProps.status) return false;
-    if (!equal(prevProps.attachments, nextProps.attachments)) return false;
-
-    return true;
+    return (
+      prevProps.input === nextProps.input &&
+      prevProps.status === nextProps.status &&
+      equal(prevProps.attachments, nextProps.attachments) &&
+      equal(prevProps.messages, nextProps.messages) &&
+      prevProps.chatId === nextProps.chatId &&
+      prevProps.selectedPower === nextProps.selectedPower
+    );
   },
 );
 

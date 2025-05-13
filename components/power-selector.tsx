@@ -5,12 +5,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Zap, Lightbulb, Brain } from 'lucide-react';
-
-type PowerLevel = 'low' | 'medium' | 'high';
+import {
+  AI_MODELS_CONFIGURATION,
+  type AIModelConfig,
+  type PowerLevel,
+} from '@/src/lib/ai-models.config';
 
 interface PowerSelectorProps {
-  selectedPower: string;
-  onPowerChange: (power: string) => void;
+  selectedPower: PowerLevel;
+  onPowerChange: (power: PowerLevel) => void;
 }
 
 export default function PowerSelector({
@@ -19,10 +22,10 @@ export default function PowerSelector({
 }: PowerSelectorProps) {
   const [open, setOpen] = useState(false);
   const [currentView, setCurrentView] = useState<PowerLevel>(
-    (selectedPower as PowerLevel) || 'medium',
+    selectedPower || 'medium',
   );
   const [previousSelectedPower, setPreviousSelectedPower] =
-    useState<string>(selectedPower);
+    useState<PowerLevel>(selectedPower);
 
   // Actualizar previousSelectedPower cuando cambia selectedPower
   useEffect(() => {
@@ -36,41 +39,58 @@ export default function PowerSelector({
   const popupRef = useRef<HTMLDivElement>(null);
   const startX = useRef<number | null>(null);
 
-  const powerLevels: Record<
+  // Definición de iconos y colores específicos de la UI para cada nivel
+  const powerLevelUIDefinitions: Record<
     PowerLevel,
     {
-      label: string;
-      description: string;
-      colorIcon: string;
-      colorText: string;
       icon: React.ReactNode;
+      colorIcon: string;
+      colorText?: string; // Opcional, puede derivarse o definirse aquí
     }
   > = {
     low: {
-      label: 'Rápido',
-      description:
-        'Ideal para preguntas rápidas, consultas generales y búsquedas en internet.',
-      colorIcon: 'text-yellow-400',
-      colorText: '',
       icon: <Zap className="size-6" />,
+      colorIcon: 'text-yellow-400',
     },
     medium: {
-      label: 'Normal',
-      description:
-        'Equilibrio entre rapidez y profundidad, ideal para tareas complejas y respuestas elaboradas.',
-      colorIcon: 'text-blue-500',
-      colorText: '',
       icon: <Lightbulb className="size-6" />,
+      colorIcon: 'text-blue-500',
     },
     high: {
-      label: 'Avanzado',
-      description:
-        'Máxima profundidad para resolver preguntas complejas, especialmente matemáticas, lógica avanzada y generación de código.',
-      colorIcon: 'text-purple-600',
-      colorText: '',
       icon: <Brain className="size-6" />,
+      colorIcon: 'text-purple-600',
     },
   };
+
+  // Combina la configuración del modelo con las definiciones de UI
+  const powerLevels: Record<
+    PowerLevel,
+    AIModelConfig & {
+      icon: React.ReactNode;
+      colorIcon: string;
+      colorText?: string;
+      label: string; // Asegura que label esté presente
+    }
+  > = Object.keys(AI_MODELS_CONFIGURATION).reduce(
+    (acc, key) => {
+      const level = key as PowerLevel;
+      acc[level] = {
+        ...AI_MODELS_CONFIGURATION[level], // Datos del modelo (id, name, description, etc.)
+        ...powerLevelUIDefinitions[level], // Icono y colores de la UI
+        label: AI_MODELS_CONFIGURATION[level].name, // Usa el nombre del modelo como label
+      };
+      return acc;
+    },
+    {} as Record<
+      PowerLevel,
+      AIModelConfig & {
+        icon: React.ReactNode;
+        colorIcon: string;
+        colorText?: string;
+        label: string;
+      }
+    >,
+  );
 
   const handleDotClick = (level: PowerLevel) => {
     setCurrentView(level);
@@ -177,8 +197,7 @@ export default function PowerSelector({
   }, [open]);
 
   // Get current power level details
-  const currentPowerDetails =
-    powerLevels[selectedPower as PowerLevel] || powerLevels.medium;
+  const currentPowerDetails = powerLevels[selectedPower] || powerLevels.medium;
 
   const isHighPowerSelected = selectedPower === 'high';
 
@@ -325,25 +344,25 @@ export default function PowerSelector({
                   transition={{ duration: 0.2 }}
                   className="flex flex-col items-center justify-center py-4"
                 >
-                  {/* Power icon */}
-                  <div className={`mb-6 ${powerLevels[currentView].colorIcon}`}>
-                    {powerLevels[currentView].icon &&
+                  {/* Power icon - Usa el icono de la UI combinada */}
+                  <div className={`mb-6 ${currentPowerDetails.colorIcon}`}>
+                    {currentPowerDetails.icon &&
                       React.cloneElement(
-                        powerLevels[currentView].icon as React.ReactElement,
-                        { className: 'size-10' },
+                        currentPowerDetails.icon as React.ReactElement,
+                        { className: 'size-10' }, // Aumenta tamaño del icono en popup
                       )}
                   </div>
 
-                  {/* Power level name */}
+                  {/* Power level name - Usa el label (nombre del modelo) */}
                   <h3
-                    className={`text-2xl font-bold text-center mb-4 ${powerLevels[currentView].colorText || 'text-foreground'}`}
+                    className={`text-2xl font-bold text-center mb-4 ${currentPowerDetails.colorText || 'text-foreground'}`}
                   >
-                    {powerLevels[currentView].label}
+                    {currentPowerDetails.label}
                   </h3>
 
-                  {/* Description */}
+                  {/* Description - Usa la descripción del modelo */}
                   <p className="text-muted-foreground text-center text-sm px-6 mb-2">
-                    {powerLevels[currentView].description}
+                    {currentPowerDetails.description}
                   </p>
                 </motion.div>
               </AnimatePresence>
