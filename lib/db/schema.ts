@@ -11,12 +11,66 @@ import {
   boolean,
 } from 'drizzle-orm/pg-core';
 
+// Agregar al archivo lib/db/schema.ts
+
+// Definición de la tabla Organization
+export const organization = pgTable('Organization', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  name: varchar('name', { length: 100 }).notNull(),
+  description: text('description'),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+  // Campos adicionales que puedas necesitar
+  planType: varchar('planType', { length: 50 }).default('free'),
+  isActive: boolean('isActive').notNull().default(true),
+});
+
+export type Organization = InferSelectModel<typeof organization>;
+
+// Definición de la tabla Role
+export const role = pgTable('Role', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  name: varchar('name', { length: 50 }).notNull(),
+  description: text('description'),
+  permissions: json('permissions').notNull().default({}),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+});
+
+export type Role = InferSelectModel<typeof role>;
+
+// Definición de la tabla Integration
+export const integration = pgTable('Integration', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  name: varchar('name', { length: 100 }).notNull(),
+  type: varchar('type', { length: 50 }).notNull(),
+  config: json('config').notNull(),
+  organizationId: uuid('organizationId')
+    .notNull()
+    .references(() => organization.id),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+  isActive: boolean('isActive').notNull().default(true),
+});
+
+export type Integration = InferSelectModel<typeof integration>;
+
+// Modificar la tabla user existente (reemplaza la definición actual)
 export const user = pgTable('User', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
-  email: varchar('email', { length: 64 }).notNull().unique(), // Make email unique
-  password: varchar('password', { length: 256 }), // Store hashed password (increased length just in case)
+  email: varchar('email', { length: 64 }).notNull().unique(),
+  password: varchar('password', { length: 256 }),
   firstName: varchar('first_name', { length: 64 }).notNull(),
   lastName: varchar('last_name', { length: 64 }).notNull(),
+  // Nuevos campos para conectar con organización y rol
+  organizationId: uuid('organizationId')
+    .notNull()
+    .references(() => organization.id),
+  roleId: uuid('roleId')
+    .notNull()
+    .references(() => role.id),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+  updatedAt: timestamp('updatedAt').notNull().defaultNow(),
+  isActive: boolean('isActive').notNull().default(true),
 });
 
 export type User = InferSelectModel<typeof user>;
