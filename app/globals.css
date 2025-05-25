@@ -2,6 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Agregar estilos para evitar el scroll global */
+@layer base {   
+    :root {
+      /* ... otras variables ... */
+      
+      /* Asegúrate de que estas variables sean iguales */
+      --background: 0 0% 100%;
+      --sidebar-background: 0 0% 100%; /* Mismo color que --background */
+    }
+    
+    .dark {
+      /* ... otras variables ... */
+      
+      /* Asegúrate de que estas variables sean iguales */
+      --background: 240 10% 3.9%;
+    --sidebar-background: 240 10% 3.9%; /* Mismo color que --background */
+  }
+}
+/* Fin estilos para evitar scroll global */
+html, 
+body {
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+#__next,
+main {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Asegúrate de que el contenedor principal no tenga scroll */
+
+
+/* Permite scroll solo en áreas específicas */
 :root {
     --foreground-rgb: 0, 0, 0;
     --background-start-rgb: 214, 219, 220;

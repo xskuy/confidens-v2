@@ -3,6 +3,7 @@
 import { LogOutIcon, MoreVerticalIcon, SettingsIcon } from 'lucide-react';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
+import { useDevMode } from '@/context/dev-mode';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -19,6 +20,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from './ui/sidebar';
+import { Switch } from './ui/switch';
 
 export function NavUser({
   user,
@@ -30,6 +32,7 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const { isDevMode, setIsDevMode } = useDevMode();
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: '/login' });
@@ -85,6 +88,17 @@ export function NavUser({
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onSelect={(e) => e.preventDefault()}
+              className="flex items-center justify-between"
+            >
+              <span>Dev Mode</span>
+              <Switch
+                checked={isDevMode}
+                onCheckedChange={setIsDevMode}
+                aria-label="Toggle Developer Mode"
+              />
+            </DropdownMenuItem>
             <DropdownMenuItem onSelect={handleLogout}>
               <LogOutIcon className="mr-2 size-4" />
               Log out
