@@ -1,7 +1,8 @@
 'use client';
 
-import { LogOutIcon, MoreVerticalIcon } from 'lucide-react';
+import { LogOutIcon, MoreVerticalIcon, SettingsIcon } from 'lucide-react';
 import { signOut } from 'next-auth/react';
+import Link from 'next/link';
 import { useDevMode } from '@/context/dev-mode';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -79,6 +80,13 @@ export function NavUser({
                 </div>
               </div>
             </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/settings" className="cursor-pointer">
+                <SettingsIcon className="mr-2 size-4" />
+                Configuración
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onSelect={(e) => e.preventDefault()}
