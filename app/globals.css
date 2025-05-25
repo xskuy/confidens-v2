@@ -21,22 +21,45 @@
   }
 }
 /* Fin estilos para evitar scroll global */
-html, 
-body {
+
+/* Estilos específicos para el chat - bloquear scroll */
+html:has([data-page="chat"]), 
+body:has([data-page="chat"]) {
   height: 100%;
   overflow: hidden;
   margin: 0;
   padding: 0;
 }
 
-#__next,
-main {
+/* Para páginas de configuraciones - permitir scroll normal */
+html:has([data-page="settings"]), 
+body:has([data-page="settings"]) {
+  height: 100%;
+  overflow: auto;
+  margin: 0;
+  padding: 0;
+}
+
+/* Fallback para navegadores que no soportan :has() */
+html, 
+body {
+  height: 100%;
+  overflow: auto;
+  margin: 0;
+  padding: 0;
+}
+
+/* Solo bloquear en chat específicamente */
+.chat-layout {
   height: 100%;
   overflow: hidden;
 }
 
-/* Asegúrate de que el contenedor principal no tenga scroll */
-
+.chat-layout #__next,
+.chat-layout main {
+  height: 100%;
+  overflow: hidden;
+}
 
 /* Permite scroll solo en áreas específicas */
 :root {

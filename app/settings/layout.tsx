@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { AppSidebar } from '@/components/app-sidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { auth } from '../(auth)/auth';
+import { DevModeProvider } from '@/context/dev-mode';
 
 export const metadata: Metadata = {
   title: 'Configuración | Confidens',
@@ -28,11 +29,17 @@ export default async function SettingsLayout({
   const isCollapsed = cookieStore.get('sidebar:state')?.value !== 'true';
 
   return (
-    <SidebarProvider defaultOpen={!isCollapsed}>
-      <AppSidebar user={session?.user} />
-      <SidebarInset>
-        <div className="min-h-screen bg-background">{children}</div>
-      </SidebarInset>
-    </SidebarProvider>
+    <div data-page="settings">
+      <SidebarProvider defaultOpen={!isCollapsed}>
+        <DevModeProvider>
+          <AppSidebar user={session?.user} />
+          <SidebarInset>
+            <div className="flex flex-col bg-background p-4 overflow-y-auto h-full">
+              {children}
+            </div>
+          </SidebarInset>
+        </DevModeProvider>
+      </SidebarProvider>
+    </div>
   );
 }
