@@ -1,10 +1,11 @@
+import type React from 'react';
 import { cookies } from 'next/headers';
-
-import { AppSidebar } from '../../components/app-sidebar';
-import { SidebarInset, SidebarProvider } from '../../components/ui/sidebar';
-import { auth } from '../(auth)/auth';
 import Script from 'next/script';
-import { DevModeProvider } from '../../context/dev-mode';
+
+import { AppSidebar } from '@/components/app-sidebar';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { auth } from '@/app/(auth)/auth';
+import { DevModeProvider } from '@/context/dev-mode';
 
 export const experimental_ppr = true;
 
@@ -17,7 +18,7 @@ export default async function Layout({
   const isCollapsed = cookieStore.get('sidebar:state')?.value !== 'true';
 
   return (
-    <div data-page="chat" className="chat-layout">
+    <div data-page="chat" className=" h-screen flex">
       <Script
         src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"
         strategy="beforeInteractive"
@@ -25,7 +26,12 @@ export default async function Layout({
       <SidebarProvider defaultOpen={!isCollapsed}>
         <DevModeProvider>
           <AppSidebar user={session?.user} />
-          <SidebarInset>{children}</SidebarInset>
+          {/* Aplicamos las mismas clases que funcionaron en settings */}
+          <SidebarInset className="my-2 mr-2 rounded-xl overflow-hidden">
+            <div className="flex flex-col bg-background h-full overflow-y-auto">
+              {children}
+            </div>
+          </SidebarInset>
         </DevModeProvider>
       </SidebarProvider>
     </div>

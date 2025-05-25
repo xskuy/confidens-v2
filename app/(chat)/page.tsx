@@ -3,7 +3,6 @@ import { Chat } from '../../components/chat';
 import { DEFAULT_CHAT_MODEL_ID, getModelConfig } from '../../lib/ai/models';
 import { generateUUID } from '../../lib/utils';
 import { DataStreamHandler } from '../../components/data-stream-handler';
-import { CookieClearButton } from '../../components/debug/cookie-clear-button';
 
 export default async function Page() {
   const id = generateUUID();
@@ -31,13 +30,6 @@ export default async function Page() {
         isReadonly={false}
       />
       <DataStreamHandler id={id} />
-
-      {/* Solo visible en desarrollo - Botón para limpiar cookies */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="fixed bottom-4 right-4 z-50">
-          <CookieClearButton />
-        </div>
-      )}
     </>
   );
 }

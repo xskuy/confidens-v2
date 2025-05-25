@@ -4,7 +4,7 @@
 import type { User } from 'next-auth';
 import { useRouter } from 'next/navigation';
 
-import { PlusIcon } from '@/components/icons';
+import { PlusIcon, LogoIcon } from '@/components/icons';
 import { SidebarHistory } from '@/components/sidebar-history';
 import { NavUser } from './nav-user';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,6 @@ import {
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
-import { APP_NAME } from '@/lib/config/constants';
 
 export function AppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
@@ -45,8 +44,9 @@ export function AppSidebar({ user }: { user: User | undefined }) {
               }}
               className="flex flex-row gap-3 items-center"
             >
-              <span className="text-lg font-semibold px-2 hover:bg-muted rounded-md cursor-pointer">
-                {APP_NAME}
+              <LogoIcon size={28} />
+              <span className="text-lg font-semibold hover:bg-muted rounded-md cursor-pointer">
+                Confidens
               </span>
             </Link>
             <Tooltip>

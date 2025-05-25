@@ -2,55 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Agregar estilos para evitar el scroll global */
-@layer base {   
-    :root {
-      /* ... otras variables ... */
-      
-      /* Asegúrate de que estas variables sean iguales */
-      --background: 0 0% 100%;
-      --sidebar-background: 0 0% 100%; /* Mismo color que --background */
-    }
-    
-    .dark {
-      /* ... otras variables ... */
-      
-      /* Asegúrate de que estas variables sean iguales */
-      --background: 0 0% 13%;
-      --foreground: 0 0% 98%;
-      --card: 60 3% 8%;
-      --card-foreground: 0 0% 98%;
-      --popover: 60 3% 8%;
-      --popover-foreground: 0 0% 98%;
-      --primary: 262 100% 65%;
-      --primary-foreground: 0 0% 98%;
-      --secondary: 0 0% 14.1%;
-      --secondary-foreground: 0 0% 98%;
-      --muted: 0 0% 14.1%;
-      --muted-foreground: 240 5% 64.9%;
-      --accent: 0 0% 14.1%;
-      --accent-foreground: 0 0% 98%;
-      --destructive: 0 62.8% 30.6%;
-      --destructive-foreground: 0 0% 98%;
-      --border: 0 0% 14.1%;
-      --input: 0 0% 14.1%;
-      --ring: 240 4.9% 83.9%;
-      --chart-1: 220 70% 50%;
-      --chart-2: 160 60% 45%;
-      --chart-3: 30 80% 55%;
-      --chart-4: 280 65% 60%;
-      --chart-5: 340 75% 55%;
-      --sidebar-background: 0 0% 9%;
-      --sidebar-foreground: 240 4.8% 95.9%;
-      --sidebar-primary: 224.3 76.3% 48%;
-      --sidebar-primary-foreground: 0 0% 100%;
-      --sidebar-accent: 0 0% 14.1%;
-      --sidebar-accent-foreground: 240 4.8% 95.9%;
-      --sidebar-border: 0 0% 14.1%;
-      --sidebar-ring: 217.2 91.2% 59.8%;
-    }
-}
-/* Fin estilos para evitar scroll global */
+/* Variables CSS consolidadas */
 
 /* Estilos específicos para el chat - bloquear scroll */
 html:has([data-page="chat"]), 
@@ -165,8 +117,8 @@ body {
         --accent-foreground: 0 0% 98%;
         --destructive: 0 62.8% 30.6%;
         --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 14.1%;
-        --input: 0 0% 14.1%;
+        --border: 0 0% 30%;
+        --input: 0 0% 30%;
         --ring: 240 4.9% 83.9%;
         --chart-1: 220 70% 50%;
         --chart-2: 160 60% 45%;
@@ -272,4 +224,18 @@ body {
 .dark .user-message-bg {
     background-color: #303030 !important;
     color: #ffffff !important;
+}
+
+/* Mejoras sutiles para el sidebar - solo hover y espaciado */
+[data-sidebar="menu-item"] {
+    margin-bottom: 0.3rem; /* Muy poco espacio extra entre chats */
+}
+
+[data-sidebar="menu-button"]:hover {
+    background-color: hsl(0 0% 20%) !important; /* Un poco más de luz en hover */
+}
+
+/* Para modo claro */
+:root [data-sidebar="menu-button"]:hover {
+    background-color: hsl(0 0% 23%) !important; /* Más blanco en modo claro */
 }
