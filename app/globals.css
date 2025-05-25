@@ -16,9 +16,39 @@
       /* ... otras variables ... */
       
       /* Asegúrate de que estas variables sean iguales */
-      --background: 240 10% 3.9%;
-    --sidebar-background: 240 10% 3.9%; /* Mismo color que --background */
-  }
+      --background: 0 0% 13%;
+      --foreground: 0 0% 98%;
+      --card: 60 3% 8%;
+      --card-foreground: 0 0% 98%;
+      --popover: 60 3% 8%;
+      --popover-foreground: 0 0% 98%;
+      --primary: 262 100% 65%;
+      --primary-foreground: 0 0% 98%;
+      --secondary: 0 0% 14.1%;
+      --secondary-foreground: 0 0% 98%;
+      --muted: 0 0% 14.1%;
+      --muted-foreground: 240 5% 64.9%;
+      --accent: 0 0% 14.1%;
+      --accent-foreground: 0 0% 98%;
+      --destructive: 0 62.8% 30.6%;
+      --destructive-foreground: 0 0% 98%;
+      --border: 0 0% 14.1%;
+      --input: 0 0% 14.1%;
+      --ring: 240 4.9% 83.9%;
+      --chart-1: 220 70% 50%;
+      --chart-2: 160 60% 45%;
+      --chart-3: 30 80% 55%;
+      --chart-4: 280 65% 60%;
+      --chart-5: 340 75% 55%;
+      --sidebar-background: 0 0% 9%;
+      --sidebar-foreground: 240 4.8% 95.9%;
+      --sidebar-primary: 224.3 76.3% 48%;
+      --sidebar-primary-foreground: 0 0% 100%;
+      --sidebar-accent: 0 0% 14.1%;
+      --sidebar-accent-foreground: 240 4.8% 95.9%;
+      --sidebar-border: 0 0% 14.1%;
+      --sidebar-ring: 217.2 91.2% 59.8%;
+    }
 }
 /* Fin estilos para evitar scroll global */
 
@@ -84,7 +114,7 @@ body {
 
 @layer base {
     :root {
-        --background: 0 0% 100%;
+        --background: 0 0% 13%;
         --foreground: 240 10% 3.9%;
         --card: 0 0% 100%;
         --card-foreground: 240 10% 3.9%;
@@ -119,7 +149,7 @@ body {
         --sidebar-ring: 217.2 91.2% 59.8%;
     }
     .dark {
-        --background: 0 0% 9%;
+        --background: 0 0% 13%;
         --foreground: 0 0% 98%;
         --card: 60 3% 8%;
         --card-foreground: 0 0% 98%;
@@ -143,7 +173,7 @@ body {
         --chart-3: 30 80% 55%;
         --chart-4: 280 65% 60%;
         --chart-5: 340 75% 55%;
-        --sidebar-background: 0 0% 12.2%;
+        --sidebar-background: 0 0% 9%;
         --sidebar-foreground: 240 4.8% 95.9%;
         --sidebar-primary: 224.3 76.3% 48%;
         --sidebar-primary-foreground: 0 0% 100%;
@@ -231,4 +261,15 @@ body {
 [data-theme="dark"] .bg-primary:hover,
 .dark .bg-primary:hover {
     background-color: hsl(262 80% 60%) !important;
+}
+
+/* Estilos personalizados para mensajes del usuario */
+.user-message-bg {
+    background-color: #303030 !important;
+    color: #ffffff !important;
+}
+
+.dark .user-message-bg {
+    background-color: #303030 !important;
+    color: #ffffff !important;
 }
