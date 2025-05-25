@@ -29,7 +29,7 @@ import {
   AI_MODELS_CONFIGURATION,
   type AIModelConfig,
   type PowerLevel,
-} from '../../../../src/lib/ai-models.config';
+} from '../../../../lib/ai/ai-models.config';
 
 export const maxDuration = 60;
 

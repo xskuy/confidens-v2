@@ -9,7 +9,7 @@ import {
   AI_MODELS_CONFIGURATION,
   type AIModelConfig,
   type PowerLevel,
-} from '@/src/lib/ai-models.config';
+} from '@/lib/ai/ai-models.config';
 
 interface PowerSelectorProps {
   selectedPower: PowerLevel;
@@ -221,7 +221,7 @@ export default function PowerSelector({
             h-9 px-3 py-1 rounded-full shadow-sm hover:shadow-md flex items-center justify-center gap-2 w-28 transition-all
             ${
               isHighPowerSelected
-                ? 'bg-gradient-to-r from-blue-700 to-purple-600 border-transparent text-white'
+                ? 'bg-gradient-to-r from-blue-700 to-purple-600 text-white'
                 : 'bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700'
             }
           `}

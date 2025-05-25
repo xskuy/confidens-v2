@@ -24,7 +24,7 @@ import { SuggestedActions } from './suggested-actions';
 import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import PowerSelector from '@/components/power-selector';
-import type { PowerLevel } from '@/src/lib/ai-models.config';
+import type { PowerLevel } from '@/lib/ai/ai-models.config';
 
 function PureMultimodalInput({
   chatId,

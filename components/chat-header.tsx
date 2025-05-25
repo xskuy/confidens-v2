@@ -13,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { type VisibilityType, VisibilitySelector } from './visibility-selector';
 import { ThemeToggle } from './theme-toggle';
 import { useDevMode } from '@/context/dev-mode';
-import type { PowerLevel } from '@/src/lib/ai-models.config';
+import type { PowerLevel } from '@/lib/ai/ai-models.config';
 
 const powerLevelDetails: Record<
   PowerLevel,
