@@ -1,33 +1,17 @@
-import { GalleryVerticalEnd } from 'lucide-react';
-import Image from 'next/image';
-import { LoginForm } from '@/app/(auth)/components/login-formot';
+import { LoginForm } from '@/app/(auth)/components/login-form';
+import { LogoIcon } from '@/components/icons';
 
 export default function LoginPage() {
   return (
-    <div className="grid min-h-svh lg:grid-cols-2">
-      <div className="flex flex-col gap-4 p-6 md:p-10">
-        <div className="flex justify-center gap-2 md:justify-start">
-          <a href="/" className="flex items-center gap-2 font-medium">
-            <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <GalleryVerticalEnd className="size-4" />
-            </div>
-            Acme Inc.
-          </a>
-        </div>
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-xs">
-            <LoginForm />
+    <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
+      <div className="flex w-full max-w-sm flex-col gap-6">
+        <a href="#" className="flex items-center gap-2 self-center font-medium">
+          <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
+            <LogoIcon size={16} />
           </div>
-        </div>
-      </div>
-      <div className="relative hidden bg-muted lg:block">
-        <Image
-          src="/icon/confidens_door.jpg"
-          alt="Background image for login"
-          className="absolute inset-0 size-full object-cover dark:brightness-[0.7]"
-          width={1000}
-          height={1000}
-        />
+          Confidens
+        </a>
+        <LoginForm />
       </div>
     </div>
   );
