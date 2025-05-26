@@ -37,23 +37,23 @@ export default function AppleIcon() {
           >
             <stop
               offset="0%"
-              style={{ stopColor: '#FFB347', stopOpacity: 1 }}
+              style={{ stopColor: '#000000', stopOpacity: 1 }}
             />
             <stop
               offset="25%"
-              style={{ stopColor: '#FF6B9D', stopOpacity: 1 }}
+              style={{ stopColor: '#1A1A1A', stopOpacity: 1 }}
             />
             <stop
               offset="50%"
-              style={{ stopColor: '#9B59B6', stopOpacity: 1 }}
+              style={{ stopColor: '#8B4513', stopOpacity: 1 }}
             />
             <stop
               offset="75%"
-              style={{ stopColor: '#5B2C87', stopOpacity: 1 }}
+              style={{ stopColor: '#DAA520', stopOpacity: 1 }}
             />
             <stop
               offset="100%"
-              style={{ stopColor: '#2C3E50', stopOpacity: 1 }}
+              style={{ stopColor: '#FFD700', stopOpacity: 1 }}
             />
           </linearGradient>
         </defs>
