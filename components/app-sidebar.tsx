@@ -28,7 +28,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
     ? {
         name: user.name ?? 'User',
         email: user.email ?? 'No Email',
-        avatar: user.image ?? '',
+        avatar: user.image ?? `https://avatar.vercel.sh/${user.email}`,
       }
     : null;
 

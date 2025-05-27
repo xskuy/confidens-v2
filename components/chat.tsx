@@ -87,6 +87,9 @@ export function Chat({
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
   const isArtifactVisible = useArtifactSelector((state) => state.isVisible);
 
+  // Determinar si hay mensajes para cambiar el layout
+  const hasMessages = messages.length > 0;
+
   return (
     <>
       <div className="flex flex-col min-w-0 h-dvh bg-background">
@@ -99,36 +102,81 @@ export function Chat({
           selectedPower={selectedPower}
         />
 
-        <Messages
-          chatId={id}
-          status={status}
-          votes={votes}
-          messages={messages}
-          setMessages={setMessages}
-          reload={reload}
-          isReadonly={isReadonly}
-          isArtifactVisible={isArtifactVisible}
-        />
-
-        <form className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl">
-          {!isReadonly && (
-            <MultimodalInput
+        {hasMessages ? (
+          // Layout normal cuando hay mensajes
+          <>
+            <Messages
               chatId={id}
-              input={input}
-              setInput={setInput}
-              handleSubmit={handleSubmit}
               status={status}
-              stop={stop}
-              attachments={attachments}
-              setAttachments={setAttachments}
+              votes={votes}
               messages={messages}
               setMessages={setMessages}
-              append={append}
-              selectedPower={selectedPower}
-              setSelectedPower={setSelectedPower}
+              reload={reload}
+              isReadonly={isReadonly}
+              isArtifactVisible={isArtifactVisible}
             />
-          )}
-        </form>
+
+            <form className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl">
+              {!isReadonly && (
+                <MultimodalInput
+                  chatId={id}
+                  input={input}
+                  setInput={setInput}
+                  handleSubmit={handleSubmit}
+                  status={status}
+                  stop={stop}
+                  attachments={attachments}
+                  setAttachments={setAttachments}
+                  messages={messages}
+                  setMessages={setMessages}
+                  append={append}
+                  selectedPower={selectedPower}
+                  setSelectedPower={setSelectedPower}
+                />
+              )}
+            </form>
+          </>
+        ) : (
+          // Layout centrado cuando no hay mensajes
+          <div
+            className="flex flex-col flex-1 items-center px-4"
+            style={{ paddingTop: '25vh' }}
+          >
+            <div className="w-full max-w-3xl">
+              <Messages
+                chatId={id}
+                status={status}
+                votes={votes}
+                messages={messages}
+                setMessages={setMessages}
+                reload={reload}
+                isReadonly={isReadonly}
+                isArtifactVisible={isArtifactVisible}
+              />
+
+              <form className="flex mx-auto gap-2 w-full mt-1">
+                {!isReadonly && (
+                  <MultimodalInput
+                    chatId={id}
+                    input={input}
+                    setInput={setInput}
+                    handleSubmit={handleSubmit}
+                    status={status}
+                    stop={stop}
+                    attachments={attachments}
+                    setAttachments={setAttachments}
+                    messages={messages}
+                    setMessages={setMessages}
+                    append={append}
+                    selectedPower={selectedPower}
+                    setSelectedPower={setSelectedPower}
+                    showSuggestions={false}
+                  />
+                )}
+              </form>
+            </div>
+          </div>
+        )}
       </div>
 
       <Artifact

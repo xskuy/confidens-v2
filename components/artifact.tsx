@@ -26,7 +26,8 @@ import { codeArtifact } from '@/artifacts/code/client';
 import { sheetArtifact } from '@/artifacts/sheet/client';
 import { textArtifact } from '@/artifacts/text/client';
 import equal from 'fast-deep-equal';
-import { UseChatHelpers } from '@ai-sdk/react';
+import type { UseChatHelpers } from '@ai-sdk/react';
+import type { PowerLevel } from '@/lib/ai/ai-models.config';
 
 export const artifactDefinitions = [
   textArtifact,
@@ -217,6 +218,7 @@ function PureArtifact({
   };
 
   const [isToolbarVisible, setIsToolbarVisible] = useState(false);
+  const [selectedPower, setSelectedPower] = useState<PowerLevel>('medium');
 
   /*
    * NOTE: if there are no documents, or if
@@ -335,6 +337,9 @@ function PureArtifact({
                     append={append}
                     className="bg-background dark:bg-muted"
                     setMessages={setMessages}
+                    selectedPower={selectedPower}
+                    setSelectedPower={setSelectedPower}
+                    showSuggestions={false}
                   />
                 </form>
               </div>

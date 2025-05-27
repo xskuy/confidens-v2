@@ -234,11 +234,11 @@ export default function PowerSelector({
             onClick={() => setOpen(!open)}
             type="button"
             className={`
-              h-9 px-3 py-1 rounded-full shadow-sm hover:shadow-md flex items-center justify-center gap-2 w-28 transition-all duration-300 ease-out
+              h-9 px-3 py-1 rounded-full border-0 shadow-none hover:shadow-none flex items-center justify-center gap-2 w-28 transition-all duration-300 ease-out
               ${
                 isHighPowerSelected
-                  ? 'bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-700 text-black shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 animate-pulse-glow'
-                  : 'bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 hover:border-gray-300 dark:hover:border-zinc-600'
+                  ? 'bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-700 text-black animate-pulse-glow'
+                  : 'bg-white dark:bg-zinc-800'
               }
             `}
             variant="outline"
