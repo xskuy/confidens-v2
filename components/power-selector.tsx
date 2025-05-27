@@ -234,14 +234,14 @@ export default function PowerSelector({
             onClick={() => setOpen(!open)}
             type="button"
             className={`
-              h-9 px-3 py-1 rounded-full border-0 shadow-none hover:shadow-none flex items-center justify-center gap-2 w-28 transition-all duration-300 ease-out
+              h-8 px-3 rounded-full border border-border hover:bg-muted/50 flex items-center justify-center gap-2 transition-all duration-300 ease-out text-xs w-[120px]
               ${
                 isHighPowerSelected
-                  ? 'bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-700 text-black animate-pulse-glow'
-                  : 'bg-white dark:bg-zinc-800'
+                  ? 'bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-700 text-white border-amber-500'
+                  : 'bg-background text-muted-foreground hover:text-foreground'
               }
             `}
-            variant="outline"
+            variant="ghost"
           >
             <AnimatePresence mode="wait">
               <motion.div
@@ -256,7 +256,10 @@ export default function PowerSelector({
                     : currentPowerDetails.colorIcon
                 }
               >
-                {currentPowerDetails.icon}
+                {React.cloneElement(
+                  currentPowerDetails.icon as React.ReactElement,
+                  { className: 'w-4 h-4' },
+                )}
               </motion.div>
             </AnimatePresence>
 
@@ -267,7 +270,7 @@ export default function PowerSelector({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2, delay: 0.05 }}
-                className={`font-medium text-sm ${isHighPowerSelected ? 'text-white' : currentPowerDetails.colorText}`}
+                className={`font-medium ${isHighPowerSelected ? 'text-white' : ''}`}
               >
                 {currentPowerDetails.label}
               </motion.span>

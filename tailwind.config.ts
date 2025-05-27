@@ -21,6 +21,19 @@ const config: Config = {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
       },
+      animation: {
+        gradient: 'gradient 4.5s ease infinite',
+      },
+      keyframes: {
+        gradient: {
+          '0%, 100%': {
+            'background-position': '0% 50%',
+          },
+          '50%': {
+            'background-position': '100% 50%',
+          },
+        },
+      },
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',

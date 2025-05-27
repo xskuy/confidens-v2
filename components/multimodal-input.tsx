@@ -233,53 +233,91 @@ function PureMultimodalInput({
         </div>
       )}
 
-      <Textarea
-        data-testid="multimodal-input"
-        ref={textareaRef}
-        placeholder="Send a message..."
-        value={input}
-        onChange={handleInput}
+      <div
         className={cx(
-          'min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-3xl !text-base bg-zinc-800 dark:bg-zinc-800 pb-10 px-4 pt-3 border-0 shadow-none focus:ring-0 focus:border-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0',
-          className,
+          'relative w-full',
+          messages.length === 0 ? 'max-w-3xl mx-auto' : 'max-w-3xl mx-auto',
         )}
-        rows={2}
-        autoFocus
-        onKeyDown={(event) => {
-          if (
-            event.key === 'Enter' &&
-            !event.shiftKey &&
-            !event.nativeEvent.isComposing
-          ) {
-            event.preventDefault();
-
-            if (status !== 'ready') {
-              toast.error('Please wait for the model to finish its response!');
-            } else {
-              submitForm();
-            }
+      >
+        <Textarea
+          data-testid="multimodal-input"
+          ref={textareaRef}
+          placeholder={
+            messages.length === 0
+              ? 'Ask whatever you want....'
+              : 'Send a message...'
           }
-        }}
-      />
+          value={input}
+          onChange={handleInput}
+          className={cx(
+            'min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none !text-base border-0 shadow-none focus:ring-0 focus:border-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0',
+            'bg-muted pb-14 px-5 pt-4 text-base min-h-[60px] border border-border rounded-2xl shadow-sm',
+            className,
+          )}
+          rows={2}
+          autoFocus
+          onKeyDown={(event) => {
+            if (
+              event.key === 'Enter' &&
+              !event.shiftKey &&
+              !event.nativeEvent.isComposing
+            ) {
+              event.preventDefault();
 
-      <div className="absolute bottom-3 left-3 flex items-center gap-2">
-        <PureAttachmentsButton fileInputRef={fileInputRef} status={status} />
-        <PowerSelector
-          selectedPower={selectedPower}
-          onPowerChange={handlePowerChange}
+              if (status !== 'ready') {
+                toast.error(
+                  'Please wait for the model to finish its response!',
+                );
+              } else {
+                submitForm();
+              }
+            }
+          }}
         />
-      </div>
 
-      <div className="absolute bottom-3 right-3">
-        {status === 'submitted' ? (
-          <PureStopButton stop={stop} setMessages={setMessages} />
-        ) : (
-          <PureSendButton
-            submitForm={submitForm}
-            input={input}
-            uploadQueue={uploadQueue}
+        {/* Botones unificados para ambos estados */}
+        <div className="absolute bottom-3 left-3 flex items-center gap-3">
+          <Button
+            data-testid="attachments-button"
+            className="h-8 px-3 rounded-full bg-background border border-border hover:bg-muted/50 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-xs"
+            onClick={(event) => {
+              event.preventDefault();
+              fileInputRef.current?.click();
+            }}
+            disabled={status !== 'ready'}
+            variant="ghost"
+          >
+            <PaperclipIcon size={16} />
+            <span>Add Attachment</span>
+          </Button>
+
+          <PowerSelector
+            selectedPower={selectedPower}
+            onPowerChange={handlePowerChange}
           />
-        )}
+        </div>
+
+        <div className="absolute bottom-3 right-3 flex items-center gap-2">
+          <div className="text-muted-foreground text-xs">🌐 All Web</div>
+          <div className="text-muted-foreground text-xs">
+            {input.length}/1000
+          </div>
+          {status === 'submitted' ? (
+            <PureStopButton stop={stop} setMessages={setMessages} />
+          ) : (
+            <Button
+              data-testid="send-button"
+              className="size-8 rounded-xl bg-primary hover:bg-primary/90 flex items-center justify-center text-primary-foreground"
+              onClick={(event) => {
+                event.preventDefault();
+                submitForm();
+              }}
+              disabled={input.length === 0 || uploadQueue.length > 0}
+            >
+              <ArrowUpIcon size={16} />
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );

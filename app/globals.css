@@ -72,7 +72,7 @@ body {
         --card-foreground: 240 10% 3.9%;
         --popover: 0 0% 100%;
         --popover-foreground: 240 10% 3.9%;
-        --primary: 262 100% 65%;
+        --primary: 25 75% 45%;
         --primary-foreground: 0 0% 98%;
         --secondary: 240 4.8% 95.9%;
         --secondary-foreground: 240 5.9% 10%;
@@ -107,7 +107,7 @@ body {
         --card-foreground: 0 0% 98%;
         --popover: 60 3% 8%;
         --popover-foreground: 0 0% 98%;
-        --primary: 262 100% 65%;
+        --primary: 25 75% 45%;
         --primary-foreground: 0 0% 98%;
         --secondary: 0 0% 14.1%;
         --secondary-foreground: 0 0% 98%;
@@ -207,12 +207,12 @@ body {
 
 /* Estilos personalizados para hover de botones primarios */
 .bg-primary:hover {
-    background-color: hsl(262 80% 60%) !important;
+    background-color: hsl(20 70% 35%) !important;
 }
 
 [data-theme="dark"] .bg-primary:hover,
 .dark .bg-primary:hover {
-    background-color: hsl(262 80% 60%) !important;
+    background-color: hsl(20 70% 35%) !important;
 }
 
 /* Estilos personalizados para mensajes del usuario */
