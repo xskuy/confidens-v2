@@ -50,6 +50,13 @@
       "when": 1745594834080,
       "tag": "0006_brainy_katie_power",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1748233622517,
+      "tag": "0007_cool_stellaris",
+      "breakpoints": true
     }
   ]
 }

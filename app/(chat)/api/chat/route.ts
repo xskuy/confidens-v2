@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import {
   type UIMessage,
   appendResponseMessages,
@@ -24,7 +25,11 @@ import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { getWeather } from '@/lib/ai/tools/get-weather';
 import { isProductionEnvironment } from '@/lib/constants';
-import { myProvider } from '@/lib/ai/providers';
+import {
+  AI_MODELS_CONFIGURATION,
+  type AIModelConfig,
+  type PowerLevel,
+} from '../../../../lib/ai/ai-models.config';
 
 export const maxDuration = 60;
 
@@ -34,18 +39,31 @@ export async function POST(request: Request) {
       id,
       messages,
       selectedChatModel,
+      isDevModeActive,
     }: {
       id: string;
       messages: Array<UIMessage>;
       selectedChatModel: string;
+      isDevModeActive: boolean;
     } = await request.json();
 
-    console.log('📩 Chat API received request for model:', selectedChatModel);
+    console.log('📩 Chat API received:', {
+      payload_selectedChatModel: selectedChatModel,
+      payload_isDevModeActive: isDevModeActive,
+    });
+
+    // Asegurar que isDevModeActive sea un booleano explícito
+    const devModeEnabled = isDevModeActive === true;
+
+    console.log(`🔍 Dev Mode: ${devModeEnabled ? 'ON ✅' : 'OFF ❌'}`);
 
     const session = await auth();
 
-    if (!session?.user?.id) {
-      return new Response('Unauthorized', { status: 401 });
+    if (!session?.user?.id || !session?.user?.email) {
+      console.error(
+        '❌ Sesión de usuario no válida o falta email en /api/chat',
+      );
+      return new Response('Unauthorized: Invalid session', { status: 401 });
     }
 
     const userMessage = getMostRecentUserMessage(messages);
@@ -81,24 +99,137 @@ export async function POST(request: Request) {
       ],
     });
 
+    let finalModelConfig: AIModelConfig | undefined;
+
+    if (devModeEnabled) {
+      console.log(
+        `🔧 Dev Mode ON: Buscando config para ID -> ${selectedChatModel}`,
+      );
+      finalModelConfig = Object.values(AI_MODELS_CONFIGURATION).find(
+        (config) => config.id === selectedChatModel,
+      );
+      if (!finalModelConfig) {
+        console.warn(
+          `⚠️ Dev Mode ON: No se encontró config para ID "${selectedChatModel}". Usando MEDIUM por defecto.`,
+        );
+        finalModelConfig = AI_MODELS_CONFIGURATION.medium;
+      }
+    } else {
+      console.log(
+        `👤 Dev Mode OFF: Usando PowerSelector. Nivel recibido -> ${selectedChatModel}`,
+      );
+      // Validamos que el valor recibido sea una PowerLevel válida
+      if (
+        selectedChatModel === 'low' ||
+        selectedChatModel === 'medium' ||
+        selectedChatModel === 'high'
+      ) {
+        const powerLevelKey = selectedChatModel as PowerLevel;
+        finalModelConfig = AI_MODELS_CONFIGURATION[powerLevelKey];
+      } else {
+        // IMPORTANTE: en modo no-dev, intentamos recuperar por ID por si se está pasando
+        // directamente el ID completo (podría ocurrir al cambiar entre modos)
+        const modelByCompleteId = Object.values(AI_MODELS_CONFIGURATION).find(
+          (config) => config.id === selectedChatModel,
+        );
+
+        if (modelByCompleteId) {
+          console.log(
+            `🔄 Encontrado modelo por ID completo: ${modelByCompleteId.id}`,
+          );
+          finalModelConfig = modelByCompleteId;
+        } else {
+          console.warn(
+            `⚠️ Dev Mode OFF: PowerLevel "${selectedChatModel}" no válido. Usando MEDIUM por defecto.`,
+          );
+          finalModelConfig = AI_MODELS_CONFIGURATION.medium;
+        }
+      }
+    }
+
+    if (!finalModelConfig) {
+      console.error(
+        '❌ Error crítico: No se pudo determinar finalModelConfig. Usando MEDIUM.',
+      );
+      finalModelConfig = AI_MODELS_CONFIGURATION.medium;
+    }
+
+    console.log(
+      `Chosen model config: ID: ${finalModelConfig.id}, Provider: ${finalModelConfig.provider}, API ModelName: ${finalModelConfig.modelName}`,
+    );
+
     return createDataStreamResponse({
       execute: (dataStream) => {
-        console.log('🚀 Starting streamText with model:', selectedChatModel);
+        console.log(
+          '🚀 Starting streamText with API Model Name:',
+          finalModelConfig.modelName,
+          'for provider:',
+          finalModelConfig.provider,
+        );
         try {
+          const modelCallOptions = {
+            model: finalModelConfig.modelName,
+          };
+
+          if (finalModelConfig.providerOptions) {
+            if (
+              finalModelConfig.provider === 'google' &&
+              finalModelConfig.providerOptions.google
+            ) {
+              console.log(
+                'Google provider options:',
+                finalModelConfig.providerOptions.google,
+              );
+            } else if (
+              finalModelConfig.provider === 'openai' &&
+              finalModelConfig.providerOptions.openai
+            ) {
+              console.log(
+                'OpenAI provider options:',
+                finalModelConfig.providerOptions.openai,
+              );
+            } else if (finalModelConfig.provider === 'xai') {
+              console.log(
+                'XAI provider options:',
+                finalModelConfig.providerOptions,
+              );
+            }
+          }
+
+          console.log('Model call options for AI SDK:', modelCallOptions);
+
           const result = streamText({
-            model: myProvider.languageModel('chat-model'),
-            system: systemPrompt({ selectedChatModel }),
+            model:
+              finalModelConfig.provider === 'openai'
+                ? finalModelConfig.apiProvider.languageModel(
+                    finalModelConfig.modelName,
+                    finalModelConfig.providerOptions?.openai || {},
+                  )
+                : finalModelConfig.provider === 'google'
+                  ? finalModelConfig.apiProvider.languageModel(
+                      finalModelConfig.modelName,
+                      finalModelConfig.providerOptions?.google || {},
+                    )
+                  : finalModelConfig.provider === 'xai'
+                    ? finalModelConfig.apiProvider.languageModel(
+                        finalModelConfig.modelName,
+                        finalModelConfig.providerOptions || {},
+                      )
+                    : finalModelConfig.apiProvider.languageModel(
+                        modelCallOptions,
+                      ),
+            system: systemPrompt({ selectedChatModel: finalModelConfig.id }),
             messages,
             maxSteps: 5,
             experimental_activeTools:
-              selectedChatModel === 'chat-model-reasoning'
-                ? []
-                : [
+              finalModelConfig.id === AI_MODELS_CONFIGURATION.high.id
+                ? [
                     'getWeather',
                     'createDocument',
                     'updateDocument',
                     'requestSuggestions',
-                  ],
+                  ]
+                : [],
             experimental_transform: smoothStream({ chunking: 'word' }),
             experimental_generateMessageId: generateUUID,
             tools: {

@@ -6,51 +6,46 @@ import { useState, useEffect } from 'react';
 
 export function Greeting() {
   const { data: session } = useSession();
-  const displayName = session?.user?.name;
+  const displayName = session?.user?.name || 'John';
 
-  const [timeGreeting, setTimeGreeting] = useState('Hello there');
+  const [timeGreeting, setTimeGreeting] = useState('Hi there');
 
   useEffect(() => {
     const currentHour = new Date().getHours();
     if (currentHour < 12) {
-      setTimeGreeting('Good morning,');
+      setTimeGreeting('Hi there');
     } else if (currentHour < 18) {
-      setTimeGreeting('Good afternoon,');
+      setTimeGreeting('Hi there');
     } else {
-      setTimeGreeting('Good evening,');
+      setTimeGreeting('Hi there');
     }
   }, []);
 
   return (
-    <div
-      key="overview"
-      className="max-w-3xl mx-auto md:mt-20 px-8 size-full flex flex-col justify-center"
-    >
+    <div className="w-full text-left">
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 10 }}
-        transition={{ delay: 0.5 }}
-        className="text-2xl font-semibold"
+        transition={{ delay: 0.2 }}
+        className="space-y-4"
       >
-        {timeGreeting}
-        {displayName ? (
-          <span className="bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
-            {` ${displayName}`}
+        {/* Título principal */}
+        <h1 className="text-4xl md:text-5xl font-normal">
+          <span className="bg-gradient-to-r from-yellow-600 via-yellow-400 to-orange-500 bg-clip-text text-transparent bg-[length:200%_100%] animate-gradient">
+            {timeGreeting}, {displayName}
           </span>
-        ) : (
-          ''
-        )}
-        !
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 10 }}
-        transition={{ delay: 0.6 }}
-        className="text-2xl text-zinc-500"
-      >
-        How can I help you today?
+        </h1>
+
+        {/* Subtítulo */}
+        <h2 className="text-4xl md:text-5xl font-normal text-foreground mb-6">
+          What would like to know?
+        </h2>
+
+        {/* Descripción */}
+        <p className="text-muted-foreground text-base max-w-md">
+          Use one of the most common prompts below or use your own to begin
+        </p>
       </motion.div>
     </div>
   );

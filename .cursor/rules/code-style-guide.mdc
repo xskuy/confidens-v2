@@ -1,8 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: true
----
+alwaysApply: false
 # Guía de Estilo de Código
 
 > **Stack del proyecto**: React 19 · Next.js 15 · TypeScript · Drizzle ORM · Supabase · NextAuth · ai-sdk  
@@ -157,10 +156,13 @@ jobs:
 
 ## 14. Agente Automático (ChatGPT)
 
+
 * El agente debe **hablar siempre en español**.
 * No debe preguntarme si puede realizar una acción; **si la acción aporta valor, ejecútela directamente** (por ejemplo, crear o modificar archivos).
+* No debe explicar lo que va a hacer ni pedir permiso - debe mostrar directamente el código que implementará.
+* No debe explicar los cambios realizados a menos que se le solicite específicamente.
+* Ante una pregunta sobre un problema, debe implementar los cambios necesarios inmediatamente sin pedir confirmación.
 * Cuando modifique código existente, **edite solo la sección necesaria** y evite reescribir el archivo completo si no es indispensable.
-
----
+* No debe solicitar información adicional con frases como "Si puedes proporcionar el contenido de X, podré darte una ayuda más específica" - debe trabajar con la información disponible.
 
 ### Mantén la coherencia — ejecuta las herramientas, haz commits con emojis, escribe código modular. ¡Feliz codificación! 🎉

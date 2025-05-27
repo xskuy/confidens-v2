@@ -15,6 +15,8 @@ import { useArtifactSelector } from '@/hooks/use-artifact';
 import { toast } from 'sonner';
 import { unstable_serialize } from 'swr/infinite';
 import { getChatHistoryPaginationKey } from './sidebar-history';
+import type { PowerLevel } from '@/lib/ai/ai-models.config';
+import { useDevMode } from '@/context/dev-mode';
 
 export function Chat({
   id,
@@ -33,6 +35,15 @@ export function Chat({
 
   const [internalSelectedChatModel, setInternalSelectedChatModel] =
     useState(selectedChatModel);
+  const [selectedPower, setSelectedPower] = useState<PowerLevel>('medium');
+  const { isDevMode } = useDevMode();
+
+  // Actualizar el modelo seleccionado cuando cambia el nivel de potencia
+  useEffect(() => {
+    if (!isReadonly && !isDevMode) {
+      setInternalSelectedChatModel(selectedPower);
+    }
+  }, [selectedPower, isReadonly, isDevMode]);
 
   useEffect(() => {
     saveChatModelToCookie(internalSelectedChatModel);
@@ -50,7 +61,11 @@ export function Chat({
     reload,
   } = useChat({
     id,
-    body: { id, selectedChatModel: internalSelectedChatModel },
+    body: {
+      id,
+      selectedChatModel: internalSelectedChatModel,
+      isDevModeActive: isDevMode,
+    },
     initialMessages,
     experimental_throttle: 100,
     sendExtraMessageFields: true,
@@ -72,6 +87,9 @@ export function Chat({
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
   const isArtifactVisible = useArtifactSelector((state) => state.isVisible);
 
+  // Determinar si hay mensajes para cambiar el layout
+  const hasMessages = messages.length > 0;
+
   return (
     <>
       <div className="flex flex-col min-w-0 h-dvh bg-background">
@@ -81,36 +99,81 @@ export function Chat({
           selectedVisibilityType={selectedVisibilityType}
           isReadonly={isReadonly}
           setSelectedModelId={setInternalSelectedChatModel}
+          selectedPower={selectedPower}
         />
 
-        <Messages
-          chatId={id}
-          status={status}
-          votes={votes}
-          messages={messages}
-          setMessages={setMessages}
-          reload={reload}
-          isReadonly={isReadonly}
-          isArtifactVisible={isArtifactVisible}
-        />
-
-        <form className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl">
-          {!isReadonly && (
-            <MultimodalInput
+        {hasMessages ? (
+          // Layout normal cuando hay mensajes
+          <>
+            <Messages
               chatId={id}
-              input={input}
-              setInput={setInput}
-              handleSubmit={handleSubmit}
               status={status}
-              stop={stop}
-              attachments={attachments}
-              setAttachments={setAttachments}
+              votes={votes}
               messages={messages}
               setMessages={setMessages}
-              append={append}
+              reload={reload}
+              isReadonly={isReadonly}
+              isArtifactVisible={isArtifactVisible}
             />
-          )}
-        </form>
+
+            <form className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full max-w-3xl">
+              {!isReadonly && (
+                <MultimodalInput
+                  chatId={id}
+                  input={input}
+                  setInput={setInput}
+                  handleSubmit={handleSubmit}
+                  status={status}
+                  stop={stop}
+                  attachments={attachments}
+                  setAttachments={setAttachments}
+                  messages={messages}
+                  setMessages={setMessages}
+                  append={append}
+                  selectedPower={selectedPower}
+                  setSelectedPower={setSelectedPower}
+                />
+              )}
+            </form>
+          </>
+        ) : (
+          // Layout centrado cuando no hay mensajes
+          <div className="flex flex-col flex-1 items-center justify-center px-4 py-8">
+            <div className="w-full max-w-3xl space-y-8">
+              <Messages
+                chatId={id}
+                status={status}
+                votes={votes}
+                messages={messages}
+                setMessages={setMessages}
+                reload={reload}
+                isReadonly={isReadonly}
+                isArtifactVisible={isArtifactVisible}
+              />
+
+              <form className="flex mx-auto gap-2 w-full">
+                {!isReadonly && (
+                  <MultimodalInput
+                    chatId={id}
+                    input={input}
+                    setInput={setInput}
+                    handleSubmit={handleSubmit}
+                    status={status}
+                    stop={stop}
+                    attachments={attachments}
+                    setAttachments={setAttachments}
+                    messages={messages}
+                    setMessages={setMessages}
+                    append={append}
+                    selectedPower={selectedPower}
+                    setSelectedPower={setSelectedPower}
+                    showSuggestions={true}
+                  />
+                )}
+              </form>
+            </div>
+          </div>
+        )}
       </div>
 
       <Artifact

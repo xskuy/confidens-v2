@@ -2,6 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Variables CSS consolidadas */
+
+/* Estilos específicos para el chat - bloquear scroll */
+html:has([data-page="chat"]), 
+body:has([data-page="chat"]) {
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Para páginas de configuraciones - permitir scroll normal */
+html:has([data-page="settings"]), 
+body:has([data-page="settings"]) {
+  height: 100%;
+  overflow: auto;
+  margin: 0;
+  padding: 0;
+}
+
+/* Fallback para navegadores que no soportan :has() */
+html, 
+body {
+  height: 100%;
+  overflow: auto;
+  margin: 0;
+  padding: 0;
+}
+
+/* Solo bloquear en chat específicamente */
+.chat-layout {
+  height: 100%;
+  overflow: hidden;
+}
+
+.chat-layout #__next,
+.chat-layout main {
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Permite scroll solo en áreas específicas */
 :root {
     --foreground-rgb: 0, 0, 0;
     --background-start-rgb: 214, 219, 220;
@@ -24,13 +66,13 @@
 
 @layer base {
     :root {
-        --background: 0 0% 100%;
+        --background: 0 0% 13%;
         --foreground: 240 10% 3.9%;
         --card: 0 0% 100%;
         --card-foreground: 240 10% 3.9%;
         --popover: 0 0% 100%;
         --popover-foreground: 240 10% 3.9%;
-        --primary: 240 5.9% 10%;
+        --primary: 25 75% 45%;
         --primary-foreground: 0 0% 98%;
         --secondary: 240 4.8% 95.9%;
         --secondary-foreground: 240 5.9% 10%;
@@ -49,7 +91,7 @@
         --chart-4: 43 74% 66%;
         --chart-5: 27 87% 67%;
         --radius: 0.5rem;
-        --sidebar-background: 0 0% 98%;
+        --sidebar-background: 0 0% 12.2%;
         --sidebar-foreground: 240 5.3% 26.1%;
         --sidebar-primary: 240 5.9% 10%;
         --sidebar-primary-foreground: 0 0% 98%;
@@ -59,37 +101,37 @@
         --sidebar-ring: 217.2 91.2% 59.8%;
     }
     .dark {
-        --background: 240 10% 3.9%;
+        --background: 0 0% 13%;
         --foreground: 0 0% 98%;
-        --card: 240 10% 3.9%;
+        --card: 60 3% 8%;
         --card-foreground: 0 0% 98%;
-        --popover: 240 10% 3.9%;
+        --popover: 60 3% 8%;
         --popover-foreground: 0 0% 98%;
-        --primary: 0 0% 98%;
-        --primary-foreground: 240 5.9% 10%;
-        --secondary: 240 3.7% 15.9%;
+        --primary: 25 75% 45%;
+        --primary-foreground: 0 0% 98%;
+        --secondary: 0 0% 14.1%;
         --secondary-foreground: 0 0% 98%;
-        --muted: 240 3.7% 15.9%;
+        --muted: 0 0% 14.1%;
         --muted-foreground: 240 5% 64.9%;
-        --accent: 240 3.7% 15.9%;
+        --accent: 0 0% 14.1%;
         --accent-foreground: 0 0% 98%;
         --destructive: 0 62.8% 30.6%;
         --destructive-foreground: 0 0% 98%;
-        --border: 240 3.7% 15.9%;
-        --input: 240 3.7% 15.9%;
+        --border: 0 0% 30%;
+        --input: 0 0% 30%;
         --ring: 240 4.9% 83.9%;
         --chart-1: 220 70% 50%;
         --chart-2: 160 60% 45%;
         --chart-3: 30 80% 55%;
         --chart-4: 280 65% 60%;
         --chart-5: 340 75% 55%;
-        --sidebar-background: 240 5.9% 10%;
+        --sidebar-background: 0 0% 9%;
         --sidebar-foreground: 240 4.8% 95.9%;
         --sidebar-primary: 224.3 76.3% 48%;
         --sidebar-primary-foreground: 0 0% 100%;
-        --sidebar-accent: 240 3.7% 15.9%;
+        --sidebar-accent: 0 0% 14.1%;
         --sidebar-accent-foreground: 240 4.8% 95.9%;
-        --sidebar-border: 240 3.7% 15.9%;
+        --sidebar-border: 0 0% 14.1%;
         --sidebar-ring: 217.2 91.2% 59.8%;
     }
 }
@@ -161,4 +203,56 @@
 
 .suggestion-highlight {
     @apply bg-blue-200 hover:bg-blue-300 dark:hover:bg-blue-400/50 dark:text-blue-50 dark:bg-blue-500/40;
+}
+
+/* Estilos personalizados para hover de botones primarios */
+.bg-primary:hover {
+    background-color: hsl(20 70% 35%) !important;
+}
+
+[data-theme="dark"] .bg-primary:hover,
+.dark .bg-primary:hover {
+    background-color: hsl(20 70% 35%) !important;
+}
+
+/* Estilos personalizados para mensajes del usuario */
+.user-message-bg {
+    background-color: #303030 !important;
+    color: #ffffff !important;
+}
+
+.dark .user-message-bg {
+    background-color: #303030 !important;
+    color: #ffffff !important;
+}
+
+/* Mejoras sutiles para el sidebar - solo hover y espaciado */
+[data-sidebar="menu-item"] {
+    margin-bottom: 0.3rem; /* Muy poco espacio extra entre chats */
+}
+
+[data-sidebar="menu-button"]:hover {
+    background-color: hsl(0 0% 20%) !important; /* Un poco más de luz en hover */
+}
+
+/* Para modo claro */
+:root [data-sidebar="menu-button"]:hover {
+    background-color: hsl(0 0% 23%) !important; /* Más blanco en modo claro */
+}
+
+/* Animación sutil para el botón de high power */
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.25), 0 0 0 0 rgba(245, 158, 11, 0.4);
+        background-position: 0% 50%;
+    }
+    50% {
+        box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.4), 0 0 8px 2px rgba(245, 158, 11, 0.3);
+        background-position: 100% 50%;
+    }
+}
+
+.animate-pulse-glow {
+    background-size: 200% 200%;
+    animation: pulse-glow 3s ease-in-out infinite;
 }

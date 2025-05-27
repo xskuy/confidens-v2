@@ -6,6 +6,7 @@ import { memo } from 'react';
 import type { Vote } from '@/lib/db/schema';
 import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';
+import { cn } from '@/lib/utils';
 
 interface MessagesProps {
   chatId: string;
@@ -32,8 +33,12 @@ function PureMessages({
 
   return (
     <div
+      id="chat-scroll-container"
       ref={messagesContainerRef}
-      className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4"
+      className={cn(
+        'flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll',
+        messages.length === 0 ? '' : 'pt-4',
+      )}
     >
       {messages.length === 0 && <Greeting />}
 
@@ -58,10 +63,12 @@ function PureMessages({
         messages.length > 0 &&
         messages[messages.length - 1].role === 'user' && <ThinkingMessage />}
 
-      <div
-        ref={messagesEndRef}
-        className="shrink-0 min-w-[24px] min-h-[24px]"
-      />
+      {messages.length > 0 && (
+        <div
+          ref={messagesEndRef}
+          className="shrink-0 min-w-[24px] min-h-[24px]"
+        />
+      )}
     </div>
   );
 }

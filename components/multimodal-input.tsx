@@ -23,6 +23,8 @@ import { Textarea } from './ui/textarea';
 import { SuggestedActions } from './suggested-actions';
 import equal from 'fast-deep-equal';
 import type { UseChatHelpers } from '@ai-sdk/react';
+import PowerSelector from '@/components/power-selector';
+import type { PowerLevel } from '@/lib/ai/ai-models.config';
 
 function PureMultimodalInput({
   chatId,
@@ -37,6 +39,9 @@ function PureMultimodalInput({
   append,
   handleSubmit,
   className,
+  selectedPower,
+  setSelectedPower,
+  showSuggestions = true,
 }: {
   chatId: string;
   input: UseChatHelpers['input'];
@@ -50,6 +55,9 @@ function PureMultimodalInput({
   append: UseChatHelpers['append'];
   handleSubmit: UseChatHelpers['handleSubmit'];
   className?: string;
+  selectedPower: PowerLevel;
+  setSelectedPower: (power: PowerLevel) => void;
+  showSuggestions?: boolean;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
@@ -98,6 +106,11 @@ function PureMultimodalInput({
   const handleInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(event.target.value);
     adjustHeight();
+  };
+
+  const handlePowerChange = (power: PowerLevel) => {
+    setSelectedPower(power);
+    console.log('Selected power:', power);
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -181,7 +194,8 @@ function PureMultimodalInput({
 
   return (
     <div className="relative w-full flex flex-col gap-4">
-      {messages.length === 0 &&
+      {showSuggestions &&
+        messages.length === 0 &&
         attachments.length === 0 &&
         uploadQueue.length === 0 && (
           <SuggestedActions append={append} chatId={chatId} />
@@ -219,49 +233,91 @@ function PureMultimodalInput({
         </div>
       )}
 
-      <Textarea
-        data-testid="multimodal-input"
-        ref={textareaRef}
-        placeholder="Send a message..."
-        value={input}
-        onChange={handleInput}
+      <div
         className={cx(
-          'min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-2xl !text-base bg-muted pb-10 dark:border-zinc-700',
-          className,
+          'relative w-full',
+          messages.length === 0 ? 'max-w-3xl mx-auto' : 'max-w-3xl mx-auto',
         )}
-        rows={2}
-        autoFocus
-        onKeyDown={(event) => {
-          if (
-            event.key === 'Enter' &&
-            !event.shiftKey &&
-            !event.nativeEvent.isComposing
-          ) {
-            event.preventDefault();
-
-            if (status !== 'ready') {
-              toast.error('Please wait for the model to finish its response!');
-            } else {
-              submitForm();
-            }
+      >
+        <Textarea
+          data-testid="multimodal-input"
+          ref={textareaRef}
+          placeholder={
+            messages.length === 0
+              ? 'Ask whatever you want....'
+              : 'Send a message...'
           }
-        }}
-      />
+          value={input}
+          onChange={handleInput}
+          className={cx(
+            'min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none !text-base border-0 shadow-none focus:ring-0 focus:border-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0',
+            'bg-muted pb-14 px-5 pt-4 text-base min-h-[60px] border border-border rounded-2xl shadow-sm',
+            className,
+          )}
+          rows={2}
+          autoFocus
+          onKeyDown={(event) => {
+            if (
+              event.key === 'Enter' &&
+              !event.shiftKey &&
+              !event.nativeEvent.isComposing
+            ) {
+              event.preventDefault();
 
-      <div className="absolute bottom-0 p-2 w-fit flex flex-row justify-start">
-        <AttachmentsButton fileInputRef={fileInputRef} status={status} />
-      </div>
+              if (status !== 'ready') {
+                toast.error(
+                  'Please wait for the model to finish its response!',
+                );
+              } else {
+                submitForm();
+              }
+            }
+          }}
+        />
 
-      <div className="absolute bottom-0 right-0 p-2 w-fit flex flex-row justify-end">
-        {status === 'submitted' ? (
-          <StopButton stop={stop} setMessages={setMessages} />
-        ) : (
-          <SendButton
-            input={input}
-            submitForm={submitForm}
-            uploadQueue={uploadQueue}
+        {/* Botones unificados para ambos estados */}
+        <div className="absolute bottom-3 left-3 flex items-center gap-3">
+          <Button
+            data-testid="attachments-button"
+            className="h-8 px-3 rounded-full bg-background border border-border hover:bg-muted/50 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-xs"
+            onClick={(event) => {
+              event.preventDefault();
+              fileInputRef.current?.click();
+            }}
+            disabled={status !== 'ready'}
+            variant="ghost"
+          >
+            <PaperclipIcon size={16} />
+            <span>Add Attachment</span>
+          </Button>
+
+          <PowerSelector
+            selectedPower={selectedPower}
+            onPowerChange={handlePowerChange}
           />
-        )}
+        </div>
+
+        <div className="absolute bottom-3 right-3 flex items-center gap-2">
+          <div className="text-muted-foreground text-xs">🌐 All Web</div>
+          <div className="text-muted-foreground text-xs">
+            {input.length}/1000
+          </div>
+          {status === 'submitted' ? (
+            <PureStopButton stop={stop} setMessages={setMessages} />
+          ) : (
+            <Button
+              data-testid="send-button"
+              className="size-8 rounded-xl bg-primary hover:bg-primary/90 flex items-center justify-center text-primary-foreground"
+              onClick={(event) => {
+                event.preventDefault();
+                submitForm();
+              }}
+              disabled={input.length === 0 || uploadQueue.length > 0}
+            >
+              <ArrowUpIcon size={16} />
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -270,11 +326,15 @@ function PureMultimodalInput({
 export const MultimodalInput = memo(
   PureMultimodalInput,
   (prevProps, nextProps) => {
-    if (prevProps.input !== nextProps.input) return false;
-    if (prevProps.status !== nextProps.status) return false;
-    if (!equal(prevProps.attachments, nextProps.attachments)) return false;
-
-    return true;
+    return (
+      prevProps.input === nextProps.input &&
+      prevProps.status === nextProps.status &&
+      equal(prevProps.attachments, nextProps.attachments) &&
+      equal(prevProps.messages, nextProps.messages) &&
+      prevProps.chatId === nextProps.chatId &&
+      prevProps.selectedPower === nextProps.selectedPower &&
+      prevProps.showSuggestions === nextProps.showSuggestions
+    );
   },
 );
 
@@ -288,7 +348,7 @@ function PureAttachmentsButton({
   return (
     <Button
       data-testid="attachments-button"
-      className="rounded-md rounded-bl-lg p-[7px] h-fit dark:border-zinc-700 hover:dark:bg-zinc-900 hover:bg-zinc-200"
+      className="h-9 px-3 py-1 rounded-full border-0 shadow-none hover:shadow-none hover:bg-transparent flex items-center justify-center"
       onClick={(event) => {
         event.preventDefault();
         fileInputRef.current?.click();
@@ -296,7 +356,7 @@ function PureAttachmentsButton({
       disabled={status !== 'ready'}
       variant="ghost"
     >
-      <PaperclipIcon size={14} />
+      <PaperclipIcon size={18} />
     </Button>
   );
 }
@@ -313,14 +373,14 @@ function PureStopButton({
   return (
     <Button
       data-testid="stop-button"
-      className="rounded-full p-1.5 h-fit border dark:border-zinc-600"
+      className="h-9 px-3 py-1 rounded-full border-0 shadow-none hover:shadow-none hover:bg-transparent flex items-center justify-center"
       onClick={(event) => {
         event.preventDefault();
         stop();
         setMessages((messages) => messages);
       }}
     >
-      <StopIcon size={14} />
+      <StopIcon size={18} />
     </Button>
   );
 }
@@ -339,14 +399,14 @@ function PureSendButton({
   return (
     <Button
       data-testid="send-button"
-      className="rounded-full p-1.5 h-fit border dark:border-zinc-600"
+      className="h-9 px-3 py-1 rounded-full border-0 shadow-none hover:shadow-none hover:bg-transparent flex items-center justify-center"
       onClick={(event) => {
         event.preventDefault();
         submitForm();
       }}
       disabled={input.length === 0 || uploadQueue.length > 0}
     >
-      <ArrowUpIcon size={14} />
+      <ArrowUpIcon size={18} />
     </Button>
   );
 }

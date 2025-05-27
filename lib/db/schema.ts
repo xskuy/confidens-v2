@@ -13,13 +13,65 @@ import {
 
 export const user = pgTable('User', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
-  email: varchar('email', { length: 64 }).notNull().unique(), // Make email unique
-  password: varchar('password', { length: 256 }), // Store hashed password (increased length just in case)
+  email: varchar('email', { length: 64 }).notNull().unique(),
+  password: varchar('password', { length: 256 }), // Optional for OAuth users
   firstName: varchar('first_name', { length: 64 }).notNull(),
   lastName: varchar('last_name', { length: 64 }).notNull(),
+  image: varchar('image', { length: 512 }), // Profile image URL
+  provider: varchar('provider', { length: 32 }), // 'google', 'microsoft', 'credentials'
+  providerId: varchar('provider_id', { length: 128 }), // Provider's user ID
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
 export type User = InferSelectModel<typeof user>;
+
+// OAuth accounts table for NextAuth
+export const account = pgTable('Account', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  type: varchar('type', { length: 255 }).notNull(),
+  provider: varchar('provider', { length: 255 }).notNull(),
+  providerAccountId: varchar('provider_account_id', { length: 255 }).notNull(),
+  refresh_token: text('refresh_token'),
+  access_token: text('access_token'),
+  expires_at: timestamp('expires_at'),
+  token_type: varchar('token_type', { length: 255 }),
+  scope: varchar('scope', { length: 255 }),
+  id_token: text('id_token'),
+  session_state: varchar('session_state', { length: 255 }),
+});
+
+export type Account = InferSelectModel<typeof account>;
+
+// Sessions table for NextAuth
+export const session = pgTable('Session', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  sessionToken: varchar('session_token', { length: 255 }).notNull().unique(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  expires: timestamp('expires').notNull(),
+});
+
+export type Session = InferSelectModel<typeof session>;
+
+// Verification tokens table for NextAuth
+export const verificationToken = pgTable(
+  'VerificationToken',
+  {
+    identifier: varchar('identifier', { length: 255 }).notNull(),
+    token: varchar('token', { length: 255 }).notNull().unique(),
+    expires: timestamp('expires').notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.identifier, table.token] }),
+  }),
+);
+
+export type VerificationToken = InferSelectModel<typeof verificationToken>;
 
 export const chat = pgTable('Chat', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
