@@ -61,13 +61,9 @@ export const user = pgTable('User', {
   password: varchar('password', { length: 256 }),
   firstName: varchar('first_name', { length: 64 }).notNull(),
   lastName: varchar('last_name', { length: 64 }).notNull(),
-  // Nuevos campos para conectar con organización y rol
-  organizationId: uuid('organizationId')
-    .notNull()
-    .references(() => organization.id),
-  roleId: uuid('roleId')
-    .notNull()
-    .references(() => role.id),
+  // Campos opcionales para conectar con organización y rol
+  organizationId: uuid('organizationId').references(() => organization.id),
+  roleId: uuid('roleId').references(() => role.id),
   createdAt: timestamp('createdAt').notNull().defaultNow(),
   updatedAt: timestamp('updatedAt').notNull().defaultNow(),
   isActive: boolean('isActive').notNull().default(true),

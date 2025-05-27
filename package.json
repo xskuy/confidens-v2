@@ -16,7 +16,10 @@
     "db:pull": "drizzle-kit pull",
     "db:check": "drizzle-kit check",
     "db:up": "drizzle-kit up",
-    "test": "export PLAYWRIGHT=True && pnpm exec playwright test"
+    "test": "export PLAYWRIGHT=True && pnpm exec playwright test",
+    "test:queries": "tsx lib/db/test-queries.ts",
+    "test:new-queries": "tsx lib/db/test-new-queries.ts",
+    "test:cleanup": "tsx lib/db/cleanup-test-data.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^1.2.10",

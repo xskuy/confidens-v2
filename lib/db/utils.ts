@@ -1,16 +1,35 @@
+import { config } from 'dotenv';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+import { hash } from 'bcrypt-ts';
 import { generateId } from 'ai';
-import { genSaltSync, hashSync } from 'bcrypt-ts';
 
-export function generateHashedPassword(password: string) {
-  const salt = genSaltSync(10);
-  const hash = hashSync(password, salt);
+// Cargar variables de entorno
+config({ path: '.env.local' });
 
-  return hash;
+if (!process.env.POSTGRES_URL) {
+  throw new Error('POSTGRES_URL is not defined');
 }
 
-export function generateDummyPassword() {
-  const password = generateId(12);
-  const hashedPassword = generateHashedPassword(password);
+// Configuración específica para Supabase
+const client = postgres(process.env.POSTGRES_URL, {
+  ssl: 'require',
+  max: 1,
+  prepare: false,
+  connection: {
+    application_name: 'confidens_v2',
+  },
+});
 
-  return hashedPassword;
+export const db = drizzle(client);
+
+export async function generateHashedPassword(
+  password: string,
+): Promise<string> {
+  return hash(password, 10);
+}
+
+export async function generateDummyPassword(): Promise<string> {
+  const password = generateId(12);
+  return generateHashedPassword(password);
 }
