@@ -116,7 +116,7 @@ export function Chat({
               isArtifactVisible={isArtifactVisible}
             />
 
-            <form className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl">
+            <form className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full max-w-3xl">
               {!isReadonly && (
                 <MultimodalInput
                   chatId={id}
@@ -138,11 +138,8 @@ export function Chat({
           </>
         ) : (
           // Layout centrado cuando no hay mensajes
-          <div
-            className="flex flex-col flex-1 items-center px-4"
-            style={{ paddingTop: '25vh' }}
-          >
-            <div className="w-full max-w-3xl">
+          <div className="flex flex-col flex-1 items-center justify-center px-4 py-8">
+            <div className="w-full max-w-3xl space-y-8">
               <Messages
                 chatId={id}
                 status={status}
@@ -154,7 +151,7 @@ export function Chat({
                 isArtifactVisible={isArtifactVisible}
               />
 
-              <form className="flex mx-auto gap-2 w-full mt-1">
+              <form className="flex mx-auto gap-2 w-full">
                 {!isReadonly && (
                   <MultimodalInput
                     chatId={id}
@@ -170,7 +167,7 @@ export function Chat({
                     append={append}
                     selectedPower={selectedPower}
                     setSelectedPower={setSelectedPower}
-                    showSuggestions={false}
+                    showSuggestions={true}
                   />
                 )}
               </form>
