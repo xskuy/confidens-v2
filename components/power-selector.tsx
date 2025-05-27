@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Zap, Lightbulb, Brain } from 'lucide-react';
+import { Rocket, Lightbulb, Orbit } from 'lucide-react';
 import {
   AI_MODELS_CONFIGURATION,
   type AIModelConfig,
@@ -49,16 +49,16 @@ export default function PowerSelector({
     }
   > = {
     low: {
-      icon: <Zap className="size-6" />,
-      colorIcon: 'text-yellow-400',
+      icon: <Rocket className="size-6" />,
+      colorIcon: 'text-white',
     },
     medium: {
       icon: <Lightbulb className="size-6" />,
       colorIcon: 'text-blue-500',
     },
     high: {
-      icon: <Brain className="size-6" />,
-      colorIcon: 'text-purple-600',
+      icon: <Orbit className="size-6" />,
+      colorIcon: 'text-yellow-500',
     },
   };
 
@@ -213,50 +213,67 @@ export default function PowerSelector({
           ease: 'easeInOut',
         }}
       >
-        <Button
-          ref={buttonRef}
-          onClick={() => setOpen(!open)}
-          type="button"
-          className={`
-            h-9 px-3 py-1 rounded-full shadow-sm hover:shadow-md flex items-center justify-center gap-2 w-28 transition-all
-            ${
-              isHighPowerSelected
-                ? 'bg-gradient-to-r from-blue-700 to-purple-600 text-white'
-                : 'bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700'
-            }
-          `}
-          variant="outline"
+        <motion.div
+          whileHover={{
+            scale: 1.02,
+            y: -1,
+          }}
+          whileTap={{
+            scale: 0.98,
+            y: 0,
+          }}
+          transition={{
+            type: 'spring',
+            stiffness: 400,
+            damping: 25,
+            mass: 0.8,
+          }}
         >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`icon-${selectedPower}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2, delay: 0.05 }}
-              className={
+          <Button
+            ref={buttonRef}
+            onClick={() => setOpen(!open)}
+            type="button"
+            className={`
+              h-9 px-3 py-1 rounded-full shadow-sm hover:shadow-md flex items-center justify-center gap-2 w-28 transition-all duration-300 ease-out
+              ${
                 isHighPowerSelected
-                  ? 'text-white'
-                  : currentPowerDetails.colorIcon
+                  ? 'bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-700 text-black shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 animate-pulse-glow'
+                  : 'bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 hover:border-gray-300 dark:hover:border-zinc-600'
               }
-            >
-              {currentPowerDetails.icon}
-            </motion.div>
-          </AnimatePresence>
+            `}
+            variant="outline"
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`icon-${selectedPower}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2, delay: 0.05 }}
+                className={
+                  isHighPowerSelected
+                    ? 'text-white'
+                    : currentPowerDetails.colorIcon
+                }
+              >
+                {currentPowerDetails.icon}
+              </motion.div>
+            </AnimatePresence>
 
-          <AnimatePresence mode="wait">
-            <motion.span
-              key={`text-${selectedPower}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2, delay: 0.05 }}
-              className={`font-medium text-sm ${isHighPowerSelected ? 'text-white' : currentPowerDetails.colorText}`}
-            >
-              {currentPowerDetails.label}
-            </motion.span>
-          </AnimatePresence>
-        </Button>
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={`text-${selectedPower}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2, delay: 0.05 }}
+                className={`font-medium text-sm ${isHighPowerSelected ? 'text-white' : currentPowerDetails.colorText}`}
+              >
+                {currentPowerDetails.label}
+              </motion.span>
+            </AnimatePresence>
+          </Button>
+        </motion.div>
       </motion.div>
 
       {open && (

@@ -35,7 +35,7 @@ export function Greeting() {
       >
         {timeGreeting}
         {displayName ? (
-          <span className="bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-yellow-600 to-amber-400 bg-clip-text text-transparent">
             {` ${displayName}`}
           </span>
         ) : (

@@ -2,7 +2,7 @@
 import { useRouter } from 'next/navigation';
 import { useWindowSize } from 'usehooks-ts';
 import { memo } from 'react';
-import { Zap, Lightbulb, Brain } from 'lucide-react';
+import { Lightbulb, Orbit, Rocket } from 'lucide-react';
 
 import { ModelSelector } from '@/components/model-selector';
 import { SidebarToggle } from '@/components/sidebar-toggle';
@@ -25,8 +25,8 @@ const powerLevelDetails: Record<
 > = {
   low: {
     label: 'Rápido',
-    icon: <Zap className="size-5" />,
-    colorIcon: 'text-yellow-400',
+    icon: <Rocket className="size-6" />,
+    colorIcon: 'text-white',
   },
   medium: {
     label: 'Normal',
@@ -35,8 +35,8 @@ const powerLevelDetails: Record<
   },
   high: {
     label: 'Avanzado',
-    icon: <Brain className="size-5" />,
-    colorIcon: 'text-purple-600',
+    icon: <Orbit className="size-6" />,
+    colorIcon: 'text-yellow-500',
   },
 };
 

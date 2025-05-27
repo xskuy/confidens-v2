@@ -77,6 +77,45 @@ export async function createUser({
   }
 }
 
+export async function createOAuthUser({
+  email,
+  firstName,
+  lastName,
+  image,
+  provider,
+  providerId,
+}: {
+  email: string;
+  firstName: string;
+  lastName: string;
+  image?: string;
+  provider?: string;
+  providerId?: string;
+}) {
+  try {
+    const [insertedUser] = await db
+      .insert(user)
+      .values({
+        email,
+        password: null, // OAuth users no necesitan password
+        firstName,
+        lastName,
+        image,
+        provider,
+        providerId,
+      })
+      .returning();
+    console.log(`[CreateOAuthUser] OAuth user ${email} created successfully.`);
+    return insertedUser;
+  } catch (error) {
+    console.error(
+      `[CreateOAuthUser] Failed to create OAuth user ${email}:`,
+      error,
+    );
+    throw error;
+  }
+}
+
 export async function saveChat({
   id,
   userId,
