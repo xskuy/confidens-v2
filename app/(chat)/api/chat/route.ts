@@ -59,8 +59,11 @@ export async function POST(request: Request) {
 
     const session = await auth();
 
-    if (!session?.user?.id) {
-      return new Response('Unauthorized', { status: 401 });
+    if (!session?.user?.id || !session?.user?.email) {
+      console.error(
+        '❌ Sesión de usuario no válida o falta email en /api/chat',
+      );
+      return new Response('Unauthorized: Invalid session', { status: 401 });
     }
 
     const userMessage = getMostRecentUserMessage(messages);

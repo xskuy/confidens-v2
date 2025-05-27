@@ -41,6 +41,7 @@ function PureMultimodalInput({
   className,
   selectedPower,
   setSelectedPower,
+  showSuggestions = true,
 }: {
   chatId: string;
   input: UseChatHelpers['input'];
@@ -56,6 +57,7 @@ function PureMultimodalInput({
   className?: string;
   selectedPower: PowerLevel;
   setSelectedPower: (power: PowerLevel) => void;
+  showSuggestions?: boolean;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
@@ -192,7 +194,8 @@ function PureMultimodalInput({
 
   return (
     <div className="relative w-full flex flex-col gap-4">
-      {messages.length === 0 &&
+      {showSuggestions &&
+        messages.length === 0 &&
         attachments.length === 0 &&
         uploadQueue.length === 0 && (
           <SuggestedActions append={append} chatId={chatId} />
@@ -237,7 +240,7 @@ function PureMultimodalInput({
         value={input}
         onChange={handleInput}
         className={cx(
-          'min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-2xl !text-base bg-muted pb-10 dark:border-zinc-700',
+          'min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-3xl !text-base bg-zinc-800 dark:bg-zinc-800 pb-10 px-4 pt-3 border-0 shadow-none focus:ring-0 focus:border-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0',
           className,
         )}
         rows={2}
@@ -291,7 +294,8 @@ export const MultimodalInput = memo(
       equal(prevProps.attachments, nextProps.attachments) &&
       equal(prevProps.messages, nextProps.messages) &&
       prevProps.chatId === nextProps.chatId &&
-      prevProps.selectedPower === nextProps.selectedPower
+      prevProps.selectedPower === nextProps.selectedPower &&
+      prevProps.showSuggestions === nextProps.showSuggestions
     );
   },
 );
@@ -306,7 +310,7 @@ function PureAttachmentsButton({
   return (
     <Button
       data-testid="attachments-button"
-      className="h-9 px-3 py-1 rounded-full shadow-sm hover:shadow-md border border-gray-200 dark:border-zinc-700 flex items-center justify-center"
+      className="h-9 px-3 py-1 rounded-full border-0 shadow-none hover:shadow-none hover:bg-transparent flex items-center justify-center"
       onClick={(event) => {
         event.preventDefault();
         fileInputRef.current?.click();
@@ -331,7 +335,7 @@ function PureStopButton({
   return (
     <Button
       data-testid="stop-button"
-      className="h-9 px-3 py-1 rounded-full shadow-sm hover:shadow-md border border-gray-200 dark:border-zinc-700 flex items-center justify-center"
+      className="h-9 px-3 py-1 rounded-full border-0 shadow-none hover:shadow-none hover:bg-transparent flex items-center justify-center"
       onClick={(event) => {
         event.preventDefault();
         stop();
@@ -357,7 +361,7 @@ function PureSendButton({
   return (
     <Button
       data-testid="send-button"
-      className="h-9 px-3 py-1 rounded-full shadow-sm hover:shadow-md border border-gray-200 dark:border-zinc-700 flex items-center justify-center"
+      className="h-9 px-3 py-1 rounded-full border-0 shadow-none hover:shadow-none hover:bg-transparent flex items-center justify-center"
       onClick={(event) => {
         event.preventDefault();
         submitForm();

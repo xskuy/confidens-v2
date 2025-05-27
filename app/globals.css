@@ -2,41 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Agregar estilos para evitar el scroll global */
-@layer base {   
-    :root {
-      /* ... otras variables ... */
-      
-      /* Asegúrate de que estas variables sean iguales */
-      --background: 0 0% 100%;
-      --sidebar-background: 0 0% 100%; /* Mismo color que --background */
-    }
-    
-    .dark {
-      /* ... otras variables ... */
-      
-      /* Asegúrate de que estas variables sean iguales */
-      --background: 240 10% 3.9%;
-    --sidebar-background: 240 10% 3.9%; /* Mismo color que --background */
-  }
-}
-/* Fin estilos para evitar scroll global */
-html, 
-body {
+/* Variables CSS consolidadas */
+
+/* Estilos específicos para el chat - bloquear scroll */
+html:has([data-page="chat"]), 
+body:has([data-page="chat"]) {
   height: 100%;
   overflow: hidden;
   margin: 0;
   padding: 0;
 }
 
-#__next,
-main {
+/* Para páginas de configuraciones - permitir scroll normal */
+html:has([data-page="settings"]), 
+body:has([data-page="settings"]) {
+  height: 100%;
+  overflow: auto;
+  margin: 0;
+  padding: 0;
+}
+
+/* Fallback para navegadores que no soportan :has() */
+html, 
+body {
+  height: 100%;
+  overflow: auto;
+  margin: 0;
+  padding: 0;
+}
+
+/* Solo bloquear en chat específicamente */
+.chat-layout {
   height: 100%;
   overflow: hidden;
 }
 
-/* Asegúrate de que el contenedor principal no tenga scroll */
-
+.chat-layout #__next,
+.chat-layout main {
+  height: 100%;
+  overflow: hidden;
+}
 
 /* Permite scroll solo en áreas específicas */
 :root {
@@ -61,7 +66,7 @@ main {
 
 @layer base {
     :root {
-        --background: 0 0% 100%;
+        --background: 0 0% 13%;
         --foreground: 240 10% 3.9%;
         --card: 0 0% 100%;
         --card-foreground: 240 10% 3.9%;
@@ -96,7 +101,7 @@ main {
         --sidebar-ring: 217.2 91.2% 59.8%;
     }
     .dark {
-        --background: 0 0% 9%;
+        --background: 0 0% 13%;
         --foreground: 0 0% 98%;
         --card: 60 3% 8%;
         --card-foreground: 0 0% 98%;
@@ -112,15 +117,15 @@ main {
         --accent-foreground: 0 0% 98%;
         --destructive: 0 62.8% 30.6%;
         --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 14.1%;
-        --input: 0 0% 14.1%;
+        --border: 0 0% 30%;
+        --input: 0 0% 30%;
         --ring: 240 4.9% 83.9%;
         --chart-1: 220 70% 50%;
         --chart-2: 160 60% 45%;
         --chart-3: 30 80% 55%;
         --chart-4: 280 65% 60%;
         --chart-5: 340 75% 55%;
-        --sidebar-background: 0 0% 12.2%;
+        --sidebar-background: 0 0% 9%;
         --sidebar-foreground: 240 4.8% 95.9%;
         --sidebar-primary: 224.3 76.3% 48%;
         --sidebar-primary-foreground: 0 0% 100%;
@@ -208,4 +213,46 @@ main {
 [data-theme="dark"] .bg-primary:hover,
 .dark .bg-primary:hover {
     background-color: hsl(262 80% 60%) !important;
+}
+
+/* Estilos personalizados para mensajes del usuario */
+.user-message-bg {
+    background-color: #303030 !important;
+    color: #ffffff !important;
+}
+
+.dark .user-message-bg {
+    background-color: #303030 !important;
+    color: #ffffff !important;
+}
+
+/* Mejoras sutiles para el sidebar - solo hover y espaciado */
+[data-sidebar="menu-item"] {
+    margin-bottom: 0.3rem; /* Muy poco espacio extra entre chats */
+}
+
+[data-sidebar="menu-button"]:hover {
+    background-color: hsl(0 0% 20%) !important; /* Un poco más de luz en hover */
+}
+
+/* Para modo claro */
+:root [data-sidebar="menu-button"]:hover {
+    background-color: hsl(0 0% 23%) !important; /* Más blanco en modo claro */
+}
+
+/* Animación sutil para el botón de high power */
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.25), 0 0 0 0 rgba(245, 158, 11, 0.4);
+        background-position: 0% 50%;
+    }
+    50% {
+        box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.4), 0 0 8px 2px rgba(245, 158, 11, 0.3);
+        background-position: 100% 50%;
+    }
+}
+
+.animate-pulse-glow {
+    background-size: 200% 200%;
+    animation: pulse-glow 3s ease-in-out infinite;
 }

@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 import { NextAuthProvider } from './providers';
 import { APP_NAME, APP_DESCRIPTION } from '@/lib/config/constants';
+import { auth } from '@/app/(auth)/auth';
 
 import './globals.css';
 
@@ -11,6 +12,10 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://chat.vercel.ai'),
   title: APP_NAME,
   description: APP_DESCRIPTION,
+  icons: {
+    icon: '/icon',
+    apple: '/apple-icon',
+  },
 };
 
 export const viewport = {
@@ -54,6 +59,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Obtener la sesión una sola vez en el servidor
+  const session = await auth();
+
   return (
     <html
       lang="en"
@@ -72,7 +80,7 @@ export default async function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <NextAuthProvider>
+        <NextAuthProvider session={session}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
