@@ -7,6 +7,14 @@ export const size = {
 };
 export const contentType = 'image/png';
 
+const colors = {
+  primary: '#000000',
+  secondary: '#1A1A1A',
+  tertiary: '#8B4513',
+  quaternary: '#DAA520',
+  quinary: '#FFD700',
+};
+
 // Función para generar el icono
 export default function Icon() {
   return new ImageResponse(
