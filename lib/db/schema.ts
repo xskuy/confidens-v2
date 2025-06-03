@@ -11,8 +11,32 @@ import {
   boolean,
 } from 'drizzle-orm/pg-core';
 
+/* 1. Organización */
+export const organization = pgTable('Organization', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: varchar('name', { length: 64 }).notNull(), // "Acme", "Latam Airlines", etc.
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export type Organization = InferSelectModel<typeof organization>;
+
+/* 2. Dominios permitidos por organización  (uno-a-muchos) */
+export const orgDomain = pgTable('OrgDomain', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => organization.id, { onDelete: 'cascade' }),
+  domain: varchar('domain', { length: 64 }).notNull().unique(), // "gmail.com", "latam.com"
+});
+
+export type OrgDomain = InferSelectModel<typeof orgDomain>;
+
+/* 3. User: añade la FK orgId (NOT NULL si todos los usuarios pertenecen a una org) */
 export const user = pgTable('User', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
+  orgId: uuid('org_id')
+    .notNull()
+    .references(() => organization.id, { onDelete: 'restrict' }),
   email: varchar('email', { length: 64 }).notNull().unique(),
   password: varchar('password', { length: 256 }), // Optional for OAuth users
   firstName: varchar('first_name', { length: 64 }).notNull(),
