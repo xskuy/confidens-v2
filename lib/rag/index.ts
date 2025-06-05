@@ -1,6 +1,8 @@
-import { env } from '@/lib/rag/env.mjs';
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
+/**
+ * @fileoverview
+ * This file serves as the entry point for the RAG module.
+ * It exports the primary functions needed to interact with the hybrid search system.
+ */
 
-const client = postgres(env.VECTOR_DATABASE_URL);
-export const db = drizzle(client);
+export { hybridSearch, type HybridSearchConfig } from './hybrid-search';
+export type { SearchResult } from './types';
