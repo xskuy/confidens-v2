@@ -1,8 +1,6 @@
 import { sql } from 'drizzle-orm';
 import { text, varchar, timestamp, pgTable } from 'drizzle-orm/pg-core';
-import { createSelectSchema } from 'drizzle-zod';
-import type { z } from 'zod';
-
+import { z } from 'zod';
 import { nanoid } from '@/lib/rag/utils';
 
 export const resources = pgTable('resources', {
@@ -10,19 +8,16 @@ export const resources = pgTable('resources', {
     .primaryKey()
     .$defaultFn(() => nanoid()),
   content: text('content').notNull(),
-
+  source: varchar('source', { length: 255 }), // e.g., filename, URL
   createdAt: timestamp('created_at').notNull().default(sql`now()`),
   updatedAt: timestamp('updated_at').notNull().default(sql`now()`),
 });
 
-// Schema for resources - used to validate API requests
-export const insertResourceSchema = createSelectSchema(resources)
-  .extend({})
-  .omit({
-    id: true,
-    createdAt: true,
-    updatedAt: true,
-  });
+// Manually define the Zod schema for insertion to avoid library conflicts.
+export const insertResourceSchema = z.object({
+  content: z.string().min(1),
+  source: z.string().optional(),
+});
 
 // Type for resources - used to type API request params and within Components
 export type NewResourceParams = z.infer<typeof insertResourceSchema>;

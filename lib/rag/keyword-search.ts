@@ -5,10 +5,11 @@
  * or a full-text search database like Elasticsearch which uses BM25.
  */
 
-import { sql } from 'drizzle-orm';
+import { sql, eq } from 'drizzle-orm';
 import { db } from '@/lib/rag/db';
 import { embeddings } from '@/lib/rag/db/schema/embeddings';
 import type { SearchResult } from '@/lib/rag/types';
+import { resources } from '@/lib/rag/db/schema/resources';
 
 /**
  * Performs a keyword-based full-text search using PostgreSQL.
@@ -23,26 +24,22 @@ export async function search(
 ): Promise<SearchResult[]> {
   console.log(`Performing keyword search for: "${query}"`);
 
-  // Use websearch_to_tsquery to handle more flexible user queries.
-  // The 'english' config is used for stemming and stop-word removal.
-  const tsQuery = sql`websearch_to_tsquery('english', ${query})`;
-
-  // Calculate the relevance score using ts_rank.
-  const rank = sql<number>`ts_rank(to_tsvector('english', ${embeddings.content}), ${tsQuery})`;
+  const tsquery = sql`plainto_tsquery('spanish', ${query})`;
 
   const results = await db
     .select({
       id: embeddings.id,
       text: embeddings.content,
-      score: rank,
-      metadata: {
-        resourceId: embeddings.resourceId,
-      },
+      source: resources.source,
+      score: sql`ts_rank(to_tsvector('spanish', ${embeddings.content}), ${tsquery})`,
     })
     .from(embeddings)
-    .where(sql`${embeddings.content} @@ ${tsQuery}`)
-    .orderBy(sql`${rank} DESC`)
+    .innerJoin(resources, eq(embeddings.resourceId, resources.id))
+    .where(sql`to_tsvector('spanish', ${embeddings.content}) @@ ${tsquery}`)
+    .orderBy(
+      sql`ts_rank(to_tsvector('spanish', ${embeddings.content}), ${tsquery}) DESC`,
+    )
     .limit(limit);
 
-  return results;
+  return results as SearchResult[];
 }

@@ -17,6 +17,8 @@ export interface HybridSearchConfig {
   vectorWeight: number;
   /** The weight to apply to the keyword search results (0 to 1). */
   keywordWeight: number;
+  /** The number of results to fetch from each search. */
+  topK: number;
 }
 
 /**
@@ -34,16 +36,36 @@ const RRF_K = 60;
  */
 export async function hybridSearch(
   query: string,
-  config: HybridSearchConfig = { vectorWeight: 0.5, keywordWeight: 0.5 },
+  config: HybridSearchConfig = {
+    vectorWeight: 0.5,
+    keywordWeight: 0.5,
+    topK: 20,
+  },
 ): Promise<SearchResult[]> {
   const [vectorResults, keywordResults] = await Promise.all([
-    vectorSearch(query),
-    keywordSearch(query),
+    vectorSearch(query, config.topK),
+    keywordSearch(query, config.topK),
   ]);
+
+  // Debug: Mostrar resultados de cada búsqueda por separado
+  console.log('\n🔍 DEBUG: Resultados de Vector Search:');
+  vectorResults.forEach((result, index) => {
+    console.log(
+      `  ${index + 1}. Score: ${result.score?.toFixed(4)} | Text: "${result.text.substring(0, 80)}..."`,
+    );
+  });
+
+  console.log('\n🔍 DEBUG: Resultados de Keyword Search:');
+  keywordResults.forEach((result, index) => {
+    console.log(
+      `  ${index + 1}. Score: ${result.score?.toFixed(4)} | Text: "${result.text.substring(0, 80)}..."`,
+    );
+  });
 
   const combinedResults = rerank(vectorResults, keywordResults, config);
 
-  return combinedResults;
+  // Return only the top candidates after the initial ranking
+  return combinedResults.slice(0, config.topK);
 }
 
 /**

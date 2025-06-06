@@ -4,11 +4,12 @@
  * This would typically involve a vector database like Pinecone, Weaviate, or pgvector.
  */
 
-import { sql } from 'drizzle-orm';
+import { sql, eq } from 'drizzle-orm';
 import { db } from '@/lib/rag/db';
 import { embeddings } from '@/lib/rag/db/schema/embeddings';
 import { generateEmbedding } from '@/lib/rag/ai/embedding';
 import type { SearchResult } from '@/lib/rag/types';
+import { resources } from '@/lib/rag/db/schema/resources';
 
 /**
  * Performs a vector-based semantic search using pgvector.
@@ -29,7 +30,7 @@ export async function search(
   // 2. Query the database for the most similar embeddings using cosine distance.
   // The `<=>` operator calculates the cosine distance (0=identical, 2=opposite).
   // We subtract from 1 to get cosine similarity (1=identical, -1=opposite).
-  const similarity = sql<number>`1 - (${embeddings.embedding} <=> ${JSON.stringify(
+  const cosineDistance = sql<number>`1 - (${embeddings.embedding} <=> ${JSON.stringify(
     queryEmbedding,
   )})`;
 
@@ -37,14 +38,19 @@ export async function search(
     .select({
       id: embeddings.id,
       text: embeddings.content,
-      score: similarity,
-      metadata: {
-        resourceId: embeddings.resourceId,
-      },
+      source: resources.source,
+      score: cosineDistance,
     })
     .from(embeddings)
-    .orderBy((t) => sql`GREATEST(${t.score}, 0) DESC`)
+    .innerJoin(resources, eq(embeddings.resourceId, resources.id))
+    .orderBy(cosineDistance)
     .limit(limit);
 
-  return results;
+  // Debug: Mostrar IDs únicos para detectar duplicados
+  console.log(
+    '🔧 DEBUG Vector Search - IDs encontrados:',
+    results.map((r) => `${r.id}: "${r.text.substring(0, 50)}..."`),
+  );
+
+  return results as SearchResult[];
 }
