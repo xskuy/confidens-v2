@@ -26,7 +26,7 @@ const powerLevelDetails: Record<
   low: {
     label: 'Rápido',
     icon: <Rocket className="size-6" />,
-    colorIcon: 'text-white',
+    colorIcon: 'text-black dark:text-white',
   },
   medium: {
     label: 'Normal',

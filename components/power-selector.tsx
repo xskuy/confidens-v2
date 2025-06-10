@@ -50,7 +50,7 @@ export default function PowerSelector({
   > = {
     low: {
       icon: <Rocket className="size-6" />,
-      colorIcon: 'text-white',
+      colorIcon: 'text-black dark:text-white',
     },
     medium: {
       icon: <Lightbulb className="size-6" />,

@@ -1,163 +1,247 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from './ui/button';
-import { memo, useState, useEffect } from 'react';
+import { memo, useState, useEffect, useRef } from 'react';
 import type { UseChatHelpers } from '@ai-sdk/react';
-import { RefreshCw, User, Mail, FileText, Cpu } from 'lucide-react';
-
-interface SuggestedActionsProps {
-  chatId: string;
-  append: UseChatHelpers['append'];
-}
+import {
+  FileText,
+  Code,
+  Palette,
+  Search,
+  Sparkles,
+  Brain,
+  BookOpen,
+  ChevronDown,
+} from 'lucide-react';
 
 function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const allSuggestedActions = [
+  const categories = [
     {
-      title: 'Write a to-do list for a',
-      label: 'personal project or task',
-      action: 'Write a to-do list for a personal project or task',
-      icon: <User className="size-5 text-muted-foreground" />,
+      title: 'Summary',
+      icon: <FileText className="size-4" />,
+      options: [
+        'Summarize the French Revolution',
+        'Summarize the plot of Inception',
+        'Summarize World War II in 5 sentences',
+        'Summarize the benefits of meditation',
+        'Summarize the key points of this document',
+        'Summarize the latest AI developments',
+      ],
     },
     {
-      title: 'Generate an email to reply',
-      label: 'to a job offer',
-      action: 'Generate an email to reply to a job offer',
-      icon: <Mail className="size-5 text-muted-foreground" />,
+      title: 'Code',
+      icon: <Code className="size-4" />,
+      options: [
+        'Write a Python function to sort arrays',
+        'Create a React component for user profiles',
+        'Debug this JavaScript error',
+        'Explain how to optimize SQL queries',
+        'Create a REST API endpoint',
+        'Write unit tests for this function',
+      ],
     },
     {
-      title: 'Summarise this article or',
-      label: 'text for me in one paragraph',
-      action: 'Summarise this article or text for me in one paragraph',
-      icon: <FileText className="size-5 text-muted-foreground" />,
+      title: 'Design',
+      icon: <Palette className="size-4" />,
+      options: [
+        'Design a modern landing page layout',
+        'Create a color palette for a tech startup',
+        'Design user interface for mobile app',
+        'Suggest typography combinations',
+        'Create wireframes for e-commerce site',
+        'Design a logo concept',
+      ],
     },
     {
-      title: 'How does AI work in a',
-      label: 'technical capacity',
-      action: 'How does AI work in a technical capacity',
-      icon: <Cpu className="size-5 text-muted-foreground" />,
+      title: 'Research',
+      icon: <Search className="size-4" />,
+      options: [
+        'Research the history of artificial intelligence',
+        'Find information about renewable energy',
+        'Research market trends in cryptocurrency',
+        'Analyze competitor strategies',
+        'Research best practices for remote work',
+        'Study the impact of social media',
+      ],
     },
     {
-      title: 'What are the advantages',
-      label: 'of using Next.js?',
-      action: 'What are the advantages of using Next.js?',
-      icon: <FileText className="size-5 text-muted-foreground" />,
+      title: 'Get Inspired',
+      icon: <Sparkles className="size-4" />,
+      options: [
+        'Give me creative writing prompts',
+        'Suggest innovative business ideas',
+        'Inspire me with success stories',
+        'Creative ways to solve problems',
+        'Motivational quotes for productivity',
+        'Art and design inspiration',
+      ],
     },
     {
-      title: 'Write code to',
-      label: `demonstrate djikstra's algorithm`,
-      action: `Write code to demonstrate djikstra's algorithm`,
-      icon: <Cpu className="size-5 text-muted-foreground" />,
+      title: 'Think Deeply',
+      icon: <Brain className="size-4" />,
+      options: [
+        'Analyze the ethics of AI development',
+        'Explore the philosophy of consciousness',
+        'Examine the future of work',
+        'Discuss the impact of technology on society',
+        'Analyze complex moral dilemmas',
+        'Explore different perspectives on climate change',
+      ],
     },
     {
-      title: 'Help me write an essay',
-      label: `about silicon valley`,
-      action: `Help me write an essay about silicon valley`,
-      icon: <FileText className="size-5 text-muted-foreground" />,
-    },
-    {
-      title: 'What is the weather',
-      label: 'in San Francisco?',
-      action: 'What is the weather in San Francisco?',
-      icon: <User className="size-5 text-muted-foreground" />,
+      title: 'Learn Gently',
+      icon: <BookOpen className="size-4" />,
+      options: [
+        'Explain quantum physics in simple terms',
+        'Teach me basic programming concepts',
+        'How does machine learning work?',
+        'Explain cryptocurrency for beginners',
+        'Basic principles of good design',
+        'Introduction to data science',
+      ],
     },
   ];
-
-  // Usar las primeras 4 acciones como default para evitar hidration mismatch
-  const getInitialActions = () => {
-    return allSuggestedActions.slice(0, 4);
-  };
-
-  // Seleccionar 4 acciones aleatorias solo después de la hidratación
-  const getRandomActions = () => {
-    if (!isHydrated) {
-      return getInitialActions();
-    }
-    const shuffled = [...allSuggestedActions].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 4);
-  };
-
-  const [suggestedActions, setSuggestedActions] = useState(getInitialActions);
 
   useEffect(() => {
     setIsHydrated(true);
   }, []);
 
-  const handleRefresh = () => {
-    if (isHydrated) {
-      const newActions = [...allSuggestedActions]
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 4);
-      setSuggestedActions(newActions);
-      setRefreshKey((prev) => prev + 1);
+  // Cerrar menú al hacer clic fuera
+  useEffect(() => {
+    if (!expandedCategory) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setExpandedCategory(null);
+      }
+    };
+
+    // Agregar listener al documento
+    document.addEventListener('mousedown', handleClickOutside);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [expandedCategory]);
+
+  const handleCategoryClick = (
+    event: React.MouseEvent,
+    categoryTitle: string,
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (expandedCategory === categoryTitle) {
+      setExpandedCategory(null);
+    } else {
+      setExpandedCategory(categoryTitle);
     }
   };
 
+  const handleOptionClick = async (
+    event: React.MouseEvent<HTMLDivElement>,
+    option: string,
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    window.history.replaceState({}, '', `/chat/${chatId}`);
+    append({
+      role: 'user',
+      content: option,
+    });
+    setExpandedCategory(null);
+  };
+
+  if (!isHydrated) {
+    return null;
+  }
+
   return (
-    <div className="w-full space-y-6">
-      {/* Grid de acciones sugeridas */}
-      <div
-        data-testid="suggested-actions"
-        className="grid grid-cols-4 gap-3 w-full"
-        key={refreshKey}
+    <div
+      ref={containerRef}
+      className="w-full flex flex-col items-center space-y-4"
+    >
+      {/* Botones de categorías */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="flex flex-wrap justify-center gap-3 max-w-4xl"
       >
-        {suggestedActions.map((suggestedAction, index) => (
+        {categories.map((category, index) => (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
+            key={category.title}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1 * index }}
-            key={`suggested-action-${suggestedAction.title}-${index}-${refreshKey}`}
+            className="relative"
           >
             <Button
-              variant="ghost"
-              onClick={async () => {
-                window.history.replaceState({}, '', `/chat/${chatId}`);
-
-                append({
-                  role: 'user',
-                  content: suggestedAction.action,
-                });
-              }}
-              className="text-left border rounded-xl p-3 text-sm flex flex-col w-full h-28 justify-between items-start hover:bg-muted/50 transition-all duration-500 ease-in-out hover:border-yellow-400/30 hover:shadow-lg hover:shadow-yellow-400/10 group"
+              variant="outline"
+              onClick={(event) => handleCategoryClick(event, category.title)}
+              className={`flex items-center gap-2 px-4 py-2 h-auto rounded-full border transition-all duration-200 text-sm font-medium ${
+                expandedCategory === category.title
+                  ? 'border-primary bg-primary/10 text-primary'
+                  : 'border-border/20 bg-background/50 backdrop-blur-sm hover:bg-muted/80 hover:border-border/40'
+              }`}
             >
-              <div className="flex flex-col gap-1 text-left">
-                <span className="font-medium text-foreground text-xs leading-tight group-hover:text-yellow-600 transition-colors duration-300">
-                  {suggestedAction.title}
-                </span>
-                <span className="text-muted-foreground text-xs leading-tight group-hover:text-yellow-500/80 transition-colors duration-300">
-                  {suggestedAction.label}
-                </span>
-              </div>
-              <div className="self-start group-hover:text-yellow-500 transition-colors duration-300">
-                {suggestedAction.icon}
-              </div>
+              <span className="text-muted-foreground">{category.icon}</span>
+              {category.title}
+              <ChevronDown
+                className={`size-3 transition-transform duration-200 ${
+                  expandedCategory === category.title ? 'rotate-180' : ''
+                }`}
+              />
             </Button>
+
+            {/* Menú desplegable */}
+            <AnimatePresence>
+              {expandedCategory === category.title && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute top-full left-0 mt-2 w-80 bg-popover border border-border rounded-2xl shadow-lg z-50 p-2"
+                >
+                  <div className="space-y-1">
+                    {category.options.map((option, optionIndex) => (
+                      <motion.div
+                        key={option}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.05 * optionIndex }}
+                        onClick={(event) => handleOptionClick(event, option)}
+                        className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-muted/50 transition-colors text-sm text-foreground/80 hover:text-foreground cursor-pointer"
+                      >
+                        {option}
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         ))}
-      </div>
-
-      {/* Botón Refresh Prompts */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="flex justify-start"
-      >
-        <Button
-          variant="ghost"
-          onClick={handleRefresh}
-          className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
-        >
-          <RefreshCw className="size-4" />
-          Refresh Prompts
-        </Button>
       </motion.div>
+
+      {/* Texto descriptivo al final */}
     </div>
   );
+}
+
+export interface SuggestedActionsProps extends Pick<UseChatHelpers, 'append'> {
+  chatId: string;
 }
 
 export const SuggestedActions = memo(PureSuggestedActions, () => true);
