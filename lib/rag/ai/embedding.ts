@@ -2,8 +2,8 @@ import { embed, embedMany } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { encode } from 'gpt-3-encoder';
 
-// Use a cost-effective and performant model like text-embedding-ada-002
-const embeddingModel = openai.embedding('text-embedding-ada-002');
+// Use text-embedding-3-small (1536 dimensions) which is compatible with HNSW index limits in pgvector
+const embeddingModel = openai.embedding('text-embedding-3-small');
 
 const CHUNK_SIZE = 200; // Target chunk size in tokens
 const CHUNK_OVERLAP = 20; // Number of overlapping tokens between chunks

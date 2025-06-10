@@ -47,22 +47,22 @@ export async function hybridSearch(
     keywordSearch(query, config.topK),
   ]);
 
-  // Debug: Mostrar resultados de cada búsqueda por separado
-  console.log('\n🔍 DEBUG: Resultados de Vector Search:');
-  vectorResults.forEach((result, index) => {
-    console.log(
-      `  ${index + 1}. Score: ${result.score?.toFixed(4)} | Text: "${result.text.substring(0, 80)}..."`,
-    );
-  });
-
-  console.log('\n🔍 DEBUG: Resultados de Keyword Search:');
-  keywordResults.forEach((result, index) => {
-    console.log(
-      `  ${index + 1}. Score: ${result.score?.toFixed(4)} | Text: "${result.text.substring(0, 80)}..."`,
-    );
-  });
-
   const combinedResults = rerank(vectorResults, keywordResults, config);
+
+  // Debug: Buscar específicamente dónde están los chunks sobre ARPANET
+  console.log(
+    '\n🔍 DEBUG: Posiciones de chunks sobre ARPANET en resultado final:',
+  );
+  combinedResults.forEach((result, index) => {
+    if (
+      result.text.toLowerCase().includes('arpanet') ||
+      result.text.toLowerCase().includes('departamento de defensa')
+    ) {
+      console.log(
+        `  ENCONTRADO en posición ${index + 1}: "${result.text.substring(0, 80)}..." (Score: ${result.score?.toFixed(6)})`,
+      );
+    }
+  });
 
   // Return only the top candidates after the initial ranking
   return combinedResults.slice(0, config.topK);

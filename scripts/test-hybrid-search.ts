@@ -13,32 +13,26 @@
 
 import { createResource } from '@/lib/rag/actions/resources';
 import { hybridSearch } from '@/lib/rag';
-import { rerankWithXenova } from '@/lib/rag/rerank';
 import { db } from '@/lib/rag/db';
 import { embeddings } from '@/lib/rag/db/schema/embeddings';
 import { resources } from '@/lib/rag/db/schema/resources';
 
 const sampleText = `
-  La computación cuántica es un paradigma de computación fundamentalmente nuevo,
-  basado en los principios de la mecánica cuántica. A diferencia de los ordenadores
-  clásicos, que almacenan y procesan información en bits (0s o 1s), los ordenadores
-  cuánticos utilizan cúbits o bits cuánticos.
+  El Internet, uno de los avances tecnológicos más significativos del siglo XX, transformó radicalmente la forma en que las personas interactúan, acceden a la información y hacen negocios. Sus orígenes se remontan a la década de 1960 con el desarrollo de ARPANET, una red experimental financiada por el Departamento de Defensa de los Estados Unidos. El propósito inicial de ARPANET era permitir la comunicación entre investigadores en diferentes universidades sin depender de una única línea de comunicación física.
 
-  Un cúbit puede representar un 0, un 1, o ambos valores simultáneamente gracias a un
-  fenómeno llamado superposición. Además, los cúbits pueden estar entrelazados,
-  lo que significa que el estado de un cúbit puede depender instantáneamente del
-  estado de otro, sin importar la distancia que los separe. Estos dos principios,
-  superposición y entrelazamiento, son la base del inmenso poder de la
-  computación cuántica.
+Durante los años 70 y 80, se desarrollaron protocolos fundamentales como TCP/IP, que permitieron que múltiples redes se interconectaran y funcionaran como una sola. En 1989, Tim Berners-Lee propuso el sistema de hipertexto que daría origen a la World Wide Web, facilitando el acceso a información a través de navegadores. En la década de 1990, el Internet comenzó su expansión global. Empresas, gobiernos y particulares empezaron a conectarse, dando lugar a una economía digital.
 
-  Uno de los algoritmos más famosos es el algoritmo de Shor, que puede factorizar
-  números enteros grandes de manera exponencialmente más rápida que cualquier
-  algoritmo clásico conocido. Esto tiene implicaciones profundas para la criptografía
-  moderna, que se basa en la dificultad de la factorización.
+El impacto del Internet en la sociedad ha sido profundo. En la educación, ha permitido el acceso masivo a cursos en línea, bibliotecas digitales y herramientas interactivas. En la economía, ha originado nuevas industrias, desde el comercio electrónico hasta el marketing digital, y ha transformado industrias tradicionales como el turismo, el transporte y la banca. También ha influido en la política, al facilitar la organización de movimientos sociales, la difusión de información y la vigilancia ciudadana.
+
+Sin embargo, también ha traído desafíos: la desinformación, las violaciones a la privacidad, la adicción digital y la desigualdad en el acceso. A pesar de los esfuerzos por lograr una conectividad global, todavía hay más de 2.5 mil millones de personas sin acceso estable a Internet. El concepto de “brecha digital” refleja esta desigualdad, y es uno de los principales retos del siglo XXI.
+
+En los últimos años, el surgimiento de tecnologías como la inteligencia artificial, el Internet de las cosas (IoT), y la computación en la nube ha vuelto al Internet aún más indispensable. La sociedad moderna depende del acceso constante a servicios digitales, desde la comunicación hasta la gestión de infraestructuras críticas.
+
+En conclusión, el Internet no es solo una herramienta: es una infraestructura fundamental para el funcionamiento del mundo moderno. Su desarrollo y regulación determinarán gran parte del futuro social, económico y político de la humanidad.
 `;
 
 const searchQuery =
-  '¿Qué son los cúbits y cómo se relacionan con la superposición?';
+  '¿Cuál fue el rol del Departamento de Defensa de los Estados Unidos en el origen del Internet, y qué tecnología específica financió en sus primeras etapas?';
 
 async function main() {
   console.log('--- Iniciando prueba del pipeline RAG ---');
@@ -70,8 +64,18 @@ async function main() {
     );
 
     // 3. Re-rank con el Cross-Encoder
-    console.log('\n[3/4] ✨ Re-rankeando con Cross-Encoder...');
-    const finalResults = await rerankWithXenova(searchQuery, hybridResults);
+    console.log('\n[3/4] ✨ Re-rankeando con el Cross-Encoder...');
+    let finalResults: any;
+    try {
+      const { rerankWithXenova } = await import('@/lib/rag/rerank');
+      console.log('✅ Módulo de rerank cargado correctamente');
+      finalResults = await rerankWithXenova(searchQuery, hybridResults);
+      console.log(`✅ Reranking completado: ${finalResults.length} resultados`);
+    } catch (rerankError) {
+      console.error('❌ Error en el reranking:');
+      console.error(rerankError);
+      throw rerankError;
+    }
 
     // 4. Show final, reranked results and prepare context for LLM
     console.log('\n[4/4] ✨ Resultados finales y re-rankeados:');
@@ -84,17 +88,15 @@ async function main() {
       console.log(
         `\n-- Contexto generado para el LLM (Top ${topK.length} pasajes) --`,
       );
-      const context = topK.map((r) => r.text).join('\n\n');
+      const context = topK.map((r: any) => r.text).join('\n\n');
       console.log(context);
       console.log('---------------------------------------\n');
 
-      console.log('-- Desglose de todos los pasajes re-rankeados --');
-      finalResults.forEach((result, index) => {
-        console.log(`\n--- Pasaje #${index + 1} ---`);
+      console.log('\n-- Scores de re-ranking --');
+      finalResults.forEach((result: any, index: number) => {
         console.log(
-          `🎯 Score (Cross-Encoder): ${result.rerankScore.toFixed(4)}`,
+          `${index + 1}. Score: ${result.rerankScore?.toFixed(4) ?? 'N/A'} | "${result.text.substring(0, 80)}..."`,
         );
-        console.log(`💬 Texto: "${result.text}"`);
       });
     }
   } catch (error) {

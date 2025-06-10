@@ -14,9 +14,9 @@ import type { SearchResult } from './types';
 // CONFIG
 // ────────────────────────────────────────────────────────────────
 // Modelo multilingüe afinado en ES; logits 2‑dim ⇒ softmax.
-const MODEL_ID = 'Xenova/bge-reranker-base';
+const MODEL_ID = 'mixedbread-ai/mxbai-rerank-base-v1';
 const KEEP_TOP_K = 5; // número de pasajes que regresamos
-const MIN_PROB = 0.002; // 0,2 % — filtra solo el ruido extremo
+const MIN_PROB = 0.0005; // 0,05 % — filtra solo el ruido extremo
 
 // ────────────────────────────────────────────────────────────────
 // SINGLETON CACHES
@@ -47,7 +47,7 @@ export async function rerankWithXenova(
   query: string,
   results: SearchResult[],
 ): Promise<RerankResult[]> {
-  // 1) Filtrado + deduplicado por contenido
+  // 1) Filtrado + deduplicado por contenido
   const seen = new Set<string>();
   const docs = results.filter((r): r is SearchResult & { text: string } => {
     if (typeof r.text !== 'string' || !r.text.trim()) return false;
@@ -58,39 +58,44 @@ export async function rerankWithXenova(
   });
   if (!docs.length) return [];
 
-  // 2) Pairs [query, passage]
+  // 2) Pairs [query, passage]
   const passages = docs.map((d) => d.text.trim());
   const queries = new Array(passages.length).fill(query);
 
-  // 3) Run model
+  // 3) Run model
   const tokenizer = await getTokenizer();
   const model = (await getModel()) as any;
-  const inputs = tokenizer(queries, {
-    text_pair: passages,
+  const inputs = tokenizer(queries, passages, {
     padding: true,
-    truncation: true,
+    truncation: 'only_second',
+    max_length: 512,
   });
+
   const { logits } = await model(inputs as unknown as Tensor);
 
   const dims = logits.dims ?? [];
+
   let probs: number[];
-  if (dims[1] === 2) {
-    // softmax → probabilidad de etiqueta «relevante» (idx 1)
-    probs = logits
-      .softmax(-1)
-      .tolist()
-      .map(([, rel]: [number, number]) => rel);
+  if (dims.length === 2 && dims[1] === 2) {
+    // Binary classification: softmax → probabilidad de etiqueta «relevante» (idx 1)
+    const softmaxed = logits.softmax(-1);
+    const softmaxData = Array.from(softmaxed.data) as number[];
+    // Para binary classification, tomamos cada segundo valor (índice 1, 3, 5, ...)
+    probs = [];
+    for (let i = 1; i < softmaxData.length; i += 2) {
+      probs.push(softmaxData[i]);
+    }
+  } else if (dims.length === 2 && dims[1] === 1) {
+    // Regression task: sigmoid directamente de los datos raw
+    const flattened = Array.from(logits.data) as number[];
+    probs = flattened.map((score) => 1 / (1 + Math.exp(-score))); // manual sigmoid
   } else {
-    // fallback (1‑d logit)
-    probs = Array.from(logits.sigmoid().squeeze(-1).data);
+    // Fallback genérico - procesar datos raw
+    const flattened = Array.from(logits.data) as number[];
+    probs = flattened.map((score) => 1 / (1 + Math.exp(-score))); // manual sigmoid
   }
 
-  if (process.env.NODE_ENV !== 'production') {
-    console.debug('🔵 logits sample', logits.tolist().slice(0, 3));
-    console.debug('🔵 probs  sample', probs.slice(0, 5));
-  }
-
-  // 4) Ranking y corte
+  // 4) Ranking y corte
   let reranked = docs
     .map((d, i) => ({ ...d, rerankScore: probs[i] }))
     .filter((d) => d.rerankScore >= MIN_PROB)

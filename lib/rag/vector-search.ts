@@ -22,17 +22,14 @@ export async function search(
   query: string,
   limit = 10,
 ): Promise<SearchResult[]> {
-  console.log(`Performing vector search for: "${query}"`);
-
   // 1. Generate an embedding for the user's query.
   const queryEmbedding = await generateEmbedding(query);
 
   // 2. Query the database for the most similar embeddings using cosine distance.
   // The `<=>` operator calculates the cosine distance (0=identical, 2=opposite).
   // We subtract from 1 to get cosine similarity (1=identical, -1=opposite).
-  const cosineDistance = sql<number>`1 - (${embeddings.embedding} <=> ${JSON.stringify(
-    queryEmbedding,
-  )})`;
+  const embeddingString = JSON.stringify(queryEmbedding);
+  const cosineDistance = sql<number>`1 - (${embeddings.embedding} <=> ${embeddingString})`;
 
   const results = await db
     .select({
@@ -45,12 +42,6 @@ export async function search(
     .innerJoin(resources, eq(embeddings.resourceId, resources.id))
     .orderBy(cosineDistance)
     .limit(limit);
-
-  // Debug: Mostrar IDs únicos para detectar duplicados
-  console.log(
-    '🔧 DEBUG Vector Search - IDs encontrados:',
-    results.map((r) => `${r.id}: "${r.text.substring(0, 50)}..."`),
-  );
 
   return results as SearchResult[];
 }

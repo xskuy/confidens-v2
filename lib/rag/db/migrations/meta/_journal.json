@@ -8,6 +8,13 @@
       "when": 1749177838549,
       "tag": "0000_lazy_golden_guardian",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1749264867286,
+      "tag": "0001_cheerful_doctor_doom",
+      "breakpoints": true
     }
   ]
 }
