@@ -99,16 +99,16 @@ El monitor­eo remoto y los trabajos de operación y mantenimiento (O&M) se real
     # 4. Perform Hybrid Search and Rerank
     print("\n--- Starting Hybrid Search & Rerank ---")
     query_text = "Considerando los desarrollos de la década de 1980 y la propuesta de 1989, ¿qué innovaciones fueron cruciales para que Internet dejara de ser una red experimental y se expandiera globalmente? A su vez, ¿cómo se contrasta este éxito con el principal reto social que afecta a 2.5 mil millones de personas?"
-    SIGMOID_MIN = 0.65  # 30% probabilidad sigmoid ≈ mínimo relevante
+    SIGMOID_MIN = 0.50  # Umbral más laxo mientras el corpus es pequeño
 
-    # Híbrida con agrupación por documento antes del reranking
+    # Búsqueda híbrida SIN agrupar primero (dejamos que MMR gestione diversidad)
     fused_results = hybrid_search(
         query=query_text,
         embeddings_collection=embeddings_collection,
         bm25_searcher=bm25_model,
         corpus_ids=corpus_ids,
         k_final=20,
-        group_by_doc=True,  # Agrupar chunks por documento base
+        group_by_doc=False,  # Permitir varios chunks por documento
     )
 
     # Rerank con umbral sigmoid para filtrar contenido irrelevante
@@ -120,12 +120,15 @@ El monitor­eo remoto y los trabajos de operación y mantenimiento (O&M) se real
         collection=embeddings_collection,
         device=DEVICE,
         min_sigmoid=SIGMOID_MIN,  # Usar probabilidad sigmoid en lugar de logits
+        max_per_doc=3,  # Permitir hasta 3 chunks por documento tras MMR
     )
 
     print(f"\n--- Final Reranked Results for query: '{query_text}' ---")
     if not reranked_results:
         print("No relevant documents found.")
     else:
+        # Mostrar cada pasaje con metadatos mínimos y construir el contexto
+        context_parts = []
         for i, (doc_id, score) in enumerate(reranked_results):
             # Mostrar también score sigmoid para debug
             import torch
@@ -136,6 +139,17 @@ El monitor­eo remoto y los trabajos de operación y mantenimiento (O&M) se real
                 f"  {i + 1}. ID: {doc_id}, Logit: {score:.4f}, Sigmoid: {sigmoid_score:.4f}"
             )
             print(f"     Content: {content}\n")
+
+            # Añadir al contexto
+            context_parts.append(content)
+
+        # -----------------------------------------------------------
+        # Nuevo: Concatenar los pasajes en orden de relevancia y
+        # mostrarlos como el contexto que se enviaría al LLM.
+        # -----------------------------------------------------------
+        print("\n--- 🔎 Contexto agregado para el LLM (preview) ---\n")
+        combined_context = "\n\n".join(context_parts)
+        print(combined_context)
 
     print("--- Process Complete ---")
 

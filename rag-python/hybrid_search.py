@@ -235,15 +235,29 @@ def rerank(
     min_sigmoid=None,
     diversify=True,
     lambda_param=0.65,
+    max_per_doc: int = 1,
 ):
+    def _shorten_query(q: str, tokenizer, max_tokens: int = 64) -> str:
+        """Recorta la query para que no exceda `max_tokens`, evitando que el texto del pasaje se trunque demasiado."""
+        tokens = tokenizer.encode(q, add_special_tokens=False)
+        if len(tokens) <= max_tokens:
+            return q
+        # Mantener primeros 40 tokens y últimos 24 tokens (por si hay términos clave al final)
+        keep_first, keep_last = 40, max_tokens - 40
+        shortened_ids = tokens[:keep_first] + tokens[-keep_last:]
+        return tokenizer.decode(shortened_ids, skip_special_tokens=True)
+
     if not docs_ids_scores:
         return []
+
+    # Recortar query para el reranker
+    query_for_rerank = _shorten_query(query, reranker_tokenizer)
 
     doc_ids = [d for d, _ in docs_ids_scores]
     texts = collection.get(ids=doc_ids)["documents"]
 
     scores = get_relevance_scores(
-        query, texts, reranker_tokenizer, reranker_model, device
+        query_for_rerank, texts, reranker_tokenizer, reranker_model, device
     )
     paired = [(d, s) for (d, _), s in zip(docs_ids_scores, scores)]
     paired.sort(key=lambda x: x[1], reverse=True)
@@ -262,12 +276,12 @@ def rerank(
             collection,
             lambda_param,
             top_k=len(paired),
-            max_per_doc=1,
+            max_per_doc=max_per_doc,
             min_threshold=min_sigmoid,
         )
 
         # Validar resultados
-        validation = validate_mmr_results(paired, max_per_doc=1)
+        validation = validate_mmr_results(paired, max_per_doc=max_per_doc)
         print(f"DEBUG: MMR validation: {validation}")
 
     return paired
@@ -310,7 +324,15 @@ def hybrid_search(
     k_vec, k_bm25 = min(k_vec, num_docs), min(k_bm25, num_docs)
 
     vec = embeddings_collection.query(query_texts=[query], n_results=k_vec)
-    vec_ranked = list(zip(vec["ids"][0], vec["distances"][0]))
+
+    # ChromaDB devuelve distancias (menor = más similar).
+    # Convertimos a *similaridad* para que los sistemas de ranking que
+    # esperan "mayor = mejor" (como RRF) funcionen correctamente.
+    vec_ranked = []
+    for doc_id, dist in zip(vec["ids"][0], vec["distances"][0]):
+        # Similaridad simple: 1 / (1 + distancia)
+        similarity = 1.0 / (1.0 + dist)
+        vec_ranked.append((doc_id, similarity))
 
     bm25_ranked = bm25_search(bm25_searcher, query, corpus_ids, k=k_bm25)
 
