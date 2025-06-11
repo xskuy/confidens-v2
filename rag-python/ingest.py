@@ -57,7 +57,7 @@ def ingest_resource(
     # 3. Prepare and store each chunk in the 'embeddings' collection
     if not chunks:
         print("No chunks to add for this resource.")
-        return
+        return resource_id
 
     embedding_ids = [str(uuid.uuid4()) for _ in chunks]
     enriched_metadatas = [
@@ -74,3 +74,5 @@ def ingest_resource(
         ids=embedding_ids, documents=chunks, metadatas=enriched_metadatas
     )
     print(f"Added {len(chunks)} embeddings to the collection.")
+    
+    return resource_id
