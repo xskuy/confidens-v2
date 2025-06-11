@@ -20,7 +20,7 @@ def test_ingest():
     
     try:
         result = subprocess.run(
-            ['uv', 'run', 'python', 'api_ingest.py'],
+            ['uv', 'run', 'python', 'src/api/api_ingest.py'],
             input=json.dumps(test_data),
             text=True,
             capture_output=True,
@@ -28,17 +28,31 @@ def test_ingest():
         )
         
         if result.returncode == 0:
-            response = json.loads(result.stdout)
-            print(f"✅ Ingesta exitosa: {response.get('message')}")
-            print(f"   Resource ID: {response.get('resource_id')}")
-            print(f"   Chunks: {response.get('chunks_count')}")
-            return True
+            # Buscar la línea JSON en el stdout (puede haber texto adicional)
+            lines = result.stdout.strip().split('\n')
+            json_line = None
+            for line in lines:
+                if line.startswith('{') and line.endswith('}'):
+                    json_line = line
+                    break
+            
+            if json_line:
+                response = json.loads(json_line)
+                print(f"✅ Ingesta exitosa: {response.get('message')}")
+                print(f"   Resource ID: {response.get('resource_id')}")
+                print(f"   Chunks: {response.get('chunks_count')}")
+                return True
+            else:
+                print(f"❌ No se encontró respuesta JSON válida: {result.stdout}")
+                return False
         else:
             print(f"❌ Error en ingesta: {result.stderr}")
             return False
             
     except Exception as e:
         print(f"❌ Excepción en ingesta: {e}")
+        print(f"   Stdout: {result.stdout if 'result' in locals() else 'N/A'}")
+        print(f"   Stderr: {result.stderr if 'result' in locals() else 'N/A'}")
         return False
 
 def test_list():
@@ -47,7 +61,7 @@ def test_list():
     
     try:
         result = subprocess.run(
-            ['uv', 'run', 'python', 'api_list.py'],
+            ['uv', 'run', 'python', 'src/api/api_list.py'],
             capture_output=True,
             text=True,
             timeout=30
@@ -85,7 +99,7 @@ def test_search():
     
     try:
         result = subprocess.run(
-            ['uv', 'run', 'python', 'api_search.py'],
+            ['uv', 'run', 'python', 'src/api/api_search.py'],
             input=json.dumps(search_data),
             text=True,
             capture_output=True,
@@ -93,24 +107,38 @@ def test_search():
         )
         
         if result.returncode == 0:
-            response = json.loads(result.stdout)
-            results_count = response.get('total_results', 0)
-            print(f"✅ Búsqueda exitosa: {results_count} resultados")
+            # Buscar la línea JSON en el stdout (puede haber texto adicional)
+            lines = result.stdout.strip().split('\n')
+            json_line = None
+            for line in lines:
+                if line.startswith('{') and line.endswith('}'):
+                    json_line = line
+                    break
             
-            # Mostrar algunos resultados
-            results = response.get('results', [])
-            for i, result in enumerate(results[:2]):  # Mostrar solo los primeros 2
-                score = result.get('score', {})
-                print(f"   Resultado {i+1}: Score {score.get('sigmoid', 0):.3f}")
-                print(f"      Contenido: {result.get('content', '')[:100]}...")
-            
-            return True
+            if json_line:
+                response = json.loads(json_line)
+                results_count = response.get('total_results', 0)
+                print(f"✅ Búsqueda exitosa: {results_count} resultados")
+                
+                # Mostrar algunos resultados
+                results = response.get('results', [])
+                for i, result in enumerate(results[:2]):  # Mostrar solo los primeros 2
+                    score = result.get('score', {})
+                    print(f"   Resultado {i+1}: Score {score.get('sigmoid', 0):.3f}")
+                    print(f"      Contenido: {result.get('content', '')[:100]}...")
+                
+                return True
+            else:
+                print(f"❌ No se encontró respuesta JSON válida: {result.stdout}")
+                return False
         else:
             print(f"❌ Error en búsqueda: {result.stderr}")
             return False
             
     except Exception as e:
         print(f"❌ Excepción en búsqueda: {e}")
+        print(f"   Stdout: {result.stdout if 'result' in locals() else 'N/A'}")
+        print(f"   Stderr: {result.stderr if 'result' in locals() else 'N/A'}")
         return False
 
 def main():

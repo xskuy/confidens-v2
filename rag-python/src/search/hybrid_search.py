@@ -3,8 +3,8 @@ import numpy as np
 from collections import defaultdict
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
-from db import get_db_client, get_or_create_collections
-from bm25_search import create_bm25_searcher, bm25_search
+from ..database.db import get_db_client, get_or_create_collections
+from .bm25_search import create_bm25_searcher, bm25_search
 
 
 # ----------------------------------------------------------------------

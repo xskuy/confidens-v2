@@ -1,5 +1,5 @@
 import bm25s
-from db import get_db_client, get_or_create_collections
+from ..database.db import get_db_client, get_or_create_collections
 
 
 def create_bm25_searcher(corpus: list[str]):

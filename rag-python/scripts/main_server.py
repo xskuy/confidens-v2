@@ -16,10 +16,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
-from bm25_search import create_bm25_searcher
-from db import get_db_client, get_or_create_collections
-from hybrid_search import hybrid_search, rerank
-from ingest import ingest_resource
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.search.bm25_search import create_bm25_searcher
+from src.database.db import get_db_client, get_or_create_collections
+from src.search.hybrid_search import hybrid_search, rerank
+from src.ingestion.ingest import ingest_resource
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO)

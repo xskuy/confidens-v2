@@ -8,8 +8,12 @@ import json
 import sys
 import uuid
 import datetime
-from db import get_db_client, get_or_create_collections
-from ingest import ingest_resource
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+from src.database.db import get_db_client, get_or_create_collections
+from src.ingestion.ingest import ingest_resource
 
 
 def main():

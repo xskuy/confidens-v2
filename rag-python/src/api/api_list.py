@@ -6,7 +6,10 @@ Responde con JSON a stdout con la lista de documentos.
 
 import json
 import sys
-from db import get_db_client, get_or_create_collections
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+from src.database.db import get_db_client, get_or_create_collections
 
 
 def main():

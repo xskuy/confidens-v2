@@ -51,7 +51,7 @@ echo ""
 # Iniciar FastAPI en background
 echo -e "${BLUE}🐍 Iniciando servidor FastAPI (Puerto 8000)...${NC}"
 cd rag-python
-uv run uvicorn main_server:app --reload --host 127.0.0.1 --port 8000 &
+uv run python scripts/main_server.py &
 FASTAPI_PID=$!
 cd ..
 
