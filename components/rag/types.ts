@@ -6,7 +6,11 @@ export interface Document {
   created_at: string;
   content_preview: string;
   chunks_count: number;
+  status?: 'pending' | 'processing' | 'completed' | 'failed';
+  statusMessage?: string;
 }
+
+export type DocumentStatus = 'pending' | 'processing' | 'completed' | 'failed';
 
 export interface SearchResult {
   id: string;

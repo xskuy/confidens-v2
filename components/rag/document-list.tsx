@@ -12,9 +12,31 @@ import {
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
-import { Trash2, Upload, Search, MoreHorizontal, Filter } from 'lucide-react';
+import {
+  Trash2,
+  Upload,
+  Search,
+  MoreHorizontal,
+  Filter,
+  Clock,
+  Loader2,
+  CheckCircle,
+  XCircle,
+} from 'lucide-react';
 import { useState } from 'react';
-import type { Document } from './types';
+import type { Document, DocumentStatus } from './types';
+
+// Componente del icono PDF
+const PdfIcon = ({ className = 'size-6' }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 512 512"
+    className={className}
+    fill="currentColor"
+  >
+    <path d="M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 144-208 0c-35.3 0-64 28.7-64 64l0 144-48 0c-35.3 0-64-28.7-64-64L0 64zm384 64l-128 0L256 0 384 128zM176 352l32 0c30.9 0 56 25.1 56 56s-25.1 56-56 56l-16 0 0 32c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-48 0-80c0-8.8 7.2-16 16-16zm32 80c13.3 0 24-10.7 24-24s-10.7-24-24-24l-16 0 0 48 16 0zm96-80l32 0c26.5 0 48 21.5 48 48l0 64c0 26.5-21.5 48-48 48l-32 0c-8.8 0-16-7.2-16-16l0-128c0-8.8 7.2-16 16-16zm32 128c8.8 0 16-7.2 16-16l0-64c0-8.8-7.2-16-16-16l-16 0 0 96 16 0zm80-112c0-8.8 7.2-16 16-16l48 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-32 0 0 32 32 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-32 0 0 48c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-64 0-64z" />
+  </svg>
+);
 
 interface DocumentListProps {
   documents: Document[];
@@ -30,6 +52,34 @@ export function DocumentList({
   loading,
 }: DocumentListProps) {
   const [searchQuery, setSearchQuery] = useState('');
+
+  const getStatusIcon = (status: DocumentStatus = 'completed') => {
+    switch (status) {
+      case 'pending':
+        return <Clock className="size-4 text-yellow-500" />;
+      case 'processing':
+        return <Loader2 className="size-4 text-blue-500 animate-spin" />;
+      case 'completed':
+        return <CheckCircle className="size-4 text-green-500" />;
+      case 'failed':
+        return <XCircle className="size-4 text-red-500" />;
+      default:
+        return <CheckCircle className="size-4 text-green-500" />;
+    }
+  };
+
+  const getStatusText = (
+    status: DocumentStatus = 'completed',
+    message?: string,
+  ) => {
+    const statusTexts = {
+      pending: 'Pendiente',
+      processing: 'Procesando...',
+      completed: 'Completado',
+      failed: 'Error',
+    };
+    return message || statusTexts[status];
+  };
 
   const filteredDocuments = documents.filter(
     (doc) =>
@@ -56,12 +106,12 @@ export function DocumentList({
 
   const getFileIcon = (title: string) => {
     const extension = title.split('.').pop()?.toLowerCase();
-    if (extension === 'pdf') return '📄';
+    if (extension === 'pdf') return <PdfIcon />;
     if (['doc', 'docx'].includes(extension || '')) return '📘';
     if (['xls', 'xlsx'].includes(extension || '')) return '📊';
     if (['ppt', 'pptx'].includes(extension || '')) return '📁';
     if (['jpg', 'jpeg', 'png', 'gif'].includes(extension || '')) return '🖼️';
-    return '📄';
+    return <PdfIcon />;
   };
 
   return (
@@ -121,6 +171,9 @@ export function DocumentList({
                   Nombre del Archivo
                 </TableHead>
                 <TableHead className="font-medium text-center">
+                  Estado
+                </TableHead>
+                <TableHead className="font-medium text-center">
                   Tamaño
                 </TableHead>
                 <TableHead className="font-medium text-center">
@@ -142,10 +195,8 @@ export function DocumentList({
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="size-8 flex items-center justify-center">
-                        <span className="text-lg">
-                          {getFileIcon(doc.title)}
-                        </span>
+                      <div className="size-8 flex items-center justify-center text-red-600">
+                        {getFileIcon(doc.title)}
                       </div>
                       <div className="min-w-0">
                         <div className="font-medium text-sm truncate">
@@ -155,6 +206,14 @@ export function DocumentList({
                           {doc.source}
                         </div>
                       </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      {getStatusIcon(doc.status)}
+                      <span className="text-sm">
+                        {getStatusText(doc.status, doc.statusMessage)}
+                      </span>
                     </div>
                   </TableCell>
                   <TableCell className="text-center">

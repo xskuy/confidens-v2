@@ -11,7 +11,7 @@ from typing import List, Optional
 
 import torch
 import uvicorn
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, Form, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
@@ -235,6 +235,81 @@ async def ingest_document(request: IngestRequest):
     except Exception as e:
         logger.error(f"❌ Error en ingesta: {e}")
         raise HTTPException(status_code=500, detail=f"Error ingesting document: {str(e)}")
+
+
+@app.post("/api/ingest/pdf", response_model=IngestResponse, tags=["Documents"])
+async def ingest_pdf(
+    pdf_file: UploadFile = File(...),
+    title: str = Form(None),
+    author: str = Form("Unknown"),
+    version: str = Form("1.0.0"),
+    source: str = Form("upload"),
+):
+    """Ingestar un PDF (archivo) en ChromaDB.
+
+    1. Se extrae el texto del PDF con PyMuPDF.
+    2. Se delega a `ingest_resource` para crear chunks y embeddings.
+    """
+    try:
+        logger.info(f"📥 Ingestando PDF: {pdf_file.filename}")
+
+        # Usar nombre del archivo como título si no se provee
+        if not title:
+            title = pdf_file.filename.rsplit(".", 1)[0]
+
+        # Leer bytes del archivo
+        file_bytes = await pdf_file.read()
+
+        # Extraer texto con PyMuPDF
+        try:
+            import fitz  # PyMuPDF
+            pdf_doc = fitz.open(stream=file_bytes, filetype="pdf")
+            pages_text = [page.get_text() for page in pdf_doc]
+            pdf_doc.close()
+            content = "\n\n".join(pages_text)
+        except Exception as e:
+            logger.error(f"❌ Error extrayendo texto del PDF: {e}")
+            raise HTTPException(status_code=500, detail="Failed to extract text from PDF")
+
+        if not content.strip():
+            raise HTTPException(status_code=400, detail="PDF sin contenido extraíble")
+
+        # Contar antes de la ingesta
+        before_count = app_state["embeddings_collection"].count()
+
+        resource_id = ingest_resource(
+            resources_collection=app_state["resources_collection"],
+            embeddings_collection=app_state["embeddings_collection"],
+            title=title,
+            author=author,
+            content_type="pdf",
+            version=version,
+            content=content,
+            source=source,
+        )
+
+        # Contar después de la ingesta
+        after_count = app_state["embeddings_collection"].count()
+        chunks_added = after_count - before_count
+
+        update_bm25_if_needed()
+
+        logger.info(
+            f"✅ PDF ingresado: {resource_id} ({chunks_added} chunks)"
+        )
+
+        return IngestResponse(
+            success=True,
+            resource_id=resource_id,
+            chunks_count=chunks_added,
+            message=f"Successfully ingested PDF '{title}'",
+        )
+    except HTTPException:
+        # Re-lanzar para FastAPI
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error en ingesta de PDF: {e}")
+        raise HTTPException(status_code=500, detail=f"Error ingesting PDF: {str(e)}")
 
 
 @app.get("/api/list", response_model=ListResponse, tags=["Documents"])

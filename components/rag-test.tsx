@@ -58,10 +58,96 @@ export function RagTest() {
         // Actualizar lista de documentos
         await handleListDocuments();
       } else {
-        // TODO: Implementar subida de archivos
-        console.log('Archivos a procesar:', data.files);
-        setError('Funcionalidad de archivos en desarrollo');
-        return;
+        if (!data.files) {
+          setError('No se recibieron archivos');
+          return;
+        }
+
+        const totalFiles = data.files.length;
+        const pdfFiles = data.files.filter(
+          (f) =>
+            f.file.type === 'application/pdf' ||
+            f.file.name.toLowerCase().endsWith('.pdf'),
+        );
+
+        if (pdfFiles.length === 0) {
+          setError('No se encontraron archivos PDF para procesar');
+          return;
+        }
+
+        // Agregar documentos con estado pendiente a la lista
+        const pendingDocs: Document[] = pdfFiles.map((pdfFile, index) => ({
+          id: `pending-${Date.now()}-${index}`,
+          title: pdfFile.file.name,
+          author: 'Procesando...',
+          source: 'upload',
+          created_at: new Date().toISOString(),
+          content_preview: 'Archivo en procesamiento...',
+          chunks_count: 0,
+          status: 'pending' as const,
+          statusMessage: 'En cola...',
+        }));
+
+        setDocuments((prev) => [...pendingDocs, ...prev]);
+
+        // Procesar archivos uno por uno
+        for (let i = 0; i < pdfFiles.length; i++) {
+          const pdfFile = pdfFiles[i];
+          const pendingDocId = pendingDocs[i].id;
+
+          try {
+            // Actualizar estado a procesando
+            setDocuments((prev) =>
+              prev.map((doc) =>
+                doc.id === pendingDocId
+                  ? {
+                      ...doc,
+                      status: 'processing' as const,
+                      statusMessage: 'Extrayendo texto...',
+                    }
+                  : doc,
+              ),
+            );
+
+            const formData = new FormData();
+            formData.append('files', pdfFile.file, pdfFile.file.name);
+
+            const response = await fetch('/api/rag/documents/upload', {
+              method: 'POST',
+              body: formData,
+            });
+
+            if (!response.ok) {
+              throw new Error(
+                `Error ${response.status}: ${response.statusText}`,
+              );
+            }
+
+            const result = await response.json();
+
+            // Remover documento pendiente y refrescar lista
+            setDocuments((prev) =>
+              prev.filter((doc) => doc.id !== pendingDocId),
+            );
+            await handleListDocuments();
+          } catch (err) {
+            // Marcar como fallido
+            setDocuments((prev) =>
+              prev.map((doc) =>
+                doc.id === pendingDocId
+                  ? {
+                      ...doc,
+                      status: 'failed' as const,
+                      statusMessage:
+                        err instanceof Error
+                          ? err.message
+                          : 'Error desconocido',
+                    }
+                  : doc,
+              ),
+            );
+          }
+        }
       }
     } catch (err) {
       setError(
