@@ -115,7 +115,41 @@ curl -X GET http://localhost:3000/api/rag/documents/list
 
 ---
 
-### 3. **Búsqueda Híbrida** - `POST /api/rag/search`
+### 3. **Borrar Documentos** - `DELETE /api/rag/documents/delete`
+
+Borra un documento y todos sus chunks asociados de ChromaDB.
+
+#### Request Body:
+```json
+{
+  "resource_id": "uuid-del-documento"
+}
+```
+
+#### Response:
+```json
+{
+  "success": true,
+  "message": "Successfully deleted document 'Mi Documento' and 5 chunks",
+  "resourceId": "uuid-del-documento",
+  "chunksDeleted": 5
+}
+```
+
+#### Errores:
+- `404 Not Found` - Si el documento no existe
+- `500 Internal Server Error` - Error del servidor
+
+#### Ejemplo con cURL:
+```bash
+curl -X DELETE http://localhost:3000/api/rag/documents/delete \
+  -H "Content-Type: application/json" \
+  -d '{"resource_id": "documento-uuid-a-borrar"}'
+```
+
+---
+
+### 4. **Búsqueda Híbrida** - `POST /api/rag/search`
 
 Búsqueda híbrida (semántica + léxica) con reranking.
 
@@ -169,10 +203,11 @@ Visita http://localhost:8000/docs para la interfaz Swagger.
 
 ### **Endpoints FastAPI:**
 - `POST /api/ingest` - Ingestar documento
-- `GET /api/list` - Listar documentos  
+- `GET /api/list` - Listar documentos
+- `DELETE /api/delete` - Borrar documento
 - `POST /api/search` - Búsqueda híbrida
 
-### **Ejemplo Directo:**
+### **Ejemplos Directos:**
 ```bash
 # Búsqueda directa en FastAPI
 curl -X POST http://localhost:8000/api/search \
@@ -180,6 +215,13 @@ curl -X POST http://localhost:8000/api/search \
   -d '{
     "query": "¿Cómo funciona la búsqueda semántica?",
     "k_final": 5
+  }'
+
+# Borrar documento directamente en FastAPI
+curl -X DELETE http://localhost:8000/api/delete \
+  -H "Content-Type: application/json" \
+  -d '{
+    "resource_id": "documento-uuid-a-borrar"
   }'
 ```
 

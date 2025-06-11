@@ -89,6 +89,15 @@ class IngestResponse(BaseModel):
     chunks_count: int
     message: str
 
+class DeleteRequest(BaseModel):
+    resource_id: str
+
+class DeleteResponse(BaseModel):
+    success: bool
+    resource_id: str
+    chunks_deleted: int
+    message: str
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -182,7 +191,7 @@ async def root():
     return {
         "message": "🚀 RAG API Server running!",
         "status": "healthy",
-        "endpoints": ["/docs", "/ingest", "/list", "/search"]
+        "endpoints": ["/docs", "/ingest", "/list", "/search", "/delete"]
     }
 
 
@@ -386,6 +395,62 @@ async def hybrid_search_api(request: SearchRequest):
     except Exception as e:
         logger.error(f"❌ Error en búsqueda: {e}")
         raise HTTPException(status_code=500, detail=f"Error performing search: {str(e)}")
+
+
+@app.delete("/api/delete", response_model=DeleteResponse, tags=["Documents"])
+async def delete_document(request: DeleteRequest):
+    """Borrar un documento y todos sus chunks de ChromaDB"""
+    try:
+        logger.info(f"🗑️ Borrando documento: {request.resource_id}")
+        
+        # Verificar que el documento existe
+        try:
+            resource_data = app_state["resources_collection"].get(ids=[request.resource_id])
+            if not resource_data["documents"]:
+                raise HTTPException(status_code=404, detail=f"Document {request.resource_id} not found")
+        except Exception:
+            raise HTTPException(status_code=404, detail=f"Document {request.resource_id} not found")
+        
+        # Obtener información del documento antes de borrarlo
+        document_title = resource_data["metadatas"][0].get("title", "Unknown")
+        
+        # Obtener todos los chunks relacionados con este documento
+        all_chunks = app_state["embeddings_collection"].get()
+        chunks_to_delete = []
+        
+        for i, metadata in enumerate(all_chunks["metadatas"]):
+            if metadata.get("resource_id") == request.resource_id:
+                chunks_to_delete.append(all_chunks["ids"][i])
+        
+        logger.info(f"📊 Encontrados {len(chunks_to_delete)} chunks para borrar")
+        
+        # Borrar chunks de la colección embeddings
+        if chunks_to_delete:
+            app_state["embeddings_collection"].delete(ids=chunks_to_delete)
+            logger.info(f"🗑️ Borrados {len(chunks_to_delete)} chunks")
+        
+        # Borrar el documento de la colección resources
+        app_state["resources_collection"].delete(ids=[request.resource_id])
+        logger.info(f"🗑️ Borrado documento principal: {request.resource_id}")
+        
+        # Actualizar BM25 después del borrado
+        update_bm25_if_needed()
+        
+        logger.info(f"✅ Documento '{document_title}' borrado exitosamente")
+        
+        return DeleteResponse(
+            success=True,
+            resource_id=request.resource_id,
+            chunks_deleted=len(chunks_to_delete),
+            message=f"Successfully deleted document '{document_title}' and {len(chunks_to_delete)} chunks"
+        )
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions (como 404)
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error borrando documento: {e}")
+        raise HTTPException(status_code=500, detail=f"Error deleting document: {str(e)}")
 
 
 if __name__ == "__main__":
