@@ -1,86 +1,68 @@
 'use client';
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-interface Document {
-  id: string;
-  title: string;
-  author: string;
-  source: string;
-  created_at: string;
-  content_preview: string;
-  chunks_count: number;
-}
-
-interface SearchResult {
-  id: string;
-  content: string;
-  score: {
-    logit: number;
-    sigmoid: number;
-  };
-  metadata: {
-    resource_id: string;
-    title?: string;
-    author?: string;
-    source?: string;
-  };
-}
+import { useState, useEffect } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { RagHeader } from '@/components/rag/rag-header';
+import { DocumentUpload } from '@/components/rag/document-upload';
+import { DocumentList } from '@/components/rag/document-list';
+import type { Document, UploadedFile } from '@/components/rag/types';
 
 export function RagTest() {
   const [documents, setDocuments] = useState<Document[]>([]);
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Formulario de ingesta
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [source, setSource] = useState('');
+  // Cargar documentos al montar el componente
+  useEffect(() => {
+    handleListDocuments();
+  }, []);
 
-  // Formulario de búsqueda
-  const [query, setQuery] = useState('');
-
-  const handleIngestDocument = async () => {
-    if (!title || !content || !source) {
-      setError('Por favor completa todos los campos para la ingesta');
-      return;
+  const handleDocumentUpload = async (data: {
+    mode: 'manual' | 'files';
+    manual?: { title: string; content: string; source: string };
+    files?: UploadedFile[];
+  }) => {
+    if (data.mode === 'manual' && data.manual) {
+      const { title, content, source } = data.manual;
+      if (!title || !content || !source) {
+        setError('Por favor completa todos los campos para la ingesta');
+        return;
+      }
+    } else if (data.mode === 'files' && data.files) {
+      if (data.files.length === 0) {
+        setError('Por favor sube al menos un archivo');
+        return;
+      }
     }
 
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch('/api/rag/documents', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title,
-          content,
-          source,
-        }),
-      });
+      if (data.mode === 'manual' && data.manual) {
+        const response = await fetch('/api/rag/documents', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data.manual),
+        });
 
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        console.log('Ingesta exitosa:', result);
+
+        // Actualizar lista de documentos
+        await handleListDocuments();
+      } else {
+        // TODO: Implementar subida de archivos
+        console.log('Archivos a procesar:', data.files);
+        setError('Funcionalidad de archivos en desarrollo');
+        return;
       }
-
-      const result = await response.json();
-      console.log('Ingesta exitosa:', result);
-
-      // Limpiar formulario
-      setTitle('');
-      setContent('');
-      setSource('');
-
-      // Actualizar lista de documentos
-      await handleListDocuments();
     } catch (err) {
       setError(
         `Error en ingesta: ${err instanceof Error ? err.message : 'Error desconocido'}`,
@@ -112,9 +94,10 @@ export function RagTest() {
     }
   };
 
-  const handleSearch = async () => {
-    if (!query) {
-      setError('Por favor ingresa una consulta de búsqueda');
+  const handleDeleteDocument = async (resourceId: string, title: string) => {
+    if (
+      !confirm(`¿Estás seguro de que quieres borrar el documento "${title}"?`)
+    ) {
       return;
     }
 
@@ -122,27 +105,31 @@ export function RagTest() {
     setError(null);
 
     try {
-      const response = await fetch('/api/rag/search', {
-        method: 'POST',
+      const response = await fetch('/api/rag/documents/delete', {
+        method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          query,
-          k_final: 5,
-          min_sigmoid: 0.3,
+          resource_id: resourceId,
         }),
       });
 
       if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('El documento no fue encontrado');
+        }
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
 
       const result = await response.json();
-      setSearchResults(result.results);
+      console.log('Borrado exitoso:', result);
+
+      // Actualizar lista de documentos después del borrado
+      await handleListDocuments();
     } catch (err) {
       setError(
-        `Error en búsqueda: ${err instanceof Error ? err.message : 'Error desconocido'}`,
+        `Error al borrar documento: ${err instanceof Error ? err.message : 'Error desconocido'}`,
       );
     } finally {
       setLoading(false);
@@ -150,141 +137,40 @@ export function RagTest() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-8">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold">Prueba de APIs de RAG</h1>
-        <p className="text-gray-600 mt-2">
-          Prueba las APIs de ingesta, listado y búsqueda híbrida con Chroma
-        </p>
+    <div className="flex-1 flex flex-col">
+      <RagHeader />
+
+      {/* Main Content */}
+      <div className="flex-1 p-6 space-y-8 overflow-y-auto">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold">
+            Sistema RAG - Base de Conocimiento
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            Sube documentos, PDFs, imágenes y más para crear tu base de
+            conocimiento inteligente
+          </p>
+        </div>
+
+        {error && (
+          <Card className="border-destructive/50 bg-destructive/10">
+            <CardContent className="pt-4">
+              <p className="text-destructive">{error}</p>
+            </CardContent>
+          </Card>
+        )}
+
+        <div className="max-w-2xl mx-auto">
+          <DocumentUpload onSubmit={handleDocumentUpload} loading={loading} />
+        </div>
+
+        <DocumentList
+          documents={documents}
+          onRefresh={handleListDocuments}
+          onDelete={handleDeleteDocument}
+          loading={loading}
+        />
       </div>
-
-      {error && (
-        <Card className="border-red-200 bg-red-50">
-          <CardContent className="pt-4">
-            <p className="text-red-600">{error}</p>
-          </CardContent>
-        </Card>
-      )}
-
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Ingesta de Documentos */}
-        <Card>
-          <CardHeader>
-            <CardTitle>🗂️ Ingestar Documento</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Input
-              placeholder="Título del documento"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-            <Input
-              placeholder="Fuente del documento"
-              value={source}
-              onChange={(e) => setSource(e.target.value)}
-            />
-            <Textarea
-              placeholder="Contenido del documento"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              rows={6}
-            />
-            <Button
-              onClick={handleIngestDocument}
-              disabled={loading}
-              className="w-full"
-            >
-              {loading ? 'Ingiriendo...' : 'Ingestar Documento'}
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Búsqueda */}
-        <Card>
-          <CardHeader>
-            <CardTitle>🔍 Búsqueda Híbrida</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Input
-              placeholder="Escribe tu consulta aquí..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-            <Button
-              onClick={handleSearch}
-              disabled={loading}
-              className="w-full"
-            >
-              {loading ? 'Buscando...' : 'Buscar'}
-            </Button>
-
-            {searchResults.length > 0 && (
-              <div className="space-y-3">
-                <h4 className="font-semibold">
-                  Resultados ({searchResults.length})
-                </h4>
-                {searchResults.map((result, index) => (
-                  <div
-                    key={result.id}
-                    className="border rounded p-3 bg-gray-50"
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="text-sm font-medium">
-                        {result.metadata.title || 'Sin título'}
-                      </span>
-                      <span className="text-xs bg-blue-100 px-2 py-1 rounded">
-                        {(result.score.sigmoid * 100).toFixed(1)}%
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-700 line-clamp-3">
-                      {result.content}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Lista de Documentos */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle>📚 Documentos en la Base de Datos</CardTitle>
-          <Button
-            onClick={handleListDocuments}
-            disabled={loading}
-            variant="outline"
-            size="sm"
-          >
-            {loading ? 'Cargando...' : 'Actualizar'}
-          </Button>
-        </CardHeader>
-        <CardContent>
-          {documents.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">
-              No hay documentos. Ingesta algunos documentos para empezar.
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {documents.map((doc) => (
-                <div key={doc.id} className="border rounded p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="font-semibold">{doc.title}</h4>
-                    <span className="text-xs bg-gray-100 px-2 py-1 rounded">
-                      {doc.chunks_count} chunks
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-2">
-                    Por: {doc.author} | Fuente: {doc.source}
-                  </p>
-                  <p className="text-sm text-gray-700">{doc.content_preview}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 }
