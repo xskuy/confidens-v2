@@ -21,9 +21,20 @@ export async function GET() {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('FastAPI error:', errorText);
-      return new Response('Failed to list documents via FastAPI', {
-        status: 500,
-      });
+
+      // Devolver lista vacía cuando FastAPI no está disponible
+      return Response.json(
+        {
+          success: false,
+          documents: [],
+          totalResources: 0,
+          totalChunks: 0,
+          error: 'connection_failed',
+          message:
+            'No se puede conectar al servidor RAG. Verifica que esté ejecutándose.',
+        },
+        { status: 200 },
+      );
     }
 
     const result = await response.json();
@@ -41,15 +52,34 @@ export async function GET() {
     console.error('Error listing documents:', error);
 
     // Verificar si es un error de conexión con FastAPI
-    if (error instanceof TypeError && error.message.includes('fetch')) {
-      return new Response(
-        'RAG server is not available. Please ensure the FastAPI server is running on port 8000.',
+    if (error instanceof TypeError && error.message.includes('fetch failed')) {
+      console.log('🔌 Error de conexión con servidor RAG');
+
+      return Response.json(
         {
-          status: 503,
+          success: false,
+          documents: [],
+          totalResources: 0,
+          totalChunks: 0,
+          error: 'connection_refused',
+          message:
+            'Servidor RAG no disponible. Ejecuta "./start-dev.sh" para iniciarlo.',
         },
+        { status: 200 },
       );
     }
 
-    return new Response('Internal server error', { status: 500 });
+    // Para otros errores, devolver lista vacía también
+    return Response.json(
+      {
+        success: false,
+        documents: [],
+        totalResources: 0,
+        totalChunks: 0,
+        error: 'unknown_error',
+        message: 'Error inesperado al cargar documentos.',
+      },
+      { status: 200 },
+    );
   }
 }

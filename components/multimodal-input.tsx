@@ -42,6 +42,8 @@ function PureMultimodalInput({
   selectedPower,
   setSelectedPower,
   showSuggestions = true,
+  ragMode = false,
+  setRagMode,
 }: {
   chatId: string;
   input: UseChatHelpers['input'];
@@ -58,6 +60,8 @@ function PureMultimodalInput({
   selectedPower: PowerLevel;
   setSelectedPower: (power: PowerLevel) => void;
   showSuggestions?: boolean;
+  ragMode?: boolean;
+  setRagMode?: (ragMode: boolean) => void;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
@@ -243,15 +247,18 @@ function PureMultimodalInput({
           data-testid="multimodal-input"
           ref={textareaRef}
           placeholder={
-            messages.length === 0
-              ? 'Ask whatever you want....'
-              : 'Send a message...'
+            ragMode
+              ? 'Pregunta sobre tus documentos (modo RAG activado)...'
+              : messages.length === 0
+                ? 'Ask whatever you want....'
+                : 'Send a message...'
           }
           value={input}
           onChange={handleInput}
           className={cx(
             'min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none !text-base border-0 shadow-none focus:ring-0 focus:border-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0',
             'bg-muted pb-14 px-5 pt-4 text-base min-h-[60px] border border-border rounded-2xl shadow-sm',
+            ragMode && 'border-primary/50 bg-primary/5',
             className,
           )}
           rows={2}
@@ -291,6 +298,27 @@ function PureMultimodalInput({
             <span>Add Attachment</span>
           </Button>
 
+          <Button
+            data-testid="rag-button"
+            className={cx(
+              'h-8 px-3 rounded-full border border-border hover:bg-muted/50 flex items-center gap-2 transition-colors text-xs',
+              ragMode
+                ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                : 'bg-background text-muted-foreground hover:text-foreground',
+            )}
+            onClick={(event) => {
+              event.preventDefault();
+              if (setRagMode) {
+                setRagMode(!ragMode);
+              }
+            }}
+            disabled={status !== 'ready'}
+            variant="ghost"
+          >
+            <span className="text-sm font-medium">🔍</span>
+            <span>{ragMode ? 'RAG ON' : 'RAG'}</span>
+          </Button>
+
           <PowerSelector
             selectedPower={selectedPower}
             onPowerChange={handlePowerChange}
@@ -298,7 +326,9 @@ function PureMultimodalInput({
         </div>
 
         <div className="absolute bottom-3 right-3 flex items-center gap-2">
-          <div className="text-muted-foreground text-xs">🌐 All Web</div>
+          <div className="text-muted-foreground text-xs">
+            {ragMode ? '🔍 RAG' : '🌐 All Web'}
+          </div>
           <div className="text-muted-foreground text-xs">
             {input.length}/1000
           </div>
@@ -333,7 +363,9 @@ export const MultimodalInput = memo(
       equal(prevProps.messages, nextProps.messages) &&
       prevProps.chatId === nextProps.chatId &&
       prevProps.selectedPower === nextProps.selectedPower &&
-      prevProps.showSuggestions === nextProps.showSuggestions
+      prevProps.showSuggestions === nextProps.showSuggestions &&
+      prevProps.ragMode === nextProps.ragMode &&
+      prevProps.setRagMode === nextProps.setRagMode
     );
   },
 );
