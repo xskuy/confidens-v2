@@ -156,16 +156,14 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
                     variant="outline"
                     type="button"
                     onClick={(event) => handleCategoryClick(category.title)}
-                    className="group relative flex items-center gap-2 px-4 py-2.5 h-auto rounded-full backdrop-blur-xl transition-all duration-300 ease-out text-sm font-medium shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] hover:scale-[1.02] active:scale-[0.98] bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] text-white/[0.70] hover:text-white/[0.90]"
+                    className="group relative flex items-center gap-2 px-4 py-2.5 h-auto rounded-full backdrop-blur-xl transition-[transform,background-color,border-color,box-shadow] duration-150 ease-out text-sm font-medium shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] hover:scale-[1.02] active:scale-[0.98] bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] text-muted-foreground hover:text-foreground"
                   >
-                    <span className="text-white/[0.65] group-hover:text-white/[0.85] transition-all duration-300">
+                    <span className="text-muted-foreground group-hover:text-foreground">
                       {React.cloneElement(category.icon as React.ReactElement, {
                         className: 'w-4 h-4',
                       })}
                     </span>
-                    <span className="transition-all duration-300">
-                      {category.title}
-                    </span>
+                    <span>{category.title}</span>
 
                     {/* Efecto de brillo en hover */}
                     <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -196,20 +194,20 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
                   onClick={(event) => handleBackClick(event)}
                   variant="ghost"
                   type="button"
-                  className="group relative p-2 rounded-full backdrop-blur-xl bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] transition-all duration-300 ease-out shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] text-white/[0.70] hover:text-white/[0.90] hover:scale-105 active:scale-[0.95]"
+                  className="group relative p-3 rounded-full backdrop-blur-xl bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] transition-[transform,background-color,border-color,box-shadow] duration-150 ease-out shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] text-muted-foreground hover:text-foreground hover:scale-105 active:scale-[0.95]"
                 >
-                  <ArrowLeft className="size-3" />
+                  <ArrowLeft className="size-4" />
                   <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </Button>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-white/[0.65] text-sm">
+                  <span className="text-muted-foreground text-sm">
                     {React.cloneElement(
                       selectedCategoryData?.icon as React.ReactElement,
                       { className: 'w-4 h-4' },
                     )}
                   </span>
-                  <h2 className="text-lg font-semibold text-white/[0.90]">
+                  <h2 className="text-lg font-semibold text-foreground">
                     {selectedCategoryData?.title}
                   </h2>
                 </div>
@@ -230,7 +228,7 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.02 * index }}
                   onClick={(event) => handleOptionClick(event, option)}
-                  className="group relative py-2.5 px-3 rounded-lg backdrop-blur-xl bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] transition-all duration-300 ease-out text-xs text-white/[0.75] hover:text-white/[0.95] cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] hover:scale-[1.01] active:scale-[0.99]"
+                  className="group relative py-2.5 px-3 rounded-lg backdrop-blur-xl bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] transition-[transform,background-color,border-color,box-shadow] duration-150 ease-out text-xs text-muted-foreground hover:text-foreground cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] hover:scale-[1.01] active:scale-[0.99]"
                 >
                   <span className="relative z-10 leading-relaxed">
                     {option}

@@ -20,37 +20,29 @@ export default function LoginPage() {
 
       {/* Contenido principal */}
       <div className="relative z-10 flex min-h-screen items-center justify-center p-6">
-        <div className="w-full max-w-sm">
-          {/* Contenedor único con efecto Liquid Glass auténtico */}
-          <div
-            className="backdrop-blur-sm border border-white/20 rounded-2xl shadow-2xl overflow-hidden"
-            style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              backdropFilter: 'blur(21.8px) saturate(1.5)',
-              boxShadow:
-                '0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-            }}
-          >
+        <div className="w-full max-w-md">
+          {/* Contenedor con glassmorphism más sólido y cuadrado */}
+          <div className="backdrop-blur-[28px] bg-black/[0.45] dark:bg-black/[0.50] border border-white/[0.15] dark:border-white/[0.12] rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.45),0_1px_1px_rgba(255,255,255,0.12)_inset] hover:shadow-[0_12px_40px_rgba(0,0,0,0.52)] transition-all duration-300 ease-out overflow-hidden">
             {/* Header con logo y título */}
-            <div className="text-center pt-12 pb-8 px-8">
-              <div className="flex justify-center mb-8">
-                <div className="flex items-center gap-3 px-5 py-3 rounded-full backdrop-blur-md bg-white/10 border border-white/20 shadow-lg">
-                  <LogoIcon size={22} />
-                  <span className="text-white font-medium text-xl">
+            <div className="text-center pt-10 pb-6 px-8">
+              <div className="flex justify-center mb-6">
+                <div className="flex items-center gap-3 px-4 py-2.5 rounded-full backdrop-blur-xl bg-white/[0.08] dark:bg-white/[0.06] border border-white/[0.15] dark:border-white/[0.12] shadow-[0_4px_20px_rgba(0,0,0,0.25),0_1px_1px_rgba(255,255,255,0.12)_inset]">
+                  <LogoIcon size={20} />
+                  <span className="text-white/[0.95] font-medium text-lg">
                     Confidens
                   </span>
                 </div>
               </div>
-              <h1 className="text-3xl font-extralight text-white mb-3 tracking-tight">
+              <h1 className="text-3xl font-light text-white/[0.95] mb-3 tracking-tight">
                 Welcome back
               </h1>
-              <p className="text-white/70 text-base font-light">
+              <p className="text-white/[0.75] text-base font-light">
                 A whole new element of delight
               </p>
             </div>
 
             {/* Formulario integrado */}
-            <div className="px-6 pb-8">
+            <div className="px-8 pb-8">
               <LoginForm />
             </div>
           </div>

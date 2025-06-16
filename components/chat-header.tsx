@@ -1,7 +1,7 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { useWindowSize } from 'usehooks-ts';
-import { memo } from 'react';
+import React, { memo } from 'react';
 import { Lightbulb, Orbit, Rocket } from 'lucide-react';
 
 import { ModelSelector } from '@/components/model-selector';
@@ -44,11 +44,13 @@ function StaticPowerDisplay({ selectedPower }: { selectedPower: PowerLevel }) {
   const details = powerLevelDetails[selectedPower] || powerLevelDetails.medium;
 
   return (
-    <div className="flex items-center justify-center h-9 min-w-32 px-3 gap-2.5 font-medium">
+    <div className="relative z-10 flex items-center justify-center gap-1 font-medium text-muted-foreground group-hover:text-foreground w-20">
       <span className={`flex items-center ${details.colorIcon}`}>
-        {details.icon}
+        {React.cloneElement(details.icon as React.ReactElement, {
+          className: 'size-4',
+        })}
       </span>
-      <span className="text-base whitespace-nowrap flex items-center">
+      <span className="text-xs whitespace-nowrap flex items-center">
         {details.label}
       </span>
     </div>
@@ -84,15 +86,21 @@ function PureChatHeader({
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
+                type="button"
                 variant="outline"
-                className="md:px-2 px-2 md:h-fit"
-                onClick={() => {
+                className="group relative md:px-2 px-2 md:h-fit backdrop-blur-xl bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] text-muted-foreground hover:text-foreground transition-all duration-150 ease-out hover:scale-[1.02] active:scale-[0.98] rounded-2xl"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   router.push('/');
                   router.refresh();
                 }}
               >
                 <PlusIcon />
                 <span className="md:sr-only">New Chat</span>
+
+                {/* Efecto de brillo en hover */}
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>New Chat</TooltipContent>
@@ -106,7 +114,15 @@ function PureChatHeader({
               setSelectedModelId={setSelectedModelId}
             />
           ) : (
-            <StaticPowerDisplay selectedPower={selectedPower} />
+            <div className="group relative backdrop-blur-xl bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] text-muted-foreground hover:text-foreground transition-all duration-150 ease-out hover:scale-[1.02] active:scale-[0.98] rounded-2xl md:px-2 md:h-fit py-2">
+              <StaticPowerDisplay selectedPower={selectedPower} />
+
+              {/* Efecto de brillo en hover */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
+
+              {/* Borde interno de brillo */}
+              <div className="absolute inset-0 rounded-2xl border border-white/[0.10] opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
+            </div>
           ))}
 
         {!isReadonly && (
@@ -118,7 +134,7 @@ function PureChatHeader({
       </div>
 
       <div className="flex items-center">
-        <ThemeToggle />
+        <ThemeToggle className="backdrop-blur-xl bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] text-muted-foreground hover:text-foreground transition-all duration-150 ease-out hover:scale-[1.02] active:scale-[0.98]" />
       </div>
     </header>
   );
@@ -127,8 +143,8 @@ function PureChatHeader({
 export const ChatHeader = memo(PureChatHeader, (prevProps, nextProps) => {
   return (
     prevProps.selectedModelId === nextProps.selectedModelId &&
-    prevProps.chatId === nextProps.chatId &&
     prevProps.selectedVisibilityType === nextProps.selectedVisibilityType &&
+    prevProps.chatId === nextProps.chatId &&
     prevProps.isReadonly === nextProps.isReadonly &&
     prevProps.selectedPower === nextProps.selectedPower
   );

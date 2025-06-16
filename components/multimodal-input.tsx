@@ -244,7 +244,7 @@ function PureMultimodalInput({
           onChange={handleInput}
           className={cx(
             'min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none !text-base border-0 shadow-none focus:ring-0 focus:border-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0',
-            'backdrop-blur-[28px] bg-black/[0.12] dark:bg-black/[0.25] border border-white/[0.08] dark:border-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] focus:border-white/[0.16] dark:focus:border-white/[0.14] pb-14 px-6 pt-5 text-base min-h-[72px] rounded-[24px] shadow-[0_8px_32px_rgba(0,0,0,0.24),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_12px_40px_rgba(0,0,0,0.32)] focus:shadow-[0_16px_48px_rgba(0,0,0,0.40)] placeholder:text-white/[0.45] dark:placeholder:text-white/[0.40] text-white/[0.95] dark:text-white/[0.90] transition-all duration-300 ease-out',
+            'backdrop-blur-[28px] bg-black/[0.12] dark:bg-black/[0.25] border border-white/[0.08] dark:border-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] focus:border-white/[0.16] dark:focus:border-white/[0.14] pb-14 px-6 pt-5 text-base min-h-[72px] rounded-[24px] shadow-[0_8px_32px_rgba(0,0,0,0.24),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_12px_40px_rgba(0,0,0,0.32)] focus:shadow-[0_16px_48px_rgba(0,0,0,0.40)] placeholder:text-muted-foreground text-foreground transition-all duration-300 ease-out',
             className,
           )}
           rows={2}
@@ -273,7 +273,7 @@ function PureMultimodalInput({
           <button
             type="button"
             data-testid="attachments-button"
-            className="group relative p-3 rounded-full backdrop-blur-xl bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] transition-all duration-300 ease-out shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] text-white/[0.70] dark:text-white/[0.65] hover:text-white/[0.90] dark:hover:text-white/[0.85] hover:scale-105 active:scale-[0.95] disabled:opacity-40 disabled:hover:scale-100"
+            className="group relative p-3 rounded-full backdrop-blur-xl bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] transition-all duration-300 ease-out shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] text-muted-foreground hover:text-foreground hover:scale-105 active:scale-[0.95] disabled:opacity-40 disabled:hover:scale-100"
             onClick={(event) => {
               event.preventDefault();
               fileInputRef.current?.click();
@@ -298,7 +298,7 @@ function PureMultimodalInput({
             <button
               type="button"
               data-testid="stop-button"
-              className="group relative p-3 rounded-full backdrop-blur-xl bg-red-500/[0.15] border border-red-400/[0.20] hover:bg-red-500/[0.25] hover:border-red-400/[0.30] transition-all duration-300 ease-out shadow-[0_4px_20px_rgba(239,68,68,0.20),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(239,68,68,0.30)] text-red-300 hover:text-red-200 hover:scale-105 active:scale-[0.95]"
+              className="group relative p-3 rounded-full backdrop-blur-xl bg-red-500/[0.15] border border-red-400/[0.20] hover:bg-red-500/[0.25] hover:border-red-400/[0.30] transition-all duration-300 ease-out shadow-[0_4px_20px_rgba(239,68,68,0.20),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(239,68,68,0.30)] text-red-400 hover:text-red-300 hover:scale-105 active:scale-[0.95]"
               onClick={(event) => {
                 event.preventDefault();
                 stop();
@@ -312,7 +312,7 @@ function PureMultimodalInput({
             <button
               type="button"
               data-testid="send-button"
-              className="group relative p-3 rounded-full backdrop-blur-xl bg-gradient-to-br from-slate-600/[0.15] via-slate-500/[0.12] to-slate-400/[0.15] border border-slate-400/[0.20] hover:border-slate-300/[0.30] hover:from-slate-500/[0.25] hover:via-slate-400/[0.20] hover:to-slate-300/[0.25] transition-all duration-300 ease-out shadow-[0_4px_20px_rgba(0,0,0,0.20),0_1px_1px_rgba(255,255,255,0.08)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.30)] text-slate-200 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed hover:scale-105 active:scale-[0.95] disabled:hover:scale-100"
+              className="group relative p-3 rounded-full backdrop-blur-xl bg-gradient-to-br from-slate-600/[0.15] via-slate-500/[0.12] to-slate-400/[0.15] border border-slate-400/[0.20] hover:border-slate-300/[0.30] hover:from-slate-500/[0.25] hover:via-slate-400/[0.20] hover:to-slate-300/[0.25] transition-all duration-300 ease-out shadow-[0_4px_20px_rgba(0,0,0,0.20),0_1px_1px_rgba(255,255,255,0.08)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.30)] text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed hover:scale-105 active:scale-[0.95] disabled:hover:scale-100"
               onClick={(event) => {
                 event.preventDefault();
                 submitForm();

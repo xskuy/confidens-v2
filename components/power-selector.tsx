@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Rocket, Lightbulb, Orbit } from 'lucide-react';
+import { Zap, Lightbulb, Orbit } from 'lucide-react';
 import {
   AI_MODELS_CONFIGURATION,
   type AIModelConfig,
@@ -49,8 +49,8 @@ export default function PowerSelector({
     }
   > = {
     low: {
-      icon: <Rocket className="size-6" />,
-      colorIcon: 'text-slate-300 dark:text-slate-200',
+      icon: <Zap className="size-6" />,
+      colorIcon: 'text-slate-600 dark:text-slate-300',
     },
     medium: {
       icon: <Lightbulb className="size-6" />,
@@ -234,10 +234,10 @@ export default function PowerSelector({
             onClick={() => setOpen(!open)}
             type="button"
             className={`
-              h-9 px-4 rounded-full backdrop-blur-xl bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] flex items-center justify-center gap-2 transition-all duration-300 ease-out text-xs w-[120px] shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] text-white/[0.70] hover:text-white/[0.90] group
+              p-3 rounded-2xl backdrop-blur-xl bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] flex items-center justify-center gap-2 transition-[transform,background-color,border-color,box-shadow] duration-150 ease-out text-xs w-28 shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] text-muted-foreground hover:text-foreground group hover:scale-105 active:scale-[0.95]
               ${
                 isHighPowerSelected
-                  ? 'bg-gradient-to-r from-amber-600/[0.25] via-yellow-500/[0.20] to-amber-700/[0.25] text-amber-200 border-amber-400/[0.30] hover:border-amber-300/[0.40] shadow-[0_4px_20px_rgba(245,158,11,0.25),0_1px_1px_rgba(255,255,255,0.08)_inset] hover:shadow-[0_8px_32px_rgba(245,158,11,0.35)]'
+                  ? 'bg-gradient-to-r from-amber-600/[0.25] via-yellow-500/[0.20] to-amber-700/[0.25] text-amber-800 dark:text-amber-200 border-amber-400/[0.30] hover:border-amber-300/[0.40] shadow-[0_4px_20px_rgba(245,158,11,0.25),0_1px_1px_rgba(255,255,255,0.08)_inset] hover:shadow-[0_8px_32px_rgba(245,158,11,0.35)]'
                   : ''
               }
             `}
@@ -252,7 +252,7 @@ export default function PowerSelector({
                 transition={{ duration: 0.2, delay: 0.05 }}
                 className={
                   isHighPowerSelected
-                    ? 'text-amber-200'
+                    ? 'text-amber-800 dark:text-amber-200'
                     : currentPowerDetails.colorIcon
                 }
               >
@@ -270,7 +270,7 @@ export default function PowerSelector({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2, delay: 0.05 }}
-                className={`font-medium ${isHighPowerSelected ? 'text-amber-200' : 'text-white/[0.75] group-hover:text-white/[0.90]'}`}
+                className={`font-medium ${isHighPowerSelected ? 'text-amber-800 dark:text-amber-200' : 'text-muted-foreground group-hover:text-foreground'}`}
               >
                 {currentPowerDetails.label}
               </motion.span>
@@ -285,7 +285,7 @@ export default function PowerSelector({
       {open && (
         <div
           ref={popupRef}
-          className="fixed z-50 w-[320px] backdrop-blur-[28px] bg-black/[0.15] dark:bg-black/[0.25] border border-white/[0.12] dark:border-white/[0.08] rounded-3xl shadow-[0_20px_64px_rgba(0,0,0,0.35),0_1px_2px_rgba(255,255,255,0.08)_inset] hover:shadow-[0_24px_80px_rgba(0,0,0,0.45)]"
+          className="fixed z-50 w-[320px] backdrop-blur-[28px] bg-black/[0.15] dark:bg-black/[0.25] border border-white/[0.12] dark:border-white/[0.08] rounded-3xl shadow-[0_20px_64px_rgba(0,0,0,0.35),0_1px_2px_rgba(255,255,255,0.08)_inset]"
           style={{ top: '0', left: '0' }}
         >
           <div className="w-full" ref={containerRef}>
@@ -380,12 +380,12 @@ export default function PowerSelector({
                   </div>
 
                   {/* Power level name - Usa el label (nombre del modelo) */}
-                  <h3 className="text-2xl font-bold text-center mb-4 text-white/[0.95] dark:text-white/[0.90]">
+                  <h3 className="text-xl font-bold text-center mb-3 text-foreground">
                     {currentPowerDetails.label}
                   </h3>
 
                   {/* Description - Usa la descripción del modelo */}
-                  <p className="text-white/[0.65] dark:text-white/[0.60] text-center text-sm px-6 mb-2 leading-relaxed">
+                  <p className="text-muted-foreground text-center text-sm px-6 mb-2 leading-relaxed h-16 flex items-center justify-center">
                     {currentPowerDetails.description}
                   </p>
                 </motion.div>
