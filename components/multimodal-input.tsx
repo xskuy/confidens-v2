@@ -15,6 +15,7 @@ import {
 } from 'react';
 import { toast } from 'sonner';
 import { useLocalStorage, useWindowSize } from 'usehooks-ts';
+import { Plus, Search } from 'lucide-react';
 
 import { ArrowUpIcon, PaperclipIcon, StopIcon } from './icons';
 import { PreviewAttachment } from './preview-attachment';
@@ -283,28 +284,29 @@ function PureMultimodalInput({
         />
 
         {/* Botones unificados para ambos estados */}
-        <div className="absolute bottom-3 left-3 flex items-center gap-3">
-          <Button
+        <div className="absolute bottom-3 left-3 flex items-center gap-2">
+          {/* Botón de agregar archivos - solo icono + */}
+          <button
             data-testid="attachments-button"
-            className="h-8 px-3 rounded-full bg-background border border-border hover:bg-muted/50 flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-xs"
+            className="size-10 rounded-xl bg-transparent hover:bg-muted/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-all duration-200 border-0"
             onClick={(event) => {
               event.preventDefault();
               fileInputRef.current?.click();
             }}
             disabled={status !== 'ready'}
-            variant="ghost"
+            type="button"
           >
-            <PaperclipIcon size={16} />
-            <span>Add Attachment</span>
-          </Button>
+            <Plus size={20} />
+          </button>
 
-          <Button
+          {/* Botón RAG - con texto e icono */}
+          <button
             data-testid="rag-button"
             className={cx(
-              'h-8 px-3 rounded-full border border-border hover:bg-muted/50 flex items-center gap-2 transition-colors text-xs',
+              'h-8 px-3 rounded-xl flex items-center gap-1.5 transition-all duration-200 border-0 bg-transparent hover:bg-muted/50',
               ragMode
-                ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                : 'bg-background text-muted-foreground hover:text-foreground',
+                ? 'text-blue-500'
+                : 'text-muted-foreground hover:text-foreground',
             )}
             onClick={(event) => {
               event.preventDefault();
@@ -313,11 +315,11 @@ function PureMultimodalInput({
               }
             }}
             disabled={status !== 'ready'}
-            variant="ghost"
+            type="button"
           >
-            <span className="text-sm font-medium">🔍</span>
-            <span>{ragMode ? 'RAG ON' : 'RAG'}</span>
-          </Button>
+            <Search size={16} />
+            <span className="text-xs font-medium">RAG</span>
+          </button>
 
           <PowerSelector
             selectedPower={selectedPower}

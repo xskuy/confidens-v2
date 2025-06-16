@@ -234,11 +234,11 @@ export default function PowerSelector({
             onClick={() => setOpen(!open)}
             type="button"
             className={`
-              h-8 px-3 rounded-full border border-border hover:bg-muted/50 flex items-center justify-center gap-2 transition-all duration-300 ease-out text-xs w-[120px]
+              h-8 px-3 rounded-full hover:bg-muted/50 flex items-center justify-center gap-2 transition-all duration-300 ease-out text-xs w-[120px] border-0 bg-transparent
               ${
                 isHighPowerSelected
-                  ? 'bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-700 text-white border-amber-500'
-                  : 'bg-background text-muted-foreground hover:text-foreground'
+                  ? 'text-amber-500'
+                  : 'text-muted-foreground hover:text-foreground'
               }
             `}
             variant="ghost"
@@ -252,7 +252,7 @@ export default function PowerSelector({
                 transition={{ duration: 0.2, delay: 0.05 }}
                 className={
                   isHighPowerSelected
-                    ? 'text-white'
+                    ? 'text-amber-500'
                     : currentPowerDetails.colorIcon
                 }
               >
@@ -270,7 +270,7 @@ export default function PowerSelector({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2, delay: 0.05 }}
-                className={`font-medium ${isHighPowerSelected ? 'text-white' : ''}`}
+                className="font-medium"
               >
                 {currentPowerDetails.label}
               </motion.span>
@@ -282,7 +282,7 @@ export default function PowerSelector({
       {open && (
         <div
           ref={popupRef}
-          className="fixed z-50 w-[320px] bg-popover rounded-xl shadow-lg border"
+          className="fixed z-50 w-[320px] bg-popover rounded-xl shadow-lg"
           style={{ top: '0', left: '0' }}
         >
           <div className="w-full" ref={containerRef}>
