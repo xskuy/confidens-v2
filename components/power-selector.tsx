@@ -50,15 +50,15 @@ export default function PowerSelector({
   > = {
     low: {
       icon: <Rocket className="size-6" />,
-      colorIcon: 'text-black dark:text-white',
+      colorIcon: 'text-slate-300 dark:text-slate-200',
     },
     medium: {
       icon: <Lightbulb className="size-6" />,
-      colorIcon: 'text-blue-500',
+      colorIcon: 'text-blue-400 dark:text-blue-300',
     },
     high: {
       icon: <Orbit className="size-6" />,
-      colorIcon: 'text-yellow-500',
+      colorIcon: 'text-amber-400 dark:text-amber-300',
     },
   };
 
@@ -234,11 +234,11 @@ export default function PowerSelector({
             onClick={() => setOpen(!open)}
             type="button"
             className={`
-              h-8 px-3 rounded-full border border-border hover:bg-muted/50 flex items-center justify-center gap-2 transition-all duration-300 ease-out text-xs w-[120px]
+              h-9 px-4 rounded-full backdrop-blur-xl bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] flex items-center justify-center gap-2 transition-all duration-300 ease-out text-xs w-[120px] shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] text-white/[0.70] hover:text-white/[0.90] group
               ${
                 isHighPowerSelected
-                  ? 'bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-700 text-white border-amber-500'
-                  : 'bg-background text-muted-foreground hover:text-foreground'
+                  ? 'bg-gradient-to-r from-amber-600/[0.25] via-yellow-500/[0.20] to-amber-700/[0.25] text-amber-200 border-amber-400/[0.30] hover:border-amber-300/[0.40] shadow-[0_4px_20px_rgba(245,158,11,0.25),0_1px_1px_rgba(255,255,255,0.08)_inset] hover:shadow-[0_8px_32px_rgba(245,158,11,0.35)]'
+                  : ''
               }
             `}
             variant="ghost"
@@ -252,7 +252,7 @@ export default function PowerSelector({
                 transition={{ duration: 0.2, delay: 0.05 }}
                 className={
                   isHighPowerSelected
-                    ? 'text-white'
+                    ? 'text-amber-200'
                     : currentPowerDetails.colorIcon
                 }
               >
@@ -270,11 +270,14 @@ export default function PowerSelector({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2, delay: 0.05 }}
-                className={`font-medium ${isHighPowerSelected ? 'text-white' : ''}`}
+                className={`font-medium ${isHighPowerSelected ? 'text-amber-200' : 'text-white/[0.75] group-hover:text-white/[0.90]'}`}
               >
                 {currentPowerDetails.label}
               </motion.span>
             </AnimatePresence>
+
+            {/* Efecto de brillo en hover */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </Button>
         </motion.div>
       </motion.div>
@@ -282,18 +285,18 @@ export default function PowerSelector({
       {open && (
         <div
           ref={popupRef}
-          className="fixed z-50 w-[320px] bg-popover rounded-xl shadow-lg border"
+          className="fixed z-50 w-[320px] backdrop-blur-[28px] bg-black/[0.15] dark:bg-black/[0.25] border border-white/[0.12] dark:border-white/[0.08] rounded-3xl shadow-[0_20px_64px_rgba(0,0,0,0.35),0_1px_2px_rgba(255,255,255,0.08)_inset] hover:shadow-[0_24px_80px_rgba(0,0,0,0.45)]"
           style={{ top: '0', left: '0' }}
         >
           <div className="w-full" ref={containerRef}>
-            <div className="p-4">
+            <div className="p-6">
               {/* Dots navigation */}
-              <div className="flex justify-center mb-4">
-                <div className="w-full max-w-[200px] h-8 bg-muted rounded-full relative flex items-center justify-between px-4">
+              <div className="flex justify-center mb-6">
+                <div className="w-full max-w-[200px] h-9 backdrop-blur-[20px] bg-white/[0.06] dark:bg-white/[0.04] border border-white/[0.10] dark:border-white/[0.08] rounded-full relative flex items-center justify-between px-4 shadow-[0_4px_16px_rgba(0,0,0,0.20),0_1px_1px_rgba(255,255,255,0.06)_inset]">
                   {/* Thumb/handle deslizante blanco */}
                   <motion.div
-                    className="absolute size-5 bg-white rounded-full shadow-md z-10 cursor-pointer"
-                    style={{ top: '5.5px' }}
+                    className="absolute size-6 bg-gradient-to-br from-white/[0.95] to-white/[0.85] rounded-full shadow-[0_4px_12px_rgba(0,0,0,0.25),0_1px_2px_rgba(255,255,255,0.8)_inset] z-10 cursor-pointer backdrop-blur-sm"
+                    style={{ top: '6px' }}
                     initial={false}
                     animate={{
                       left:
@@ -305,9 +308,9 @@ export default function PowerSelector({
                       translateX: '-50%',
                       scale: [1, 1.15, 1],
                       boxShadow: [
-                        '0 2px 4px rgba(0,0,0,0.1)',
-                        '0 0 8px 2px rgba(255,255,255,0.6)',
-                        '0 2px 4px rgba(0,0,0,0.1)',
+                        '0_4px_12px_rgba(0,0,0,0.25),0_1px_2px_rgba(255,255,255,0.8)_inset',
+                        '0_0_16px_4px_rgba(255,255,255,0.6),0_4px_12px_rgba(0,0,0,0.25),0_1px_2px_rgba(255,255,255,0.8)_inset',
+                        '0_4px_12px_rgba(0,0,0,0.25),0_1px_2px_rgba(255,255,255,0.8)_inset',
                       ],
                     }}
                     transition={{
@@ -347,9 +350,12 @@ export default function PowerSelector({
                     <motion.button
                       key={level}
                       type="button"
-                      className={`size-3 rounded-full ${currentView === level ? 'bg-primary-foreground/70' : 'bg-muted-foreground/50'}`}
+                      className={`size-3 rounded-full backdrop-blur-sm transition-all duration-300 ${
+                        currentView === level
+                          ? 'bg-white/[0.60] shadow-[0_2px_8px_rgba(255,255,255,0.4)]'
+                          : 'bg-white/[0.25] hover:bg-white/[0.35] shadow-[0_1px_4px_rgba(0,0,0,0.15)]'
+                      }`}
                       onClick={() => handleDotClick(level)}
-                      // Desactivar animación de pulso ya que ahora el foco visual es el thumb blanco
                     />
                   ))}
                 </div>
@@ -362,26 +368,24 @@ export default function PowerSelector({
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.2 }}
-                  className="flex flex-col items-center justify-center py-4"
+                  className="flex flex-col items-center justify-center py-6"
                 >
                   {/* Power icon - Usa el icono de la UI combinada */}
-                  <div className={`mb-6 ${currentPowerDetails.colorIcon}`}>
+                  <div className={`mb-8 ${currentPowerDetails.colorIcon}`}>
                     {currentPowerDetails.icon &&
                       React.cloneElement(
                         currentPowerDetails.icon as React.ReactElement,
-                        { className: 'size-10' }, // Aumenta tamaño del icono en popup
+                        { className: 'size-12' }, // Aumenta tamaño del icono en popup
                       )}
                   </div>
 
                   {/* Power level name - Usa el label (nombre del modelo) */}
-                  <h3
-                    className={`text-2xl font-bold text-center mb-4 ${currentPowerDetails.colorText || 'text-foreground'}`}
-                  >
+                  <h3 className="text-2xl font-bold text-center mb-4 text-white/[0.95] dark:text-white/[0.90]">
                     {currentPowerDetails.label}
                   </h3>
 
                   {/* Description - Usa la descripción del modelo */}
-                  <p className="text-muted-foreground text-center text-sm px-6 mb-2">
+                  <p className="text-white/[0.65] dark:text-white/[0.60] text-center text-sm px-6 mb-2 leading-relaxed">
                     {currentPowerDetails.description}
                   </p>
                 </motion.div>

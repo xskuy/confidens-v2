@@ -1,8 +1,8 @@
 'use client';
 
+import React, { memo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from './ui/button';
-import { memo, useState, useEffect, useRef } from 'react';
 import type { UseChatHelpers } from '@ai-sdk/react';
 import {
   FileText,
@@ -12,13 +12,12 @@ import {
   Sparkles,
   Brain,
   BookOpen,
-  ChevronDown,
+  ArrowLeft,
 } from 'lucide-react';
 
 function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const categories = [
     {
@@ -29,8 +28,6 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
         'Summarize the plot of Inception',
         'Summarize World War II in 5 sentences',
         'Summarize the benefits of meditation',
-        'Summarize the key points of this document',
-        'Summarize the latest AI developments',
       ],
     },
     {
@@ -41,8 +38,6 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
         'Create a React component for user profiles',
         'Debug this JavaScript error',
         'Explain how to optimize SQL queries',
-        'Create a REST API endpoint',
-        'Write unit tests for this function',
       ],
     },
     {
@@ -53,8 +48,6 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
         'Create a color palette for a tech startup',
         'Design user interface for mobile app',
         'Suggest typography combinations',
-        'Create wireframes for e-commerce site',
-        'Design a logo concept',
       ],
     },
     {
@@ -65,8 +58,6 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
         'Find information about renewable energy',
         'Research market trends in cryptocurrency',
         'Analyze competitor strategies',
-        'Research best practices for remote work',
-        'Study the impact of social media',
       ],
     },
     {
@@ -77,8 +68,6 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
         'Suggest innovative business ideas',
         'Inspire me with success stories',
         'Creative ways to solve problems',
-        'Motivational quotes for productivity',
-        'Art and design inspiration',
       ],
     },
     {
@@ -89,8 +78,6 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
         'Explore the philosophy of consciousness',
         'Examine the future of work',
         'Discuss the impact of technology on society',
-        'Analyze complex moral dilemmas',
-        'Explore different perspectives on climate change',
       ],
     },
     {
@@ -101,8 +88,6 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
         'Teach me basic programming concepts',
         'How does machine learning work?',
         'Explain cryptocurrency for beginners',
-        'Basic principles of good design',
-        'Introduction to data science',
       ],
     },
   ];
@@ -111,46 +96,17 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
     setIsHydrated(true);
   }, []);
 
-  // Cerrar menú al hacer clic fuera
-  useEffect(() => {
-    if (!expandedCategory) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
-        setExpandedCategory(null);
-      }
-    };
-
-    // Agregar listener al documento
-    document.addEventListener('mousedown', handleClickOutside);
-
-    // Cleanup
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [expandedCategory]);
-
-  const handleCategoryClick = (
-    event: React.MouseEvent,
-    categoryTitle: string,
-  ) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (expandedCategory === categoryTitle) {
-      setExpandedCategory(null);
-    } else {
-      setExpandedCategory(categoryTitle);
-    }
+  const handleCategoryClick = (categoryTitle: string) => {
+    setSelectedCategory(categoryTitle);
   };
 
-  const handleOptionClick = async (
-    event: React.MouseEvent<HTMLDivElement>,
-    option: string,
-  ) => {
+  const handleBackClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setSelectedCategory(null);
+  };
+
+  const handleOptionClick = async (event: React.MouseEvent, option: string) => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -159,83 +115,136 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
       role: 'user',
       content: option,
     });
-    setExpandedCategory(null);
+    setSelectedCategory(null);
   };
 
   if (!isHydrated) {
     return null;
   }
 
+  const selectedCategoryData = categories.find(
+    (cat) => cat.title === selectedCategory,
+  );
+
   return (
-    <div
-      ref={containerRef}
-      className="w-full flex flex-col items-center space-y-4"
-    >
-      {/* Botones de categorías */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="flex flex-wrap justify-center gap-3 max-w-4xl"
-      >
-        {categories.map((category, index) => (
+    <div className="w-full max-w-3xl mx-auto min-h-[240px]">
+      <AnimatePresence mode="wait">
+        {!selectedCategory ? (
+          // Vista de categorías
           <motion.div
-            key={category.title}
+            key="categories"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.15 }}
+            className="flex flex-col items-center space-y-4"
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="flex flex-wrap justify-center gap-3 max-w-4xl"
+            >
+              {categories.map((category, index) => (
+                <motion.div
+                  key={category.title}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.1 * index }}
+                >
+                  <Button
+                    variant="outline"
+                    type="button"
+                    onClick={(event) => handleCategoryClick(category.title)}
+                    className="group relative flex items-center gap-2 px-4 py-2.5 h-auto rounded-full backdrop-blur-xl transition-all duration-300 ease-out text-sm font-medium shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] hover:scale-[1.02] active:scale-[0.98] bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] text-white/[0.70] hover:text-white/[0.90]"
+                  >
+                    <span className="text-white/[0.65] group-hover:text-white/[0.85] transition-all duration-300">
+                      {React.cloneElement(category.icon as React.ReactElement, {
+                        className: 'w-4 h-4',
+                      })}
+                    </span>
+                    <span className="transition-all duration-300">
+                      {category.title}
+                    </span>
+
+                    {/* Efecto de brillo en hover */}
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </Button>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+        ) : (
+          // Vista de opciones de categoría seleccionada
+          <motion.div
+            key="category-options"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1 * index }}
-            className="relative"
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.15 }}
+            className="w-full"
           >
-            <Button
-              variant="outline"
-              onClick={(event) => handleCategoryClick(event, category.title)}
-              className={`flex items-center gap-2 px-4 py-2 h-auto rounded-full border transition-all duration-200 text-sm font-medium ${
-                expandedCategory === category.title
-                  ? 'border-primary bg-primary/10 text-primary'
-                  : 'border-border/20 bg-background/50 backdrop-blur-sm hover:bg-muted/80 hover:border-border/40'
-              }`}
+            {/* Header con título y botón de volver - más compacto */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="flex items-center justify-between mb-4"
             >
-              <span className="text-muted-foreground">{category.icon}</span>
-              {category.title}
-              <ChevronDown
-                className={`size-3 transition-transform duration-200 ${
-                  expandedCategory === category.title ? 'rotate-180' : ''
-                }`}
-              />
-            </Button>
-
-            {/* Menú desplegable */}
-            <AnimatePresence>
-              {expandedCategory === category.title && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute top-full left-0 mt-2 w-80 bg-popover border border-border rounded-2xl shadow-lg z-50 p-2"
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={(event) => handleBackClick(event)}
+                  variant="ghost"
+                  type="button"
+                  className="group relative p-2 rounded-full backdrop-blur-xl bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] transition-all duration-300 ease-out shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] text-white/[0.70] hover:text-white/[0.90] hover:scale-105 active:scale-[0.95]"
                 >
-                  <div className="space-y-1">
-                    {category.options.map((option, optionIndex) => (
-                      <motion.div
-                        key={option}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.05 * optionIndex }}
-                        onClick={(event) => handleOptionClick(event, option)}
-                        className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-muted/50 transition-colors text-sm text-foreground/80 hover:text-foreground cursor-pointer"
-                      >
-                        {option}
-                      </motion.div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        ))}
-      </motion.div>
+                  <ArrowLeft className="size-3" />
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </Button>
 
-      {/* Texto descriptivo al final */}
+                <div className="flex items-center gap-2">
+                  <span className="text-white/[0.65] text-sm">
+                    {React.cloneElement(
+                      selectedCategoryData?.icon as React.ReactElement,
+                      { className: 'w-4 h-4' },
+                    )}
+                  </span>
+                  <h2 className="text-lg font-semibold text-white/[0.90]">
+                    {selectedCategoryData?.title}
+                  </h2>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Lista de opciones compacta */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="space-y-1.5"
+            >
+              {selectedCategoryData?.options.map((option, index) => (
+                <motion.div
+                  key={option}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.02 * index }}
+                  onClick={(event) => handleOptionClick(event, option)}
+                  className="group relative py-2.5 px-3 rounded-lg backdrop-blur-xl bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] transition-all duration-300 ease-out text-xs text-white/[0.75] hover:text-white/[0.95] cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] hover:scale-[1.01] active:scale-[0.99]"
+                >
+                  <span className="relative z-10 leading-relaxed">
+                    {option}
+                  </span>
+                  {/* Efecto de brillo sutil en hover */}
+                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-white/[0.08] via-white/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                  {/* Borde interno de brillo */}
+                  <div className="absolute inset-0 rounded-lg border border-white/[0.10] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
