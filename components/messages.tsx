@@ -1,5 +1,9 @@
 import type { UIMessage } from 'ai';
-import { PreviewMessage, ThinkingMessage } from './message';
+import {
+  PreviewMessage,
+  ThinkingMessage,
+  RAGSearchingMessage,
+} from './message';
 import { useScrollToBottom } from './use-scroll-to-bottom';
 import { Greeting } from './greeting';
 import { memo } from 'react';
@@ -17,6 +21,7 @@ interface MessagesProps {
   reload: UseChatHelpers['reload'];
   isReadonly: boolean;
   isArtifactVisible: boolean;
+  isRagSearching?: boolean;
 }
 
 function PureMessages({
@@ -27,6 +32,7 @@ function PureMessages({
   setMessages,
   reload,
   isReadonly,
+  isRagSearching,
 }: MessagesProps) {
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>();
@@ -58,6 +64,8 @@ function PureMessages({
           isReadonly={isReadonly}
         />
       ))}
+
+      {isRagSearching && <RAGSearchingMessage />}
 
       {status === 'submitted' &&
         messages.length > 0 &&

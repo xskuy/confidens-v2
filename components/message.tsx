@@ -3,7 +3,7 @@
 import type { UIMessage } from 'ai';
 import cx from 'classnames';
 import { AnimatePresence, motion } from 'framer-motion';
-import { memo, useState } from 'react';
+import { memo, useState, useEffect } from 'react';
 import type { Vote } from '@/lib/db/schema';
 import { DocumentToolCall, DocumentToolResult } from './document';
 import { PencilEditIcon } from './icons';
@@ -259,6 +259,61 @@ export const ThinkingMessage = () => {
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-col gap-4 text-muted-foreground">
             <p>Thinking...</p>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+export const RAGSearchingMessage = () => {
+  const [dots, setDots] = useState('');
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDots((prev) => {
+        if (prev === '...') return '';
+        return `${prev}.`;
+      });
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const role = 'assistant';
+
+  return (
+    <motion.div
+      data-testid="message-rag-searching"
+      className="w-full mx-auto max-w-3xl px-4 group/message"
+      initial={{ y: 5, opacity: 0 }}
+      animate={{ y: 0, opacity: 1, transition: { delay: 0.2 } }}
+      data-role={role}
+    >
+      <div
+        className={cx(
+          'flex gap-4 group-data-[role=user]/message:px-3 w-full group-data-[role=user]/message:w-fit group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl group-data-[role=user]/message:py-2 rounded-xl',
+          {
+            'group-data-[role=user]/message:bg-muted': true,
+          },
+        )}
+      >
+        <div className="flex flex-col gap-2 w-full">
+          <div className="flex flex-col gap-4 text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{
+                  duration: 2,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: 'linear',
+                }}
+                className="text-base"
+              >
+                🔍
+              </motion.div>
+              <span>Buscando en documentos{dots}</span>
+            </div>
           </div>
         </div>
       </div>

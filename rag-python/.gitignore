@@ -1,0 +1,11 @@
+# Environments
+venv/
+.venv/
+
+# ChromaDB data
+db/
+
+# Python caches
+__pycache__/
+.pytest_cache/
+.mypy_cache/ 
