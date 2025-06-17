@@ -151,7 +151,7 @@ export function Chat({
                 isArtifactVisible={isArtifactVisible}
               />
 
-              <form className="flex mx-auto gap-2 w-full">
+              <form className="flex mx-auto gap-2 w-full max-w-3xl">
                 {!isReadonly && (
                   <MultimodalInput
                     chatId={id}
