@@ -22,30 +22,25 @@ export function Greeting() {
   }, []);
 
   return (
-    <div className="w-full text-left">
+    <div className="w-full text-center">
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 10 }}
         transition={{ delay: 0.2 }}
-        className="space-y-4"
+        className="space-y-2"
       >
-        {/* Título principal */}
-        <h1 className="text-4xl md:text-5xl font-normal">
+        {/* Título principal minimalista */}
+        <h1 className="text-4xl md:text-5xl font-light">
           <span className="bg-gradient-to-r from-yellow-600 via-yellow-400 to-orange-500 bg-clip-text text-transparent bg-[length:200%_100%] animate-gradient">
             {timeGreeting}, {displayName}
           </span>
         </h1>
 
         {/* Subtítulo */}
-        <h2 className="text-4xl md:text-5xl font-normal text-foreground mb-6">
+        <h2 className="text-3xl md:text-4xl font-light text-foreground">
           What would like to know?
         </h2>
-
-        {/* Descripción */}
-        <p className="text-muted-foreground text-base max-w-md">
-          Use one of the most common prompts below or use your own to begin
-        </p>
       </motion.div>
     </div>
   );

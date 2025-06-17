@@ -81,12 +81,7 @@ export default async function RootLayout({
       </head>
       <body className="antialiased">
         <NextAuthProvider session={session}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <Toaster position="top-center" />
             {children}
           </ThemeProvider>
