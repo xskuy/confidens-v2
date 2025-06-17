@@ -49,9 +49,21 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('FastAPI error:', errorText);
-      return new Response('Failed to perform search via FastAPI', {
-        status: 500,
-      });
+
+      // Devolver resultados vacíos cuando FastAPI no está disponible
+      return Response.json(
+        {
+          success: false,
+          results: [],
+          query: data.query,
+          totalResults: 0,
+          context: '',
+          error: 'connection_failed',
+          message:
+            'No se puede conectar al servidor RAG para realizar búsquedas.',
+        },
+        { status: 200 },
+      );
     }
 
     const result = await response.json();
@@ -70,15 +82,36 @@ export async function POST(request: NextRequest) {
     console.error('Error in hybrid search:', error);
 
     // Verificar si es un error de conexión con FastAPI
-    if (error instanceof TypeError && error.message.includes('fetch')) {
-      return new Response(
-        'RAG server is not available. Please ensure the FastAPI server is running on port 8000.',
+    if (error instanceof TypeError && error.message.includes('fetch failed')) {
+      console.log('🔌 Error de conexión con servidor RAG para búsqueda');
+
+      return Response.json(
         {
-          status: 503,
+          success: false,
+          results: [],
+          query: 'consulta sin procesar',
+          totalResults: 0,
+          context: '',
+          error: 'connection_refused',
+          message:
+            'Servidor RAG no disponible. Ejecuta "./start-dev.sh" para iniciarlo.',
         },
+        { status: 200 },
       );
     }
 
-    return new Response('Internal server error', { status: 500 });
+    // Para otros errores, devolver resultados vacíos también
+    return Response.json(
+      {
+        success: false,
+        results: [],
+        query: 'error',
+        totalResults: 0,
+        context: '',
+        error: 'unknown_error',
+        message: 'Error inesperado al realizar la búsqueda.',
+      },
+      { status: 200 },
+    );
   }
 }

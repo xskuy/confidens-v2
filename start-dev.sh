@@ -36,13 +36,20 @@ if ! command -v pnpm &> /dev/null; then
     exit 1
 fi
 
-# Verificar que las dependencias de Python están instaladas
-echo -e "${BLUE}🔍 Verificando dependencias de Python...${NC}"
+# Configurar entorno Python
+echo -e "${BLUE}🔍 Configurando entorno Python...${NC}"
 cd rag-python
-if ! uv pip list | grep -q "fastapi"; then
-    echo -e "${YELLOW}📦 Instalando dependencias de Python...${NC}"
-    uv pip install -r requirements.txt
+
+# Crear entorno virtual si no existe
+if [ ! -d ".venv" ]; then
+    echo -e "${YELLOW}📦 Creando entorno virtual...${NC}"
+    uv venv
 fi
+
+# Verificar/instalar dependencias
+echo -e "${YELLOW}📦 Instalando dependencias de Python...${NC}"
+uv pip install -r requirements.txt
+
 cd ..
 
 echo -e "${GREEN}✅ Dependencias verificadas${NC}"
@@ -51,7 +58,7 @@ echo ""
 # Iniciar FastAPI en background
 echo -e "${BLUE}🐍 Iniciando servidor FastAPI (Puerto 8000)...${NC}"
 cd rag-python
-uv run python scripts/main_server.py &
+source .venv/bin/activate && python scripts/main_server.py &
 FASTAPI_PID=$!
 cd ..
 
