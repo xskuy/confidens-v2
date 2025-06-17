@@ -253,7 +253,7 @@ function PureMultimodalInput({
           onChange={handleInput}
           className={cx(
             'min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none !text-base border-0 shadow-none focus:ring-0 focus:border-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0',
-            'backdrop-blur-[28px] bg-black/[0.12] dark:bg-black/[0.25] border border-white/[0.08] dark:border-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] focus:border-white/[0.16] dark:focus:border-white/[0.14] pb-12 px-7 pt-5 text-base min-h-[80px] rounded-[24px] shadow-[0_8px_32px_rgba(0,0,0,0.24),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_12px_40px_rgba(0,0,0,0.32)] focus:shadow-[0_16px_48px_rgba(0,0,0,0.40)] placeholder:text-muted-foreground text-foreground transition-all duration-300 ease-out',
+            'backdrop-blur-[28px] bg-black/[0.12] dark:bg-black/[0.25] border border-white/[0.08] dark:border-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] focus:border-white/[0.16] dark:focus:border-white/[0.14] pb-14 px-6 pt-5 text-base min-h-[72px] rounded-[24px] shadow-[0_8px_32px_rgba(0,0,0,0.24),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_12px_40px_rgba(0,0,0,0.32)] focus:shadow-[0_16px_48px_rgba(0,0,0,0.40)] placeholder:text-muted-foreground text-foreground transition-all duration-300 ease-out',
             ragMode && 'border-primary/50 bg-primary/5 dark:bg-primary/5',
             className,
           )}
@@ -279,26 +279,27 @@ function PureMultimodalInput({
         />
 
         {/* Botones en la izquierda con nuevo diseño */}
-        <div className="absolute bottom-3 left-6 flex items-center gap-2">
+        <div className="absolute bottom-4 left-5 flex items-center gap-3">
           <button
             type="button"
             data-testid="attachments-button"
-            className="group relative px-3 py-2 rounded-full backdrop-blur-xl bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] transition-all duration-300 ease-out shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] text-muted-foreground hover:text-foreground hover:scale-105 active:scale-[0.95] disabled:opacity-40 disabled:hover:scale-100"
+            className="group relative p-3 rounded-full backdrop-blur-xl bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] transition-all duration-300 ease-out shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] text-muted-foreground hover:text-foreground hover:scale-105 active:scale-[0.95] disabled:opacity-40 disabled:hover:scale-100"
             onClick={(event) => {
               event.preventDefault();
               fileInputRef.current?.click();
             }}
             disabled={status !== 'ready'}
           >
-            <PaperclipIcon size={14} />
+            <PaperclipIcon size={16} />
             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </button>
 
-          {/* Botón RAG - con texto e icono */}
+          {/* Botón RAG con estilo consistente */}
           <button
+            type="button"
             data-testid="rag-button"
             className={cx(
-              'group relative px-3 py-2 rounded-full backdrop-blur-xl border transition-all duration-300 ease-out shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] hover:scale-105 active:scale-[0.95] disabled:opacity-40 disabled:hover:scale-100 flex items-center gap-1.5',
+              'group relative px-3 py-3 rounded-full backdrop-blur-xl border transition-all duration-300 ease-out shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] hover:scale-105 active:scale-[0.95] disabled:opacity-40 disabled:hover:scale-100 flex items-center gap-1.5',
               ragMode
                 ? 'bg-primary/[0.15] border-primary/[0.30] text-primary hover:bg-primary/[0.25] hover:border-primary/[0.40]'
                 : 'bg-white/[0.04] dark:bg-white/[0.03] border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] text-muted-foreground hover:text-foreground',
@@ -310,9 +311,8 @@ function PureMultimodalInput({
               }
             }}
             disabled={status !== 'ready'}
-            type="button"
           >
-            <Search size={14} />
+            <Search size={16} />
             <span className="text-xs font-medium">RAG</span>
             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </button>
@@ -326,37 +326,33 @@ function PureMultimodalInput({
         </div>
 
         {/* Botón de envío con diseño circular mejorado */}
-        <div className="absolute bottom-3 right-6 flex items-center gap-2">
-          <div className="text-muted-foreground text-xs flex items-center gap-1.5">
-            <span>{ragMode ? '🔍 RAG' : '🌐 All Web'}</span>
-            <span>{input.length}/1000</span>
-          </div>
+        <div className="absolute bottom-4 right-5">
           {status === 'submitted' ? (
             <button
               type="button"
               data-testid="stop-button"
-              className="group relative px-3 py-2 rounded-full backdrop-blur-xl bg-red-500/[0.15] border border-red-400/[0.20] hover:bg-red-500/[0.25] hover:border-red-400/[0.30] transition-all duration-300 ease-out shadow-[0_4px_20px_rgba(239,68,68,0.20),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(239,68,68,0.30)] text-red-400 hover:text-red-300 hover:scale-105 active:scale-[0.95]"
+              className="group relative p-3 rounded-full backdrop-blur-xl bg-red-500/[0.15] border border-red-400/[0.20] hover:bg-red-500/[0.25] hover:border-red-400/[0.30] transition-all duration-300 ease-out shadow-[0_4px_20px_rgba(239,68,68,0.20),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(239,68,68,0.30)] text-red-400 hover:text-red-300 hover:scale-105 active:scale-[0.95]"
               onClick={(event) => {
                 event.preventDefault();
                 stop();
                 setMessages((messages) => messages);
               }}
             >
-              <StopIcon size={14} />
+              <StopIcon size={16} />
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-red-400/[0.12] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </button>
           ) : (
             <button
               type="button"
               data-testid="send-button"
-              className="group relative px-3 py-2 rounded-full backdrop-blur-xl bg-gradient-to-br from-slate-600/[0.15] via-slate-500/[0.12] to-slate-400/[0.15] border border-slate-400/[0.20] hover:border-slate-300/[0.30] hover:from-slate-500/[0.25] hover:via-slate-400/[0.20] hover:to-slate-300/[0.25] transition-all duration-300 ease-out shadow-[0_4px_20px_rgba(0,0,0,0.20),0_1px_1px_rgba(255,255,255,0.08)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.30)] text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed hover:scale-105 active:scale-[0.95] disabled:hover:scale-100"
+              className="group relative p-3 rounded-full backdrop-blur-xl bg-gradient-to-br from-slate-600/[0.15] via-slate-500/[0.12] to-slate-400/[0.15] border border-slate-400/[0.20] hover:border-slate-300/[0.30] hover:from-slate-500/[0.25] hover:via-slate-400/[0.20] hover:to-slate-300/[0.25] transition-all duration-300 ease-out shadow-[0_4px_20px_rgba(0,0,0,0.20),0_1px_1px_rgba(255,255,255,0.08)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.30)] text-muted-foreground hover:text-foreground disabled:opacity-30 disabled:cursor-not-allowed hover:scale-105 active:scale-[0.95] disabled:hover:scale-100"
               onClick={(event) => {
                 event.preventDefault();
                 submitForm();
               }}
               disabled={input.length === 0 || uploadQueue.length > 0}
             >
-              <ArrowUpIcon size={14} />
+              <ArrowUpIcon size={16} />
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </button>
           )}

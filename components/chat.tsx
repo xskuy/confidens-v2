@@ -121,7 +121,7 @@ export function Chat({
 
   return (
     <>
-      <div className="flex flex-col min-w-0 h-dvh bg-background">
+      <div className="flex flex-col min-w-0 h-full bg-background">
         <ChatHeader
           chatId={id}
           selectedModelId={internalSelectedChatModel}
