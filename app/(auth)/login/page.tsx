@@ -3,51 +3,50 @@ import { LogoIcon } from '@/components/icons';
 
 export default function LoginPage() {
   return (
-    <div className="bg-black flex h-svh flex-col items-center justify-center gap-6 p-6 md:p-10 relative overflow-hidden">
-      {/* Efecto de iluminación avanzado */}
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Imagen de fondo nocturna */}
       <div
-        className="absolute -inset-y-1/4 -right-24 flex w-screen flex-col xl:-right-6 xl:w-[1200px]"
+        className="absolute inset-0 z-0"
         style={{
-          maskImage:
-            'linear-gradient(to right, rgba(255, 255, 255, 0), rgb(255, 255, 255))',
-          opacity: 1,
-          transform: 'none',
+          backgroundImage: 'url(/images/login-background.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
         }}
-      >
-        <div className="flex flex-col size-full blur">
-          <div
-            className="grow"
-            style={{
-              background:
-                'conic-gradient(from 180deg at 99% 40% in lab, rgb(255, 255, 255) 18deg, rgb(255, 208, 134) 36deg, rgba(17, 17, 17, 0) 90deg, rgba(17, 17, 17, 0) 342deg, rgb(255, 255, 255) 360deg)',
-            }}
-          />
-          <div
-            className="grow"
-            style={{
-              background:
-                'conic-gradient(from 0deg at 99% 60% in lab, rgb(255, 255, 255) 0deg, rgba(17, 17, 17, 0) 18deg, rgba(17, 17, 17, 0) 270deg, rgb(255, 208, 134) 324deg, rgb(255, 255, 255) 342deg)',
-            }}
-          />
-        </div>
-        <canvas
-          className="absolute inset-0 size-full"
-          width="1200"
-          height="934"
-        />
-      </div>
+      />
 
-      <div className="flex w-full max-w-sm flex-col gap-6 relative z-10">
-        <a
-          href="/"
-          className="flex items-center gap-2 self-center font-medium text-white"
-        >
-          <div className="text-white flex size-6 items-center justify-center rounded-md">
-            <LogoIcon size={16} />
+      {/* Overlay con configuración Liquid Glass */}
+      <div className="absolute inset-0 z-1 bg-black/42" />
+
+      {/* Contenido principal */}
+      <div className="relative z-10 flex min-h-screen items-center justify-center p-6">
+        <div className="w-full max-w-md">
+          {/* Contenedor con glassmorphism más sólido y cuadrado */}
+          <div className="backdrop-blur-[28px] bg-black/[0.45] dark:bg-black/[0.50] border border-white/[0.15] dark:border-white/[0.12] rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.45),0_1px_1px_rgba(255,255,255,0.12)_inset] hover:shadow-[0_12px_40px_rgba(0,0,0,0.52)] transition-all duration-300 ease-out overflow-hidden">
+            {/* Header con logo y título */}
+            <div className="text-center pt-10 pb-6 px-8">
+              <div className="flex justify-center mb-6">
+                <div className="flex items-center gap-3 px-4 py-2.5 rounded-full backdrop-blur-xl bg-white/[0.08] dark:bg-white/[0.06] border border-white/[0.15] dark:border-white/[0.12] shadow-[0_4px_20px_rgba(0,0,0,0.25),0_1px_1px_rgba(255,255,255,0.12)_inset]">
+                  <LogoIcon size={20} />
+                  <span className="text-white/[0.95] font-medium text-lg">
+                    Confidens
+                  </span>
+                </div>
+              </div>
+              <h1 className="text-3xl font-light text-white/[0.95] mb-3 tracking-tight">
+                Welcome back
+              </h1>
+              <p className="text-white/[0.75] text-base font-light">
+                A whole new element of delight
+              </p>
+            </div>
+
+            {/* Formulario integrado */}
+            <div className="px-8 pb-8">
+              <LoginForm />
+            </div>
           </div>
-          Confidens
-        </a>
-        <LoginForm />
+        </div>
       </div>
     </div>
   );
