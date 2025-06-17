@@ -44,8 +44,9 @@ const PurePreviewMessage = ({
       <motion.div
         data-testid={`message-${message.role}`}
         className="w-full mx-auto max-w-3xl px-4 group/message"
-        initial={{ y: 5, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2 }}
         data-role={message.role}
       >
         <div
@@ -243,8 +244,8 @@ export const ThinkingMessage = () => {
     <motion.div
       data-testid="message-assistant-loading"
       className="w-full mx-auto max-w-3xl px-4 group/message "
-      initial={{ y: 5, opacity: 0 }}
-      animate={{ y: 0, opacity: 1, transition: { delay: 1 } }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1, transition: { delay: 0.8, duration: 0.3 } }}
       data-role={role}
     >
       <div
