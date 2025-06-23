@@ -12,3 +12,6 @@ uvicorn[standard]
 pydantic
 PyMuPDF
 python-multipart
+unstructured[pdf]
+pdfminer.six
+pillow-heif

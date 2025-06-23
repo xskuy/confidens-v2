@@ -30,7 +30,7 @@ export const authConfig = {
 
       if (isOnChat) {
         if (isLoggedIn) return true;
-        return true; // Allow access to chat even if not logged in
+        return false; // Allow access to chat even if not logged in
       }
 
       if (isLoggedIn) {

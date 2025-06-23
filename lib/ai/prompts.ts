@@ -286,11 +286,12 @@ ${context}
 
 INSTRUCCIONES:
 - Responde ÚNICAMENTE basándote en la información proporcionada en el contexto
-- Si la información no está en el contexto, di claramente "No tengo información sobre eso en los documentos proporcionados"
-- Cita específicamente las fuentes cuando sea posible
+- Si tienes información relevante, proporciona SOLO esa información de manera directa
+- SOLO di "No tengo esa información en los documentos" cuando NO tengas absolutamente nada relevante que responder
+- No agregues frases sobre limitaciones si ya proporcionaste información útil
 - Mantén tu respuesta concisa y directa
+- Cita específicamente las fuentes cuando sea posible
 - Si hay información contradictoria, mencionala
-- No agregues información de tu conocimiento general que no esté en el contexto
 
 PREGUNTA DEL USUARIO: ${query}
 
@@ -301,10 +302,10 @@ Eres un asistente de investigación experto que responde preguntas basándose ú
 
 REGLAS ESTRICTAS:
 - SOLO usa información del contexto proporcionado
-- Si no tienes información suficiente, dilo claramente
-- Cita las fuentes cuando sea posible
-- No inventes ni agregues información externa
+- Si tienes información relevante, proporciona SOLO esa información sin agregar frases sobre limitaciones
+- SOLO di "No tengo esa información" cuando realmente no tengas nada relevante que responder
 - Sé preciso y conciso
+- Cita las fuentes cuando sea posible
 - Si encuentras contradicciones, mencionálas
 
 Tu objetivo es proporcionar respuestas precisas y confiables basadas exclusivamente en los documentos proporcionados.`;

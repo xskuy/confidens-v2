@@ -3,7 +3,7 @@
   "version": "3.0.6",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "next dev --turbo --hostname 0.0.0.0",
     "build": "tsx lib/db/migrate && next build",
     "start": "next start",
     "lint": "next lint && biome lint --write --unsafe",
@@ -21,7 +21,7 @@
     "test": "export PLAYWRIGHT=True && pnpm exec playwright test",
     "test:rag": "tsx --no-cache --env-file .env.local scripts/test-hybrid-search.ts",
     "rag:server": "cd rag-python && uv run python main_server.py",
-    "rag:dev": "cd rag-python && uv run uvicorn main_server:app --reload --host 127.0.0.1 --port 8000",
+    "rag:dev": "cd rag-python && uv run uvicorn main_server:app --reload --host 0.0.0.0 --port 8000",
     "rag:test": "cd rag-python && uv run python test_api.py"
   },
   "dependencies": {

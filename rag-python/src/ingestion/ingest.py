@@ -41,17 +41,17 @@ def ingest_resource(
 
     # 2. Chunk the resource content using LangChain's RecursiveCharacterTextSplitter
     # This splitter is more effective at preserving semantic context.
-    # 100 tokens (~400 chars) con 20 tokens (~80 chars) de solapamiento para granularidad fina
+    # A smaller chunk size to break up large sections like indexes.
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=400,   # ~100 tokens aprox. para enfocar temática
-        chunk_overlap=80,  # ~20 tokens de solapamiento
+        chunk_size=800,  # Reducido para romper mejor el índice
+        chunk_overlap=100,  # Overlap proporcional
         length_function=len,
         is_separator_regex=False,
     )
 
     chunks = text_splitter.split_text(content)
     print(
-        f"Resource split into {len(chunks)} chunks with target size of 300 tokens (~1200 chars)."
+        f"Resource split into {len(chunks)} chunks with target size of ~200 tokens (~800 chars)."
     )
 
     # 3. Prepare and store each chunk in the 'embeddings' collection
@@ -74,5 +74,5 @@ def ingest_resource(
         ids=embedding_ids, documents=chunks, metadatas=enriched_metadatas
     )
     print(f"Added {len(chunks)} embeddings to the collection.")
-    
+
     return resource_id

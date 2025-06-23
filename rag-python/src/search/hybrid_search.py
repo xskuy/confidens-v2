@@ -92,9 +92,13 @@ def diversify_results_advanced(
 
     # Preparar datos con agrupación por documento
     doc_groups = {}
+    doc_metadatas = collection.get(ids=doc_ids, include=["metadatas"])["metadatas"]
+
     for i, (doc_id, _) in enumerate(docs_ids_scores):
-        # Extraer ID base del documento (sin sufijos de chunk)
-        base_doc_id = doc_id.split("-")[0] if "-" in doc_id else doc_id
+        # Extraer ID base del documento (resource_id)
+        metadata = doc_metadatas[i]
+        base_doc_id = metadata.get("resource_id", doc_id)
+
         if base_doc_id not in doc_groups:
             doc_groups[base_doc_id] = []
         doc_groups[base_doc_id].append(
@@ -182,7 +186,7 @@ def diversify_results_advanced(
 # ----------------------------------------------------------------------
 # 1.6. Función de validación rápida
 # ----------------------------------------------------------------------
-def validate_mmr_results(results, max_per_doc=1):
+def validate_mmr_results(results, collection, max_per_doc=1):
     """
     Valida que los resultados MMR cumplan las restricciones esperadas.
     """
@@ -191,11 +195,19 @@ def validate_mmr_results(results, max_per_doc=1):
 
     # Verificar que ningún documento se repite más de max_per_doc
     doc_counts = {}
-    for doc_id, _ in results:
-        base_doc_id = doc_id.split("-")[0] if "-" in doc_id else doc_id
+    doc_ids = [doc_id for doc_id, _ in results]
+
+    if not doc_ids:
+        return {"valid": True, "stats": {}}
+
+    metadatas = collection.get(ids=doc_ids, include=["metadatas"])["metadatas"]
+
+    for i, (doc_id, _) in enumerate(results):
+        metadata = metadatas[i]
+        base_doc_id = metadata.get("resource_id", doc_id)
         doc_counts[base_doc_id] = doc_counts.get(base_doc_id, 0) + 1
 
-    max_count = max(doc_counts.values())
+    max_count = max(doc_counts.values()) if doc_counts else 0
     valid_doc_limit = max_count <= max_per_doc
 
     # Calcular relevancia media
@@ -270,7 +282,7 @@ def rerank(
 
     # Aplicar diversificación MMR avanzada si está habilitada
     if diversify and len(paired) > 1:
-        paired = diversify_results_advanced(
+        final_results = diversify_results_advanced(
             paired,
             texts,
             collection,
@@ -280,11 +292,17 @@ def rerank(
             min_threshold=min_sigmoid,
         )
 
-        # Validar resultados
-        validation = validate_mmr_results(paired, max_per_doc=max_per_doc)
+        # Validar resultados sobre la lista final diversificada
+        validation = validate_mmr_results(
+            final_results, collection, max_per_doc=max_per_doc
+        )
         print(f"DEBUG: MMR validation: {validation}")
 
-    return paired
+        return final_results
+
+    # Si no se diversifica, retornar los resultados rerankeados directamente
+    # Ordenados por score de mayor a menor
+    return sorted(paired, key=lambda x: x[1], reverse=True)
 
 
 # ----------------------------------------------------------------------
@@ -318,8 +336,12 @@ def hybrid_search(
     k_vec=20,
     k_bm25=20,
     k_final=10,
-    group_by_doc=True,
+    group_by_doc=False,  # Default changed to False to allow reranking multiple chunks from the same doc
 ):
+    """
+    Realiza una búsqueda híbrida combinando búsqueda vectorial y BM25,
+    con la opción de agrupar por documento.
+    """
     num_docs = len(corpus_ids)
     k_vec, k_bm25 = min(k_vec, num_docs), min(k_bm25, num_docs)
 
