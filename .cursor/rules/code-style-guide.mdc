@@ -1,5 +1,10 @@
 ---
 description: 
+globs: *tsx
+alwaysApply: false
+---
+---
+description: 
 globs: 
 alwaysApply: false
 # Guía de Estilo de Código

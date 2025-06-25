@@ -1,0 +1,657 @@
+[
+  {
+    "title": "1 Análisis del Contexto y Alcance",
+    "level": 1,
+    "content": [],
+    "children": [
+      {
+        "title": "1.1 ¿Cómo se alinea su solución con la misión de Alloxentric de optimizar las",
+        "level": 2,
+        "content": [
+          "La solución de marketplace de Alloxentric se alinea estrechamente con su misión de optimizar las interacciones entre personas y organizaciones al actuar como intermediario eficiente entre empresas que publican ofertas y agentes que buscan oportunidades de trabajo. La plataforma permite a las empresas alcanzar un grupo amplio de agentes capacitados, mientras que a los agentes les ofrece autonomía para gestionar sus postulaciones y desarrollo profesional.",
+          "Este enfoque fomenta un flujo de trabajo eficiente al permitir que los agentes elijan las ofertas que mejor se adapten a sus habilidades e intereses, acelerando la asignación de personal a proyectos. La posibilidad de visualizar oportunidades, postularse de manera autónoma y gestionar su propio rendimiento permite a los agentes operar con claridad y responsabilidad, lo que promueve un servicio de alta calidad.",
+          "Además, el acceso a reportes, evaluaciones y puntos acumulados motiva a los agentes a mejorar continuamente, ya que la transparencia de estos datos les permite ajustar su desempeño y fortalecer sus habilidades. La plataforma también ofrece certificaciones y cursos, que impulsan la capacitación constante y aseguran que los agentes cumplan con los estándares de Alloxentric, fortaleciendo cada interacción con clientes de forma profesional y eficiente.",
+          "Finalmente, este modelo autónomo elimina la necesidad de un proceso de asignación centralizado, mejorando la velocidad y flexibilidad de respuesta ante las demandas del mercado. La plataforma optimiza las interacciones al facilitar que agentes y empresas se conecten de manera rápida y productiva, alineándose así con la misión de Alloxentric de elevar la calidad y rentabilidad de cada contacto entre personas y organizaciones."
+        ],
+        "children": []
+      },
+      {
+        "title": "1.2 Describir específicamente ¿qué problema o necesidad de la plataforma",
+        "level": 2,
+        "content": [
+          "El proyecto del marketplace de agentes de Alloxentric resuelve una necesidad fundamental en su plataforma omnicanal al mejorar la gestión de la relación entre empresas que publican oportunidades de trabajo y los agentes que postulan a ellas. Como intermediario, el marketplace facilita una interacción eficiente y autónoma, eliminando la necesidad de una gestión centralizada de asignación de agentes y permitiendo un flujo de trabajo más ágil y de mayor calidad.",
+          "En el contexto de una plataforma omnicanal donde empresas y agentes se conectan a través",
+          "de múltiples canales (voz, texto, etc.), la solución del marketplace permite a los agentes gestionar sus postulaciones y desarrollo profesional de manera directa, reduciendo los tiempos de respuesta y la carga administrativa para la empresa. Este modelo de autogestión ayuda a las empresas a acceder a agentes capacitados y comprometidos sin procesos intermedios, optimizando la eficiencia de la plataforma.",
+          "Desde una perspectiva de gestión, el marketplace ofrece a los agentes acceso a herramientas como reportes, evaluaciones y certificaciones, asegurando que estén alineados con los estándares de Alloxentric. Esto no solo fomenta la capacitación continua, sino que también garantiza que los agentes operen de acuerdo con las expectativas de calidad de las empresas que publican ofertas.",
+          "En conjunto, el marketplace potencia la plataforma como un entorno de intermediación eficaz, promoviendo interacciones fluidas, rápidas y productivas entre empresas y agentes. Con esta estructura de autogestión y acceso directo a oportunidades, Alloxentric optimiza su misión de facilitar interacciones de alto valor entre personas y organizaciones, elevando la satisfacción y eficiencia en el servicio.",
+          "1.3.-¿Qué procesos o funcionalidades de la empresa se verán mejorados con la solución?",
+          "La solución del marketplace de agentes mejorará varios procesos y funcionalidades clave de Alloxentric:",
+          "● Asignación de Agentes a Proyectos: Al permitir que los agentes exploren y postulen de manera autónoma a oportunidades de trabajo, la solución agiliza la asignación de personal, eliminando la necesidad de una selección centralizada. Esto reduce los tiempos de espera y asegura que los agentes interesados y capacitados se asignen rápidamente a los proyectos. ● Control y Monitoreo de Desempeño: Con acceso a reportes y evaluaciones personales, los agentes pueden monitorear su rendimiento y recibir retroalimentación continua. Esto permite que los agentes ajusten su trabajo en función de sus fortalezas y áreas de mejora, lo cual no solo mejora el desempeño individual, sino que también optimiza el servicio ofrecido por la empresa en general. ● Capacitación y Certificación: La inclusión de un apartado de cursos y certificaciones permite a los agentes capacitarse y certificarse en habilidades relevantes, asegurando que estén alineados con los estándares de calidad de Alloxentric. Esto facilita una adaptación rápida a las necesidades de los clientes, garantizando un equipo de agentes preparado y actualizado. ● Gestión de Incentivos: Con el sistema de puntos y recompensas, los agentes son motivados a mantener altos estándares de calidad en cada interacción. Esto fomenta una cultura de compromiso y excelencia, lo que contribuye a un mejor rendimiento general y a un servicio más rentable. ● Flujo de Trabajo en la Plataforma Omnicanal: Al mejorar la autogestión de los agentes y facilitar su acceso a oportunidades, el flujo de trabajo en la plataforma",
+          "omnicanal se vuelve más eficiente. Las interacciones pueden ser atendidas por agentes capacitados y motivados sin demoras, mejorando la experiencia del cliente y optimizando los recursos de Alloxentric."
+        ],
+        "children": []
+      },
+      {
+        "title": "1.4 ¿Cuáles son los principales stakeholders beneficiados?",
+        "level": 2,
+        "content": [
+          "Los principales stakeholders beneficiados con el proyecto del marketplace de agentes de Alloxentric son:"
+        ],
+        "children": []
+      }
+    ]
+  },
+  {
+    "title": "1 Agentes: Son los principales beneficiarios, ya que la plataforma les permite postularse directamente a trabajos, gestionar su desarrollo profesional y acceder a cursos y certificaciones. Además, el sistema de evaluaciones y recompensas motiva su desempeño, ofreciendo una trayectoria clara y oportunidades de crecimiento dentro de la plataforma. 2. Clientes de Alloxentric: Los clientes se benefician al interactuar con agentes capacitados y motivados, lo que eleva la calidad del servicio y la satisfacción del cliente. Al agilizarse los tiempos de asignación de agentes y optimizarse el rendimiento, los clientes reciben un servicio más eficiente y adaptado a sus necesidades. 3. Equipo de Recursos Humanos y Gestión de Proyectos: Al eliminar la necesidad de una asignación centralizada de agentes, el equipo de recursos humanos y gestión de proyectos puede concentrarse en tareas estratégicas y optimizar el uso de sus recursos. La plataforma facilita la autogestión de los agentes, lo que reduce la carga operativa en los procesos de selección y asignación de personal. 4. CEO y ejecutivos de Alloxentric: La empresa en su conjunto se beneficia de una plataforma más eficiente y escalable. La solución permite optimizar la asignación de agentes, asegurar la capacitación continua y aumentar la satisfacción de los clientes. Esto refuerza la misión de Alloxentric de ofrecer interacciones de alta calidad y rentables, contribuyendo a la reputación y éxito de la empresa en el mercado. 5. Equipo de Desarrollo y Soporte Técnico: La implementación de un marketplace autónomo simplifica la operación y mantenimiento de la plataforma, al reducir las intervenciones necesarias en la asignación de agentes y fomentar un sistema en el que los propios agentes administran su trabajo. Esto optimiza la eficiencia y permite al equipo técnico concentrarse en mejoras adicionales de la plataforma.",
+    "level": 1,
+    "content": [],
+    "children": []
+  },
+  {
+    "title": "2 Evaluación Técnica",
+    "level": 1,
+    "content": [
+      "2.1.-Detallar los requerimientos técnicos para implementar la solución:",
+      "Infraestructura necesaria: El proyecto requiere una infraestructura que soporte la creación de un entorno de desarrollo colaborativo y una base de datos eficiente. Por lo tanto la infraestructura debe incluir:",
+      "● Servidor de desarrollo: Un servidor en la nube que permita el desarrollo y pruebas",
+      "de los módulos antes de su despliegue.",
+      "● Base de datos: MongoDB se utilizará como base de datos No Relacional, debido a su capacidad para manejar documentos y datos estructurados de manera flexible.",
+      "● Almacenamiento de documentos: Google Drive será usado para almacenar documentación del proyecto, permitiendo la colaboración del equipo en tiempo real.",
+      "● Servicios de comunicación: La plataforma como Zoom será esencial para coordinar reuniones con Alloxentric y la plataforma Discord para el equipo de desarrollo.",
+      "Tecnologías y frameworks utilizados:",
+      "● Lenguajes de programación utilizados: Se utilizaron diferentes lenguajes de programación para el desarrollo del proyecto, Vue2 para el frontend, javascript para el backend, y la base de datos es MongoDB.",
+      "● Control de versiones: Git para gestionar el control de versiones y documentar los cambios en el código.",
+      "● Herramientas de edición y documentación: Visual Studio Code, Google Documents y Google Sheets serán utilizados para editar código y documentar el avance del proyecto.",
+      "● Módulo de registro: Se integrará un módulo de registro de agente el cual permitirá la creación de cuenta e interactuar de forma libre en la plataforma.",
+      "● Sistema de autenticación: Integración de endpoints de autenticación para agentes, permitiendo la creación y gestión de cuentas de usuario.",
+      "● Módulo de ofertas y postulaciones: Este módulo permitirá a los agentes visualizar ofertas disponibles y postularse, integrándose con la base de datos de Alloxentric para sincronizar información en tiempo real.",
+      "● Calendario de actividades: El sistema de calendario permitirá gestionar las actividades de los agentes y requerirá integración con la interfaz de usuario para una visualización organizada.",
+      "● Evaluaciones y certificaciones: Módulos adicionales que integrarán la evaluación y certificación de los agentes, incluyendo endpoints específicos para la gestión de evaluaciones y cursos de certificación, conectados a la base de datos para almacenar los datos de progreso de los usuarios.",
+      "● Soporte: Este módulo se integra a la plataforma para integrar una solución a problemas habituales que requieren los agentes dentro de la plataforma."
+    ],
+    "children": [
+      {
+        "title": "2.2 ¿Qué indicadores técnicos demuestran la calidad de su solución? (¿cómo?)",
+        "level": 2,
+        "content": [
+          "Tiempo de respuesta:",
+          "● ¿Qué se medirá?: La velocidad con la que el sistema responde a las solicitudes de los usuarios, especialmente en operaciones críticas como el inicio de sesión y la carga de ofertas. ● ¿Cómo se medirá?: Se van a registrar los tiempos de respuesta promedio y máximos mediante herramientas de monitoreo. Idealmente, los tiempos deben mantenerse por debajo de 200 ms.",
+          "Estrategias de optimización:",
+          "● Uso de caché: Almacenar en caché los datos que se consultan frecuentemente, como listados de ofertas, para evitar consultas repetitivas a la base de datos.",
+          "● Optimización de endpoints: Minimizar los datos enviados en cada respuesta y reducir la complejidad de las consultas a MongoDB.",
+          "● Pruebas de carga: Simular tráfico intenso para asegurar que los tiempos de respuesta se mantengan estables bajo distintas cargas.",
+          "Escalabilidad:",
+          "● ¿Qué se medirá?: La capacidad del sistema para soportar un aumento de usuarios y datos sin disminuir su rendimiento.",
+          "● ¿Cómo se medirá?: Monitoreando el rendimiento y el consumo de recursos (CPU, RAM, latencia) a medida que se incrementa el tráfico.",
+          "Estrategias de optimización:",
+          "● Arquitectura en microservicios: Separar funciones en microservicios para que cada uno pueda escalar de manera independiente.",
+          "● Escalado automático en la nube: Utilizar servicios de escalado automático en una plataforma en la nube como AWS o Azure, permitiendo agregar más instancias en momentos de alta demanda.",
+          "● Optimización de base de datos: Configurar índices en MongoDB y particionamiento de datos para que las consultas sean rápidas y efectivas, incluso con grandes volúmenes de datos.",
+          "● ¿Qué se medirá?: La capacidad del sistema para proteger los datos de usuarios y operaciones contra accesos no autorizados y amenazas.",
+          "● ¿Cómo se medirá? Se llevarán a cabo pruebas de vulnerabilidad (pentesting) y análisis de código de seguridad de manera regular.",
+          "Estrategias de seguridad:",
+          "● Autenticación robusta: Implementar autenticación con JWT para manejar sesiones de manera segura.",
+          "● Cifrado de datos sensibles: Cifrar datos críticos tanto en tránsito (TLS/SSL) como en reposo (AES) para proteger la información personal y financiera.",
+          "● Política de permisos: Aplicar políticas de control de acceso estrictas para limitar la interacción de cada usuario solo con sus datos."
+        ],
+        "children": []
+      },
+      {
+        "title": "2.3 ¿Cómo se alinea su solución con las tres cualidades destacadas de Alloxentric",
+        "level": 2,
+        "content": [
+          "La arquitectura del sistema incorpora caché y optimización de endpoints, asegurando respuestas rápidas, especialmente para operaciones comunes como el inicio de sesión y la visualización de ofertas. Junto a lo anterior, existirá una comunicación con el área de soporte de Alloxentric.",
+          "Comunicación Habrá una implementación de notificaciones y recordatorios automáticos para los agentes, ayudando a que se mantengan informados sobre nuevas ofertas, postulaciones o cambios de horario.",
+          "Cada funcionalidad principal, como el registro de agentes, el sistema de ofertas, y el módulo de evaluaciones, está implementada como un módulo independiente. Esto permite que cualquier componente pueda actualizarse o modificarse sin afectar al resto del sistema. Gracias a lo anterior, facilita el escalado independiente de cada componente, permitiendo ajustar recursos a medida que el número de usuarios o las transacciones aumenten, sin necesidad de rediseñar la plataforma completa."
+        ],
+        "children": []
+      }
+    ]
+  },
+  {
+    "title": "3 Cuantificación de Beneficios",
+    "level": 1,
+    "content": [
+      "El Marketplace de AlloXentric surge como un motor de crecimiento para la empresa, abriendo un nuevo canal de conexión con agentes y clientes. Se espera que esta iniciativa tenga un impacto significativo en la rentabilidad y la experiencia del cliente.",
+      "A continuación, se describe la evaluación de la cuantificación de beneficios, considerando que los agentes proyectados son nuevas incorporaciones:"
+    ],
+    "children": []
+  },
+  {
+    "title": "1 Adquisición de Nuevos Agentes:",
+    "level": 1,
+    "content": [
+      "● Se proyecta una adquisición exponencial de nuevos agentes, pasando de 50 agentes en el primer año a 500 en el segundo. Este crecimiento del 1000% resalta la capacidad del Marketplace para atraer talento previamente inaccesible para AlloXentric, luego se proyecta un incremento del 150% en los años 3 y 4, y del 110% en el año 5 . ● La plataforma, con un costo promedio de $300 por agente, facilita la incorporación y gestión de este nuevo talento, abriendo oportunidades de negocio que antes no existían. ● La escalabilidad del sistema permite gestionar este crecimiento sin afectar la eficiencia operativa."
+    ],
+    "children": []
+  },
+  {
+    "title": "2 Beneficios Económicos:",
+    "level": 1,
+    "content": [
+      "● El Marketplace genera ingresos a través de un margen de beneficio del 20% sobre el ingreso de cada nuevo agente. ● Se proyecta un ingreso total de $36,000 en el primer año, con un crecimiento a $360,000 en el segundo año, gracias a la adquisición de nuevos agentes. ● La reducción de costos operativos y el aumento de la eficiencia contribuyen a la rentabilidad del proyecto. ● La escalabilidad del Marketplace genera oportunidades de inversión y expansión del negocio.",
+      "Esto se ve reflejado en la siguiente tabla:",
+      "Año Costo Promedio por (USD)",
+      "al Año de Agente por Año (USD)",
+      "Total (USD)"
+    ],
+    "children": []
+  },
+  {
+    "title": "1 $300 20% $60 50 $720 $36.000 2 $300 20% $60 500 $720 $360.000 3 $300 20% $60 750 $720 $540.000 4 $300 20% $60 1000 $720 $720.000 5 $300 20% $60 1100 $720 $792.000",
+    "level": 1,
+    "content": [],
+    "children": []
+  },
+  {
+    "title": "4 Análisis de Costos",
+    "level": 1,
+    "content": [],
+    "children": [
+      {
+        "title": "4.1 Detalle los costos de implementación:",
+        "level": 2,
+        "content": [
+          "533,52 156,4288 225,64 69,147 Diferencia HH 307,88 Diferencia Costos 87,2818 Para definir la inversión realizada para el desarrollo de la aplicación marketplace agente, se hizo una evaluación de los costos de los colaboradores en horas hombre ‘HH’, las cuales tenían un costo aproximado de 656,09 UF al término de un año, las cuales se pasaron a pesos chilenos dando un valor de $ 25.002.595 y por último convirtiendo esa cifra en la moneda estadounidense el doral dando un monto de inversión de USD 25.748. Sumado a los costos de implementación, definimos un apartado de inversión inicial (Año 0).",
+          "Inversión N° Actividad Descripción Costo Total Anual 'USD' Desarrollo (Horas-hombre )",
+          "Costo inicial por el desarrollo del software, incluyendo programación y pruebas. $25.748,00 901,18 2 Marketing Inicial Esto incluye campaña de lanzamiento con publicidad en redes sociales (Google Ads, Meta, LinkedIn) para captar usuarios y agentes iniciales. Además de la creación de marca de la plataforma, branding y material promocional inicial. $12.500,00 437,50 3 Equipo Tecnológico Compra de laptops, monitores y otros periféricos para el equipo de desarrollo y soporte. $15.000,00 525,00",
+          "TOTAL $53.248 $1.864 1. Desarrollo (Horas-hombre):",
+          "● Incluye el desarrollo del software desde cero, abarcando actividades como diseño, programación, pruebas y puesta en marcha. Es el componente más importante de la inversión, ya que define la funcionalidad y estabilidad de la plataforma.",
+          "● Representa aproximadamente el 48% de la inversión inicial.",
+          "● Es crítico porque afecta la calidad, tiempo de entrega y experiencia del usuario en la plataforma. ● Este costo incluye tanto desarrollo frontend como backend, además de pruebas de calidad (QA)."
+        ],
+        "children": []
+      }
+    ]
+  },
+  {
+    "title": "2 Marketing Inicial:",
+    "level": 1,
+    "content": [
+      "● Incluye campañas de lanzamiento (Google Ads, Meta, LinkedIn) para atraer los primeros usuarios y agentes, además de trabajos de branding como diseño del logo, imagen corporativa, y material promocional. ● Representa aproximadamente el 23% de la inversión inicial. ● Es clave para generar tracción en los primeros meses, logrando que agentes y clientes confíen en la plataforma. ● Este gasto puede disminuir en los años posteriores si la plataforma logra reconocimiento y atracción orgánica."
+    ],
+    "children": []
+  },
+  {
+    "title": "3 Equipo Tecnológico:",
+    "level": 1,
+    "content": [
+      "● Compra de laptops, monitores y periféricos necesarios para el equipo inicial de desarrollo y soporte. ● Representa aproximadamente el 29% de la inversión inicial. ● Es fundamental para garantizar que el equipo técnico y de soporte tenga herramientas adecuadas para operar eficientemente. ● Este es un gasto inicial y no recurrente en años posteriores, a menos que se amplíe el equipo."
+    ],
+    "children": [
+      {
+        "title": "4.2 Costos Recurrentes Esperados",
+        "level": 2,
+        "content": [],
+        "children": [
+          {
+            "title": "4.2.1 Costos Fijos de la Implementación:",
+            "level": 3,
+            "content": [
+              "N° Actividad Descripción Costo Total 'USD' Costo total 1 Capacitación Inicial Capacitación para agentes y empresas en el uso del marketplace. Incluye módulos como registro, publicación de ofertas y sistema de pagos. Utilizando talleres presenciales para la capacitación del personal.",
+              "$200,00 7,00 Almacenamiento de Documentos (Google Drive)",
+              "Costo de almacenamiento de documentación y colaboración en tiempo real. ''Google Workspace Business Standard.",
+              "$120,00 4,20 3 Servidores Costo mensual para mantener y operar los servidores donde se aloja la plataforma.",
+              "$1.664,00 58,24 4 Reserva para Riesgos Técnicos y Operativos Fondo de contingencia para posibles fallos técnicos y mejoras de seguridad. (10%)",
+              "$5.324,80 186,37 5 Base de Datos (MongoDB)",
+              "Costo mensual para la base de datos no relacional utilizada en el marketplace.",
+              "$4.651,00 162,79 6 Mantenimiento Continuo Costo de asegurar el funcionamiento óptimo de sistemas y equipos mediante acciones $5.149,60 180,24",
+              "regulares para prevenir fallas y maximizar su eficiencia."
+            ],
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "7 Remuneración de Trabajadores $139.358,00 4877,53 8 Pago de licencias Pagos de licencias necesaria como sería Zoom, Jira y Google $8.983,50 314,42 Total $165.450,90 5790,78 1. Capacitación Inicial ● Incluye talleres presenciales para enseñar a agentes y empresas cómo utilizar el marketplace (registro, publicación de ofertas, sistema de pagos). ● Es un costo menor, pero fundamental para garantizar que los usuarios iniciales comprendan el uso de la plataforma.",
+    "level": 1,
+    "content": [],
+    "children": []
+  },
+  {
+    "title": "2 Almacenamiento de Documentos ● Costo de Google Workspace Business Standard para almacenamiento y colaboración en tiempo real. ● Asegura la disponibilidad de un espacio seguro y accesible para documentos compartidos entre los equipos.",
+    "level": 1,
+    "content": [],
+    "children": []
+  },
+  {
+    "title": "3 Servidores ● Gastos mensuales para mantener y operar los servidores donde se aloja la plataforma. ● Es esencial para el funcionamiento continuo de la plataforma y afecta directamente la disponibilidad y experiencia del usuario.",
+    "level": 1,
+    "content": [],
+    "children": []
+  },
+  {
+    "title": "4 Reserva para Riesgos Técnicos y Operativos ● Fondo de contingencia para cubrir posibles fallos técnicos, emergencias y mejoras de seguridad (10% del costo total). ● Proporciona estabilidad financiera frente a imprevistos y garantiza que la plataforma mantenga su integridad.",
+    "level": 1,
+    "content": [],
+    "children": []
+  },
+  {
+    "title": "5 Base de Datos ● Gastos mensuales por el uso de la base de datos no relacional utilizada en el marketplace. ● La base de datos es el núcleo del sistema, permitiendo gestionar la información de usuarios, ofertas, y transacciones.",
+    "level": 1,
+    "content": [],
+    "children": []
+  },
+  {
+    "title": "6 Mantenimiento Continuo ● Acciones regulares para prevenir fallas y garantizar el funcionamiento óptimo de los sistemas y equipos. ● Mantiene la plataforma actualizada y funcional, minimizando tiempos de inactividad.",
+    "level": 1,
+    "content": [],
+    "children": []
+  },
+  {
+    "title": "7 Remuneración de Trabajadores ● Sueldos de nuevos desarrolladores en roles clave, como FullStack y especialistas en bases de datos. ● Es el costo más significativo (aproximadamente 84% del total), ya que el equipo técnico es crucial para la operación y mejora continua del marketplace.",
+    "level": 1,
+    "content": [],
+    "children": []
+  },
+  {
+    "title": "8 Pago de Licencias ● Gastos asociados a herramientas esenciales como Zoom, Jira y Google. ● Facilita la comunicación, colaboración y gestión eficiente de proyectos.",
+    "level": 1,
+    "content": [],
+    "children": [
+      {
+        "title": "4.2.2 Costos Variables de la Implementación:",
+        "level": 3,
+        "content": [
+          "N° Actividad Descripción Costo mensual por Agente 'USD' 'USD' 1 Soporte al Cliente Salarios o costos asociados a personal que resuelva dudas o problemas técnicos de usuarios y agentes.",
+          "$5,00 $60,00 $2,10 2 Costos Tecnológicos Costos de hosting, servidores en la nube (AWS, Google Cloud, Azure)",
+          "$8,00 $96,00 $3,36 3 Marketing Campañas en redes sociales, Google Ads o LinkedIn para atraer agentes y clientes.",
+          "$10,00 $120,00 $4,20 4 Costos administrativos Servicios externos para el manejo de finanzas y cumplimiento fiscal.",
+          "$3,00 $36,00 $1,26 5 Costos de operación Comisiones por el uso de pasarelas de pago (como PayPal, Stripe, MercadoPago).",
+          "$0,03 $0,36 $0,01 Total $26,03 $312,36 $10,93 1. Soporte al Cliente:",
+          "● Incluye salarios o costos relacionados con personal encargado de resolver problemas técnicos o consultas de los agentes y clientes. ● Fundamental para garantizar una experiencia de usuario satisfactoria, fomentando la lealtad de agentes y clientes. ● Este costo puede variar según la carga de trabajo y la automatización del soporte."
+        ],
+        "children": []
+      }
+    ]
+  },
+  {
+    "title": "2 Costos Tecnológicos:",
+    "level": 1,
+    "content": [
+      "● Gastos asociados a infraestructura tecnológica, incluyendo hosting y servidores en la nube (AWS, Google Cloud, Azure). ● Es esencial para la operación del marketplace, ya que garantiza disponibilidad y rendimiento. ● Este costo podría optimizarse a medida que la base de agentes crezca, aprovechando economías de escala."
+    ],
+    "children": []
+  },
+  {
+    "title": "3 Marketing:",
+    "level": 1,
+    "content": [
+      "● Incluye campañas digitales en redes sociales, Google Ads y LinkedIn para atraer nuevos agentes y clientes. ● Es clave para el crecimiento de la base de usuarios, especialmente en los primeros años. ● Este gasto puede disminuir con el tiempo, cuando el marketplace logre reconocimiento orgánico. ● A diferencia de los gastos en inversión de marketing, estos se enfocan en mantener a los clientes activos de la plataforma."
+    ],
+    "children": []
+  },
+  {
+    "title": "4 Costos administrativos:",
+    "level": 1,
+    "content": [
+      "● Gastos relacionados con servicios externos para el manejo de finanzas y cumplimiento fiscal. ● Garantiza el cumplimiento normativo y una gestión financiera adecuada. ● Es un costo fijo por agente que aumenta proporcionalmente con el crecimiento de la plataforma."
+    ],
+    "children": []
+  },
+  {
+    "title": "5 Costos de operación:",
+    "level": 1,
+    "content": [
+      "● Comisiones por el uso de pasarelas de pago como PayPal, Stripe o MercadoPago, calculadas como un porcentaje pequeño por transacción. ● Este es el menor costo, pero puede incrementarse con el volumen de transacciones. ● Representa un impacto directo en las operaciones financieras."
+    ],
+    "children": []
+  },
+  {
+    "title": "5 Riesgos Técnicos y Operativos que Podrían Impactar los Costos",
+    "level": 1,
+    "content": [
+      "5.1- Riesgos Técnicos 1. Fallas en el Servidor o Interrupciones del Servicio ○ Impacto: Interrupciones en el servicio debido a caídas de servidores o problemas de conectividad pueden afectar la experiencia del usuario y generar pérdida de confianza. ○ Costos asociados:",
+      "■ Incremento en el gasto de mantenimiento para solucionar problemas críticos. ■ Necesidad de contratar servicios más robustos en la nube (AWS,",
+      "Azure). ○ Mitigación: Contratar servicios con garantías de alta disponibilidad (99,9%) y realizar pruebas regulares de estrés. 2. Problemas en la Escalabilidad ○ Impacto: La infraestructura no puede manejar el crecimiento rápido de usuarios y transacciones, resultando en tiempos de respuesta lentos o fallas del sistema. ○ Costos asociados:",
+      "■ Migraciones o rediseños costosos de la arquitectura de la plataforma. ■ Incremento en el gasto en infraestructura tecnológica (servidores y bases de datos). ○ Mitigación: Implementar desde el inicio una arquitectura escalable y realizar simulaciones de carga periódicas. 3. Vulnerabilidades de Seguridad ○ Impacto: Ataques como hackeos, filtraciones de datos o fraude electrónico pueden comprometer la seguridad de la plataforma. ○ Costos asociados:",
+      "■ Multas legales y costos de compensación a usuarios. ■ Implementación de medidas adicionales de ciberseguridad (firewalls, auditorías de seguridad). ○ Mitigación: Monitoreo constante, cifrado de datos y cumplimiento de normativas de seguridad como GDPR. 4. Fallas en la Base de Datos ○ Impacto: Corrupción, pérdida de datos o baja disponibilidad de la base de datos puede interrumpir la operación del marketplace. ○ Costos asociados:",
+      "■ Servicios de recuperación de datos y auditorías de bases de datos. ■ Migración a bases de datos más confiables. ○ Mitigación: Configurar respaldos automáticos y redundancia en la base de datos.",
+      "5.2- Riesgos Operativos 1. Falta de Personal Capacitado ○ Impacto: Inexperiencia o rotación frecuente de personal técnico y operativo puede retrasar las operaciones y generar errores. ○ Costos asociados:",
+      "■ Incremento en los gastos de capacitación y reclutamiento. ■ Costos derivados de errores técnicos o mala atención al cliente. ○ Mitigación: Implementar programas de capacitación inicial y continua. 2. Dependencia de Proveedores Externos ○ Impacto: Problemas con proveedores de servicios tecnológicos (AWS, MongoDB, pasarelas de pago) pueden interrumpir la operación. ○ Costos asociados:",
+      "■ Penalizaciones contractuales o necesidad de cambiar proveedores. ■ Incremento en costos de servicios alternativos durante la transición. ○ Mitigación: Diversificar los proveedores y negociar contratos con cláusulas de",
+      "respaldo. 3. Errores en Procesos Operativos ○ Impacto: Procesos mal definidos o ejecutados pueden generar retrasos en pagos, asignaciones incorrectas o insatisfacción de los usuarios. ○ Costos asociados:",
+      "■ Incremento en gastos por reconfiguración de procesos. ■ Costos indirectos por pérdida de usuarios. ○ Mitigación: Definir y documentar procesos operativos claros y automatizarlos cuando sea posible. 4. Incrementos No Planificados en Costos de Licencias ○ Impacto: Proveedores de software (Google, Jira, etc.) aumentan sus precios, afectando los costos operativos. ○ Costos asociados:",
+      "■ Incremento en el gasto anual de licencias. ■ Costos adicionales al buscar alternativas. ○ Mitigación: Revisar contratos y buscar opciones de software más económicas o de código abierto. 5. Rotación de Usuarios y Agentes ○ Impacto: Agentes y clientes pueden abandonar la plataforma por competencia o falta de beneficios claros. ○ Costos asociados:",
+      "■ Incremento en gasto de marketing para atraer nuevos usuarios. ■ Pérdida de ingresos recurrentes. ○ Mitigación: Ofrecer incentivos como bonificaciones, programas de lealtad, y soporte de alta calidad.",
+      "5.3- Riesgos Combinados 1. Desastres Naturales o Fallos Globales ○ Impacto: Eventos como apagones, terremotos, o problemas en la infraestructura global de Internet pueden detener las operaciones. ○ Costos asociados:",
+      "■ Gastos de recuperación y tiempos de inactividad no previstos. ○ Mitigación: Implementar planes de continuidad operativa y redundancia geográfica"
+    ],
+    "children": []
+  },
+  {
+    "title": "6 Evaluación Económica.",
+    "level": 1,
+    "content": [],
+    "children": [
+      {
+        "title": "6.1 ¿Cuál es el costo-beneficio esperado del proyecto?",
+        "level": 2,
+        "content": [
+          "Para calcular el costo/beneficio esperado del proyecto usaremos la siguiente fórmula: Relación costo/beneficio = Beneficios totales/Costos totales En donde: Beneficios totales = $2.547.540, 00 Costos totales = $2.181.668,72",
+          "Los beneficios totales fueron calculados del flujo de caja tomando en cuenta la sumatoria por los 5 años. Igualmente para los costos totales se hizo la sumatoria para los 5 años, pero sumando también la inversión que se hace en el año 0.",
+          "$2.547.540, 00 / $2.128.420, 72 = 1, 167702491 ≈ 1.17 El análisis costo-beneficio del proyecto muestra una relación de 1.17, lo que indica que por cada dólar invertido se espera obtener un retorno de $1.17. Esto demuestra que el proyecto es rentable, ya que los beneficios totales proyectados superan los costos totales, incluyendo la inversión inicial.",
+          "Si bien el primer año los costos superan los ingresos debido a la fase de inversión y desarrollo, a partir del segundo año el proyecto comienza a generar beneficios significativos. Este resultado sugiere que la inversión es una decisión financieramente viable y sostenible en el mediano y largo plazo.",
+          "https://www.statista.com/statistics/370367/inflation-rate-in-chile/ https://es.tradingeconomics.com/chile/consumer-price-index-cpi https://www.sii.cl/valores_y_fechas/utm/utm2023.htm https://www.bcentral.cl/en/resumen-ipom/-/detalle/resumen-ipom-marzo-2024 https://www.bcentral.cl/en/areas/monetary-politics/monetary-policy-report-ipom IPC - 4% 2,2% 2% 2% 2% Tasa crecimiento Costo - 10,1% 5,6% 5,1% 5,1% 5,1% Tasa crecimiento Beneficios - 7,9% 4,3% 4,0% 4,0% 4,0% Cantidad de Agentes Anual - 50 500 750 1000 1100 Tiempo en años Descripción 0 1 2 3 4 5 Beneficios (Ingresos) - $38.844,00 $375.642,00 $561.330,00 $748.440,00 $823.284,00 Costos Fijos $182.161,44 $192.280,51 $201.990,67 $212.191,20 $222.906,86 Costos Variables $16.851,82 $164.855,80 $246.100,64 $328.134,18 $360.947,60 Inversión $53.248,00 Flujo de caja -$53.248,00 -$160.169,26 $18.505,69 $113.238,69 $208.114,62 $239.429,54 Flujo acumulado -$53.248,00 -$213.417,26 -$194.911,57 -$81.672,88 $126.441,74 $365.871,28",
+          "VAN $242.296,02 TIR 35% PRC 3,39 Tasa de descuento 10,25% La tabla presenta el flujo de caja proyectado para el proyecto Marketplace de AlloXentric durante un período de 5 años. El análisis considera la inversión inicial, los costos fijos y variables, los beneficios generados por la incorporación de nuevos agentes y la tasa de descuento utilizada para calcular el Valor Actual Neto (VAN).",
+          "Inversión Inicial:",
+          "El proyecto requiere una inversión inicial de $53,248.00 para su desarrollo e implementación. Esta inversión se realiza en el año 0.",
+          "Beneficios (Ingresos):",
+          "Los beneficios del proyecto provienen de los ingresos generados por los nuevos agentes que se incorporan a través del Marketplace. Se observa un crecimiento significativo en los beneficios a lo largo de los 5 años, comenzando con $38,844.00 en el primer año y alcanzando $828,284.00 en el quinto año. Este crecimiento se debe al aumento en la cantidad de agentes, que pasa de 50 en el primer año a 1100 en el quinto año.",
+          "Costos:",
+          "El proyecto incurre en costos fijos y variables. Los costos fijos se mantienen relativamente estables a lo largo del tiempo, con un ligero aumento debido a la inflación (IPC). Los costos variables, por otro lado, aumentan en proporción a la cantidad de agentes y a los beneficios generados.",
+          "Flujo de Caja:",
+          "El flujo de caja del proyecto se calcula restando los costos totales (fijos y variables) de los beneficios. Se observa un flujo de caja negativo en el primer año debido a la inversión inicial. Sin embargo, a partir del segundo año, el flujo de caja se vuelve positivo y aumenta progresivamente a lo largo del período de análisis.",
+          "Flujo de Caja Acumulado:",
+          "El flujo de caja acumulado muestra la suma de los flujos de caja de cada año. Se observa que el proyecto recupera la inversión inicial en el tercer año y comienza a generar ganancias acumuladas a partir de ese momento.",
+          "Valor Actual Neto (VAN):",
+          "El VAN del proyecto, calculado con una tasa de descuento del 10.25%, es de $442,296.02. Este valor positivo indica que el proyecto es rentable y genera valor para AlloXentric.",
+          "Tasa Interna de Retorno (TIR):",
+          "La TIR del proyecto es del 35%. Esta tasa es superior a la tasa de descuento, lo que confirma la rentabilidad del proyecto.",
+          "Periodo de Recuperación de la Inversión (PRC):",
+          "El PRC del proyecto es de 3.39 años. Esto significa que la inversión inicial se recupera en aproximadamente 3 años y 4 meses.",
+          "El análisis del flujo de caja del proyecto Marketplace de AlloXentric muestra que se trata de una inversión rentable con un VAN positivo, una TIR atractiva y un PRC razonable. El proyecto genera beneficios crecientes a lo largo del tiempo, impulsados por la incorporación de nuevos agentes y la eficiencia operativa."
+        ],
+        "children": []
+      },
+      {
+        "title": "6.2 ¿Cuáles son los principales indicadores de la evaluación?",
+        "level": 2,
+        "content": [
+          "La evaluación de un proyecto como el Marketplace de AlloXentric requiere un análisis exhaustivo de su viabilidad y rentabilidad. Para ello, se utilizan diversos indicadores que permiten medir el desempeño financiero y la creación de valor. Los principales indicadores para este proyecto son:"
+        ],
+        "children": []
+      }
+    ]
+  },
+  {
+    "title": "1 Valor Actual Neto (VAN):",
+    "level": 1,
+    "content": [
+      "● Razón: El VAN es fundamental para determinar si un proyecto es rentable, ya que considera el valor del dinero en el tiempo. Un VAN positivo indica que los flujos de caja futuros del proyecto, descontados a una tasa que refleja el costo de oportunidad del capital, superan la inversión inicial. En otras palabras, el proyecto genera valor para la empresa."
+    ],
+    "children": []
+  },
+  {
+    "title": "2 Tasa Interna de Retorno (TIR):",
+    "level": 1,
+    "content": [
+      "● Razón: La TIR expresa la rentabilidad del proyecto como un porcentaje. Comparar la TIR con la tasa de descuento mínima aceptable (que representa el costo de oportunidad del capital) permite determinar si el proyecto es atractivo desde el punto de vista financiero."
+    ],
+    "children": []
+  },
+  {
+    "title": "3 Periodo de Recuperación de la Inversión (PRC):",
+    "level": 1,
+    "content": [
+      "● Razón: El PRC es un indicador importante para evaluar la liquidez del proyecto. Permite conocer cuánto tiempo tardará la empresa en recuperar la inversión inicial, lo cual es un factor clave en la toma de decisiones, especialmente cuando se comparan diferentes opciones de inversión."
+    ],
+    "children": []
+  },
+  {
+    "title": "4 Razón Costo-Beneficio:",
+    "level": 1,
+    "content": [
+      "● Razón: Este indicador proporciona una visión general de la eficiencia del proyecto en términos de la generación de beneficios por cada unidad monetaria invertida. Una relación costo-beneficio mayor a 1 indica que el proyecto genera más beneficios que costos, lo cual es un indicador positivo de rentabilidad.",
+      "En conjunto, estos indicadores ofrecen una visión integral de la viabilidad y rentabilidad del proyecto Marketplace de AlloXentric, permitiendo a la empresa tomar decisiones informadas sobre su implementación y gestión"
+    ],
+    "children": []
+  },
+  {
+    "title": "7 Análisis de Viabilidad y Sostenibilidad",
+    "level": 1,
+    "content": [],
+    "children": [
+      {
+        "title": "7.1 ¿Qué recursos se necesitan para mantener la solución operativa a largo plazo?",
+        "level": 2,
+        "content": [
+          "Para asegurar la operatividad continua de la solución a largo plazo, se requiere una estrategia que contemple los siguientes recursos:"
+        ],
+        "children": []
+      }
+    ]
+  },
+  {
+    "title": "1 Infraestructura tecnológica:",
+    "level": 1,
+    "content": [
+      "○ MongoDB Atlas: Dado que la propuesta se basa en la nube con MongoDB Atlas, se requiere mantener la suscripción a este servicio, adaptando el plan a las necesidades de almacenamiento y rendimiento a medida que la plataforma crece. ○ GitHub, Docker, Jira, Figma, Google Drive: Renovar las licencias de estas herramientas de desarrollo para asegurar su uso continuo en el mantenimiento y mejora del Marketplace. ○ Seguridad: Implementar medidas de seguridad robustas en la nube para proteger la plataforma y los datos de los usuarios, incluyendo la configuración de firewalls, la encriptación de datos y el control de acceso. 2. Recursos financieros:",
+      "○ Presupuesto operativo: Asignar un presupuesto que cubra los costos operativos del Marketplace en la nube, incluyendo la suscripción a MongoDB Atlas, las licencias de software, el pago de salarios y la contratación de servicios en la nube. ○ Inversión en mejoras: Destinar recursos para la implementación de mejoras y nuevas funcionalidades en la plataforma, con el objetivo de mantener su competitividad y la satisfacción de los usuarios. ○ Fondo de contingencia: Contar con un fondo de contingencia para afrontar posibles imprevistos, como la necesidad de realizar actualizaciones urgentes o la migración a un nuevo proveedor de servicios en la nube.",
+      "Al considerar estos recursos, AlloXentric podrá asegurar la operatividad y el crecimiento sostenible del Marketplace a largo plazo, maximizando su rentabilidad y la satisfacción de los usuarios."
+    ],
+    "children": [
+      {
+        "title": "7.2 ¿Cómo se puede escalar la solución ante un crecimiento de la empresa?",
+        "level": 2,
+        "content": [
+          "El crecimiento de la empresa y la incorporación de nuevos agentes a través del Marketplace requerirán adaptar y escalar la solución para mantener su eficiencia y rentabilidad. A continuación, se describen las estrategias para escalar la solución:"
+        ],
+        "children": []
+      }
+    ]
+  },
+  {
+    "title": "1 Ampliar el equipo de desarrollo y soporte:",
+    "level": 1,
+    "content": [
+      "● Nuevas contrataciones: Contratar personal adicional para el desarrollo de nuevas funcionalidades, mantenimiento de la plataforma y atención al cliente. ● Especialización: Incorporar perfiles especializados en áreas como DevOps, seguridad informática y análisis de datos. ● Capacitación: Brindar capacitación continua al equipo para adaptarse a las nuevas tecnologías y necesidades del negocio."
+    ],
+    "children": []
+  },
+  {
+    "title": "2 Ajustar el modelo de negocio:",
+    "level": 1,
+    "content": [
+      "● Comisiones por transacción: Ajustar las comisiones por transacción en función del volumen de operaciones y la rentabilidad del negocio. ● Alianzas estratégicas: Establecer alianzas con otras empresas para ampliar la oferta de servicios y el alcance del Marketplace."
+    ],
+    "children": []
+  },
+  {
+    "title": "3 Adaptar los costos fijos:",
+    "level": 1,
+    "content": [
+      "● Incremento en herramientas: Al aumentar el equipo de trabajo, se deberá considerar una inversión en nuevas licencias de software y herramientas de trabajo. ● Incremento en servicios: Es posible que se requieran servicios adicionales, como seguros, servicios legales o contables, para una empresa más grande."
+    ],
+    "children": [
+      {
+        "title": "7.3 ¿Qué mejoras futuras se podrían implementar?",
+        "level": 2,
+        "content": [
+          "Para asegurar la escalabilidad y la adaptación a las crecientes necesidades de la empresa, se plantean las siguientes mejoras al proyecto Marketplace de AlloXentric:"
+        ],
+        "children": []
+      }
+    ]
+  },
+  {
+    "title": "1 Incrementar la capacidad de la infraestructura:",
+    "level": 1,
+    "content": [
+      "○ Optimización del código: Se propone realizar revisiones y optimizaciones periódicas del código fuente para asegurar un rendimiento eficiente con un mayor volumen de usuarios y transacciones. ○ Monitoreo: Se propone implementar un sistema de monitoreo que permita identificar posibles cuellos de botella en el rendimiento y tomar medidas preventivas para evitar interrupciones en el servicio."
+    ],
+    "children": []
+  },
+  {
+    "title": "2 Invertir en nuevas tecnologías:",
+    "level": 1,
+    "content": [
+      "○ Automatización: Se propone incorporar herramientas de automatización para la gestión de agentes, pagos y atención al cliente, con el objetivo de optimizar los procesos y reducir la carga administrativa. ○ Inteligencia artificial: Se propone integrar soluciones de inteligencia artificial para el análisis de datos, la detección de fraudes y la personalización de la experiencia del usuario, esto podría mejorar la eficiencia y la seguridad del Marketplace. ○ Seguridad: Se propone reforzar la seguridad de la plataforma con medidas de protección de datos, control de acceso y prevención de ataques, para garantizar la integridad y confidencialidad de la información."
+    ],
+    "children": []
+  },
+  {
+    "title": "8 Plan de Implementación y Riesgos",
+    "level": 1,
+    "content": [],
+    "children": [
+      {
+        "title": "8.1 ¿Cuáles han sido los principales riesgos y sus estrategias de mitigación que",
+        "level": 2,
+        "content": [
+          "Principales Riesgos:"
+        ],
+        "children": []
+      }
+    ]
+  },
+  {
+    "title": "1 Fallos Técnicos y Operativos:",
+    "level": 1,
+    "content": [
+      "○ Impacto: Problemas en la funcionalidad del sistema, interrupciones del servicio y riesgos de seguridad. ○ Mitigación:",
+      "■ Creación de un fondo de contingencia equivalente al 10% del costo inicial del proyecto para emergencias técnicas. ■ Pruebas de carga y pentesting para identificar y corregir vulnerabilidades antes del lanzamiento. 2. Falta de Adopción de la Plataforma:",
+      "○ Impacto: Baja participación de agentes y empresas, limitando la efectividad y rentabilidad del proyecto. ○ Mitigación:",
+      "■ Inversión inicial en marketing ($12,500 USD) para atraer usuarios. ■ Inversión anual periódica en Marketing con el fin de mantener usuarios activos. ■ Inclusión de capacitación inicial para agentes y empresas en el uso de la plataforma. 3. Riesgos Financieros:",
+      "○ Impacto: Incapacidad para mantener el flujo de caja positivo durante los primeros años. ○ Mitigación:",
+      "■ Proyecciones detalladas de costos fijos y variables para optimizar el uso de recursos. ■ Evaluación económica con un VAN positivo ($242,296 USD) y un periodo de recuperación (PRC) razonable (3.39 años). 4. Problemas de Escalabilidad:",
+      "○ Impacto: Degradación del rendimiento ante el aumento de usuarios. ○ Mitigación:",
+      "■ Diseño modular y uso de microservicios para escalar funciones de manera independiente. ■ Escalado automático en la nube y optimización de la base de datos. 5. Riesgos de Seguridad:",
+      "○ Impacto: Accesos no autorizados y pérdida de datos. ○ Mitigación:",
+      "■ Implementación de autenticación robusta mediante JWT (Bearer token). ■ Uso de cifrado TLS/SSL para datos en tránsito y AES para datos en reposo."
+    ],
+    "children": [
+      {
+        "title": "8.2 ¿Qué plan de contingencia y de qué manera se ha enfrentado a los fallos",
+        "level": 2,
+        "content": [
+          "El plan de contingencia y las estrategias para enfrentar fallos producidos en el proyecto Marketplace de Alloxentric se han estructurado en base a la identificación de riesgos específicos y su correspondiente mitigación:",
+          "Plan de Contingencia:"
+        ],
+        "children": []
+      }
+    ]
+  },
+  {
+    "title": "1 Reserva para Riesgos Técnicos y Operativos:",
+    "level": 1,
+    "content": [
+      "○ Se destinó un fondo del 10% del costo total del proyecto como contingencia para enfrentar emergencias técnicas, fallos de seguridad o actualizaciones imprevistas. 2. Mantenimiento Continuo:",
+      "○ Se implementó un programa de mantenimiento regular para prevenir fallas en los sistemas y equipos, asegurando su funcionamiento óptimo y minimizando interrupciones. 3. Pruebas y Validación:",
+      "○ Pruebas de carga y estrés realizadas previamente para asegurar la estabilidad del sistema bajo tráfico intenso. ○ Ejecución de análisis de vulnerabilidades (pentesting) para detectar y resolver brechas de seguridad. 4. Redundancia en Infraestructura:",
+      "○ Uso de servicios en la nube (AWS, Azure) con capacidades de escalado automático para garantizar la disponibilidad durante picos de demanda. 5. Seguridad de Datos:",
+      "○ Implementación de autenticación robusta con JWT y cifrado TLS/SSL para proteger datos en tránsito y AES para datos en reposo.",
+      "Enfrentamiento de Fallos Producidos:"
+    ],
+    "children": []
+  },
+  {
+    "title": "1 Fallos Operativos:",
+    "level": 1,
+    "content": [
+      "○ Respuesta: Activación del fondo de contingencia para cubrir costos de reparación inmediata. ○ Mitigación: Optimización de procesos internos y mejora de la gestión de datos para reducir errores futuros. 2. Problemas de Escalabilidad:",
+      "○ Respuesta: Implementación de microservicios que permiten escalar módulos específicos de forma independiente. ○ Mitigación: Monitoreo constante del rendimiento para ajustar recursos en tiempo real. 3. Interrupciones del Servicio:",
+      "○ Respuesta: Uso de redundancia en servidores y almacenamiento en la nube para garantizar continuidad del servicio. ○ Mitigación: Configuración de servidores en clúster para repartir la carga y prevenir caídas totales. 4. Brechas de Seguridad:",
+      "○ Respuesta: Parches inmediatos y análisis de código para resolver vulnerabilidades detectadas. ○ Mitigación: Actualización regular de protocolos de seguridad y capacitación en ciberseguridad para el equipo técnico."
+    ],
+    "children": []
+  },
+  {
+    "title": "9 Conclusiones y Recomendaciones",
+    "level": 1,
+    "content": [],
+    "children": [
+      {
+        "title": "9.1 Resumir los principales hallazgos de la evaluación",
+        "level": 2,
+        "content": [
+          "Principales Hallazgos de la Evaluación del Proyecto Marketplace de Alloxentric 1. Viabilidad Técnica y Económica:",
+          "○ VAN positivo ($242,296 USD): El proyecto genera valor para Alloxentric al superar los costos totales proyectados.",
+          "○ TIR del 35%: Rentabilidad atractiva superior a la tasa de descuento aplicada.",
+          "○ Recuperación de la inversión en 3.39 años: Indicador razonable para proyectos tecnológicos."
+        ],
+        "children": []
+      }
+    ]
+  },
+  {
+    "title": "2 Impacto en Procesos y Funcionalidades:",
+    "level": 1,
+    "content": [
+      "○ Autonomía para Agentes: Elimina la necesidad de una gestión centralizada, agilizando la asignación de personal.",
+      "○ Herramientas de Monitoreo: Los reportes y evaluaciones permiten que los agentes mejoren su desempeño.",
+      "○ Capacitación y Certificaciones: Alinean a los agentes con estándares de calidad, promoviendo la formación continua."
+    ],
+    "children": []
+  },
+  {
+    "title": "3 Riesgos y Mitigaciones:",
+    "level": 1,
+    "content": [
+      "○ Principales riesgos: fallos técnicos, problemas de escalabilidad, brechas de seguridad y baja adopción.",
+      "○ Estrategias de mitigación:",
+      "■ Fondo de contingencia (10% de costos).",
+      "■ Pruebas de carga, monitoreo de rendimiento y medidas de ciberseguridad (JWT, TLS/SSL, AES).",
+      "■ Marketing inicial y capacitación para usuarios."
+    ],
+    "children": []
+  },
+  {
+    "title": "4 Beneficios Proyectados:",
+    "level": 1,
+    "content": [
+      "○ Crecimiento exponencial en agentes: De 50 a 1,100 en 5 años.",
+      "○ Ingreso proyectado: Incremento desde $36,000 en el primer año hasta $792,000 en el quinto."
+    ],
+    "children": []
+  },
+  {
+    "title": "5 Sostenibilidad y Escalabilidad:",
+    "level": 1,
+    "content": [
+      "○ Uso de tecnologías como microservicios, MongoDB, y escalado en la nube para garantizar la capacidad operativa ante un crecimiento continuo.",
+      "○ Reducción de costos operativos mediante optimización de infraestructura y automatización de procesos."
+    ],
+    "children": []
+  },
+  {
+    "title": "6 Plan de Implementación y Contingencia:",
+    "level": 1,
+    "content": [
+      "○ Se implementaron medidas proactivas para enfrentar fallos técnicos y operativos, minimizando el impacto en la experiencia del usuario."
+    ],
+    "children": []
+  },
+  {
+    "title": "7 Mejoras Futuras:",
+    "level": 1,
+    "content": [
+      "○ Integración de inteligencia artificial para personalización y detección de fraudes.",
+      "○ Automatización de procesos para optimizar la carga administrativa."
+    ],
+    "children": [
+      {
+        "title": "9.2 ¿Qué recomendaciones específicas proponen para mejorar el proyecto?",
+        "level": 2,
+        "content": [
+          "Fortalecer la Adopción de la Plataforma:",
+          "● Ampliar las campañas de marketing para aumentar la visibilidad, con enfoque en estrategias digitales como SEO y redes sociales. ● Crear incentivos iniciales para agentes y empresas, como descuentos en tarifas o bonificaciones por las primeras transacciones.",
+          "Optimizar la Experiencia del Usuario:",
+          "● Incorporar tutoriales interactivos para nuevos usuarios, facilitando su aprendizaje en el uso de la plataforma. ● Mejorar la interfaz de usuario con un diseño más intuitivo, adaptado a diferentes dispositivos, especialmente móviles.",
+          "Incorporar Tecnologías Avanzadas:",
+          "● Integrar inteligencia artificial (IA) para la recomendación de ofertas personalizadas, análisis de datos y detección de posibles fraudes. ● Utilizar aprendizaje automático para analizar patrones de desempeño de los agentes y proporcionar sugerencias de mejora.",
+          "Fomentar la Capacitación y Retención de Agentes:",
+          "● Ampliar la oferta de cursos y certificaciones disponibles dentro de la plataforma. ● Implementar un sistema de gamificación para recompensar el progreso y desempeño de los agentes, aumentando su compromiso.",
+          "Mejorar la Sostenibilidad Financiera:",
+          "● Ajustar las comisiones según el volumen de transacciones, incentivando el uso frecuente de la plataforma. ● Ofrecer planes de suscripción con beneficios exclusivos, como acceso prioritario a ciertas ofertas o funciones premium."
+        ],
+        "children": []
+      },
+      {
+        "title": "9.3 ¿Qué lecciones aprendidas destacaría del proceso (Proceso de solución",
+        "level": 2,
+        "content": [
+          "Importancia de la Planificación Detallada:",
+          "● Un cronograma claro y estructurado para el desarrollo e implementación del proyecto facilita la alineación de esfuerzos y evita retrasos innecesarios. ● La definición precisa de los costos iniciales y recurrentes permitió un uso eficiente de los recursos y una mejor proyección de rentabilidad.",
+          "Proyección Financiera y Rentabilidad a Largo Plazo:",
+          "● El análisis económico detallado (VAN, TIR y PRC) proporcionó una visión clara de la sostenibilidad financiera, permitiendo justificar la inversión inicial y planificar mejoras futuras.",
+          "Comunicación y Colaboración Efectiva:",
+          "● El uso de herramientas como GitHub, Discord y Zoom fomentó una comunicación continua entre los equipos, mejorando la coordinación y resolución de problemas. ● La colaboración constante entre el equipo técnico y los stakeholders garantizó que las funcionalidades del sistema cumplieran con las expectativas del negocio."
+        ],
+        "children": []
+      }
+    ]
+  }
+]
