@@ -1,0 +1,17 @@
+torch
+transformers
+bm25s
+numpy
+chromadb
+sentence-transformers
+PyStemmer
+langchain-text-splitters
+scikit-learn
+fastapi
+uvicorn[standard]
+pydantic
+PyMuPDF
+python-multipart
+unstructured[pdf]
+pdfminer.six
+pillow-heif

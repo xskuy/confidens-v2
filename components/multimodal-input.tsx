@@ -15,6 +15,7 @@ import {
 } from 'react';
 import { toast } from 'sonner';
 import { useLocalStorage, useWindowSize } from 'usehooks-ts';
+import { Search } from 'lucide-react';
 
 import { ArrowUpIcon, PaperclipIcon, StopIcon } from './icons';
 import { PreviewAttachment } from './preview-attachment';
@@ -42,6 +43,8 @@ function PureMultimodalInput({
   selectedPower,
   setSelectedPower,
   showSuggestions = true,
+  ragMode = false,
+  setRagMode,
 }: {
   chatId: string;
   input: UseChatHelpers['input'];
@@ -58,6 +61,8 @@ function PureMultimodalInput({
   selectedPower: PowerLevel;
   setSelectedPower: (power: PowerLevel) => void;
   showSuggestions?: boolean;
+  ragMode?: boolean;
+  setRagMode?: (ragMode: boolean) => void;
 }) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { width } = useWindowSize();
@@ -238,15 +243,18 @@ function PureMultimodalInput({
           data-testid="multimodal-input"
           ref={textareaRef}
           placeholder={
-            messages.length === 0
-              ? 'Ask whatever you want....'
-              : 'Send a message...'
+            ragMode
+              ? 'Pregunta sobre tus documentos (modo RAG activado)...'
+              : messages.length === 0
+                ? 'Ask whatever you want....'
+                : 'Send a message...'
           }
           value={input}
           onChange={handleInput}
           className={cx(
             'min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none !text-base border-0 shadow-none focus:ring-0 focus:border-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0',
             'backdrop-blur-[28px] bg-black/[0.12] dark:bg-black/[0.25] border border-white/[0.08] dark:border-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] focus:border-white/[0.16] dark:focus:border-white/[0.14] pb-14 px-6 pt-5 text-base min-h-[72px] rounded-[24px] shadow-[0_8px_32px_rgba(0,0,0,0.24),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_12px_40px_rgba(0,0,0,0.32)] focus:shadow-[0_16px_48px_rgba(0,0,0,0.40)] placeholder:text-muted-foreground text-foreground transition-all duration-300 ease-out',
+            ragMode && 'border-primary/50 bg-primary/5 dark:bg-primary/5',
             className,
           )}
           rows={2}
@@ -283,6 +291,29 @@ function PureMultimodalInput({
             disabled={status !== 'ready'}
           >
             <PaperclipIcon size={16} />
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          </button>
+
+          {/* Botón RAG con estilo consistente */}
+          <button
+            type="button"
+            data-testid="rag-button"
+            className={cx(
+              'group relative px-3 py-3 rounded-full backdrop-blur-xl border transition-all duration-300 ease-out shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] hover:scale-105 active:scale-[0.95] disabled:opacity-40 disabled:hover:scale-100 flex items-center gap-1.5',
+              ragMode
+                ? 'bg-primary/[0.15] border-primary/[0.30] text-primary hover:bg-primary/[0.25] hover:border-primary/[0.40]'
+                : 'bg-white/[0.04] dark:bg-white/[0.03] border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] text-muted-foreground hover:text-foreground',
+            )}
+            onClick={(event) => {
+              event.preventDefault();
+              if (setRagMode) {
+                setRagMode(!ragMode);
+              }
+            }}
+            disabled={status !== 'ready'}
+          >
+            <Search size={16} />
+            <span className="text-xs font-medium">RAG</span>
             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/[0.08] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </button>
 
@@ -351,7 +382,9 @@ export const MultimodalInput = memo(
       equal(prevProps.messages, nextProps.messages) &&
       prevProps.chatId === nextProps.chatId &&
       prevProps.selectedPower === nextProps.selectedPower &&
-      prevProps.showSuggestions === nextProps.showSuggestions
+      prevProps.showSuggestions === nextProps.showSuggestions &&
+      prevProps.ragMode === nextProps.ragMode &&
+      prevProps.setRagMode === nextProps.setRagMode
     );
   },
 );

@@ -13,11 +13,11 @@ export function Greeting() {
   useEffect(() => {
     const currentHour = new Date().getHours();
     if (currentHour < 12) {
-      setTimeGreeting('Hi there');
+      setTimeGreeting('Hola');
     } else if (currentHour < 18) {
-      setTimeGreeting('Hi there');
+      setTimeGreeting('Hola');
     } else {
-      setTimeGreeting('Hi there');
+      setTimeGreeting('Hola');
     }
   }, []);
 
@@ -39,7 +39,7 @@ export function Greeting() {
 
         {/* Subtítulo */}
         <h2 className="text-3xl md:text-4xl font-light text-foreground">
-          What would like to know?
+          ¿Qué te gustaría saber?
         </h2>
       </motion.div>
     </div>

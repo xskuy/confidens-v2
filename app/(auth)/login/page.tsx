@@ -34,10 +34,10 @@ export default function LoginPage() {
                 </div>
               </div>
               <h1 className="text-3xl font-light text-white/[0.95] mb-3 tracking-tight">
-                Welcome back
+                Bienvenido de vuelta
               </h1>
               <p className="text-white/[0.75] text-base font-light">
-                A whole new element of delight
+                Accede a tu experiencia personalizada
               </p>
             </div>
 

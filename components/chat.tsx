@@ -36,6 +36,8 @@ export function Chat({
   const [internalSelectedChatModel, setInternalSelectedChatModel] =
     useState(selectedChatModel);
   const [selectedPower, setSelectedPower] = useState<PowerLevel>('medium');
+  const [ragMode, setRagMode] = useState(false);
+  const [isRagSearching, setIsRagSearching] = useState(false);
   const { isDevMode } = useDevMode();
 
   // Actualizar el modelo seleccionado cuando cambia el nivel de potencia
@@ -65,6 +67,7 @@ export function Chat({
       id,
       selectedChatModel: internalSelectedChatModel,
       isDevModeActive: isDevMode,
+      ragMode,
     },
     initialMessages,
     experimental_throttle: 100,
@@ -72,12 +75,22 @@ export function Chat({
     generateId: generateUUID,
     onFinish: () => {
       mutate(unstable_serialize(getChatHistoryPaginationKey));
+      setIsRagSearching(false);
     },
     onError: (e) => {
       console.error('Error details from useChat:', e);
       toast.error('An error occurred, please try again!');
+      setIsRagSearching(false);
     },
   });
+
+  // Efecto para detectar cuando cambia el status y terminar la búsqueda RAG
+  useEffect(() => {
+    if (status === 'streaming' || status === 'submitted') {
+      // Terminar búsqueda RAG cuando comience el processing/streaming
+      setIsRagSearching(false);
+    }
+  }, [status]);
 
   const { data: votes } = useSWR<Array<Vote>>(
     messages.length >= 2 ? `/api/vote?chatId=${id}` : null,
@@ -90,9 +103,25 @@ export function Chat({
   // Determinar si hay mensajes para cambiar el layout
   const hasMessages = messages.length > 0;
 
+  // Función personalizada para manejar el submit con RAG
+  const handleSubmitWithRAG = (
+    event?: { preventDefault?: (() => void) | undefined } | undefined,
+    chatRequestOptions?: any,
+  ) => {
+    if (ragMode && input.trim()) {
+      setIsRagSearching(true);
+
+      // Timeout de seguridad para evitar que se quede cargando indefinidamente
+      setTimeout(() => {
+        setIsRagSearching(false);
+      }, 8000); // 8 segundos máximo para dar tiempo a la búsqueda RAG
+    }
+    handleSubmit(event, chatRequestOptions);
+  };
+
   return (
     <>
-      <div className="flex flex-col min-w-0 h-dvh bg-background">
+      <div className="flex flex-col min-w-0 h-full bg-background">
         <ChatHeader
           chatId={id}
           selectedModelId={internalSelectedChatModel}
@@ -114,6 +143,7 @@ export function Chat({
               reload={reload}
               isReadonly={isReadonly}
               isArtifactVisible={isArtifactVisible}
+              isRagSearching={isRagSearching}
             />
 
             <form className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full max-w-3xl">
@@ -122,7 +152,7 @@ export function Chat({
                   chatId={id}
                   input={input}
                   setInput={setInput}
-                  handleSubmit={handleSubmit}
+                  handleSubmit={handleSubmitWithRAG}
                   status={status}
                   stop={stop}
                   attachments={attachments}
@@ -132,6 +162,8 @@ export function Chat({
                   append={append}
                   selectedPower={selectedPower}
                   setSelectedPower={setSelectedPower}
+                  ragMode={ragMode}
+                  setRagMode={setRagMode}
                 />
               )}
             </form>
@@ -149,6 +181,7 @@ export function Chat({
                 reload={reload}
                 isReadonly={isReadonly}
                 isArtifactVisible={isArtifactVisible}
+                isRagSearching={isRagSearching}
               />
 
               <form className="flex mx-auto gap-2 w-full max-w-3xl">
@@ -157,7 +190,7 @@ export function Chat({
                     chatId={id}
                     input={input}
                     setInput={setInput}
-                    handleSubmit={handleSubmit}
+                    handleSubmit={handleSubmitWithRAG}
                     status={status}
                     stop={stop}
                     attachments={attachments}
@@ -168,6 +201,8 @@ export function Chat({
                     selectedPower={selectedPower}
                     setSelectedPower={setSelectedPower}
                     showSuggestions={true}
+                    ragMode={ragMode}
+                    setRagMode={setRagMode}
                   />
                 )}
               </form>

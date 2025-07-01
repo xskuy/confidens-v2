@@ -7,7 +7,7 @@ import {
   streamText,
 } from 'ai';
 import { auth } from '@/app/(auth)/auth';
-import { systemPrompt } from '@/lib/ai/prompts';
+import { systemPrompt, ragSystemPrompt, ragPrompt } from '@/lib/ai/prompts';
 import {
   deleteChatById,
   getChatById,
@@ -40,16 +40,19 @@ export async function POST(request: Request) {
       messages,
       selectedChatModel,
       isDevModeActive,
+      ragMode,
     }: {
       id: string;
       messages: Array<UIMessage>;
       selectedChatModel: string;
       isDevModeActive: boolean;
+      ragMode?: boolean;
     } = await request.json();
 
     console.log('📩 Chat API received:', {
       payload_selectedChatModel: selectedChatModel,
       payload_isDevModeActive: isDevModeActive,
+      payload_ragMode: ragMode,
     });
 
     // Asegurar que isDevModeActive sea un booleano explícito
@@ -158,6 +161,93 @@ export async function POST(request: Request) {
       `Chosen model config: ID: ${finalModelConfig.id}, Provider: ${finalModelConfig.provider}, API ModelName: ${finalModelConfig.modelName}`,
     );
 
+    // Función helper para realizar búsqueda RAG
+    const performRAGSearch = async (query: string) => {
+      const FASTAPI_URL = process.env.RAG_API_URL || 'http://127.0.0.1:8000';
+
+      try {
+        console.log(`🔍 Realizando búsqueda RAG para: "${query}"`);
+
+        const searchData = {
+          query: query.trim(),
+          k_final: 5,
+          min_sigmoid: 0.3,
+          max_per_doc: 2,
+          group_by_doc: true,
+        };
+
+        const response = await fetch(`${FASTAPI_URL}/api/search`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(searchData),
+          signal: AbortSignal.timeout(15000), // Timeout de 15 segundos
+        });
+
+        if (!response.ok) {
+          console.error('Error en búsqueda RAG:', response.status);
+          return null;
+        }
+
+        const result = await response.json();
+
+        if (!result.success || !result.results || result.results.length === 0) {
+          console.log('No se encontraron resultados RAG relevantes');
+          return null;
+        }
+
+        console.log(`✅ RAG encontró ${result.results.length} resultados`);
+        return result.context;
+      } catch (error) {
+        console.error('Error en búsqueda RAG:', error);
+        return null;
+      }
+    };
+
+    // Preparar mensajes para el modelo
+    let finalMessages = messages;
+    let systemPromptToUse = systemPrompt({
+      selectedChatModel: finalModelConfig.id,
+    });
+
+    // Procesar modo RAG si está activado
+    if (ragMode) {
+      const lastUserMessage = userMessage.parts.find(
+        (part) => part.type === 'text',
+      )?.text;
+
+      if (lastUserMessage) {
+        console.log('🤖 Modo RAG activado, realizando búsqueda...');
+
+        const ragContext = await performRAGSearch(lastUserMessage);
+
+        if (ragContext) {
+          // Usar el prompt de RAG con contexto
+          systemPromptToUse = ragSystemPrompt;
+
+          // Modificar el último mensaje del usuario para incluir el contexto
+          const ragUserPrompt = ragPrompt(ragContext, lastUserMessage);
+
+          // Crear una nueva versión del mensaje con el prompt RAG
+          finalMessages = [
+            ...messages.slice(0, -1), // Todos los mensajes excepto el último
+            {
+              ...userMessage,
+              parts: [
+                {
+                  type: 'text',
+                  text: ragUserPrompt,
+                },
+              ],
+            },
+          ];
+        } else {
+          console.log('⚠️ No se pudo obtener contexto RAG, usando modo normal');
+        }
+      }
+    }
+
     return createDataStreamResponse({
       execute: (dataStream) => {
         console.log(
@@ -218,8 +308,8 @@ export async function POST(request: Request) {
                     : finalModelConfig.apiProvider.languageModel(
                         modelCallOptions,
                       ),
-            system: systemPrompt({ selectedChatModel: finalModelConfig.id }),
-            messages,
+            system: systemPromptToUse,
+            messages: finalMessages,
             maxSteps: 5,
             experimental_activeTools:
               finalModelConfig.id === AI_MODELS_CONFIGURATION.high.id
