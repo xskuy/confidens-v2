@@ -1,0 +1,76 @@
+---
+description: 
+globs: *.py
+alwaysApply: false
+---
+## Key Principles
+- Write concise, technical responses with accurate Python examples.  
+- Use functional, declarative programming; avoid classes where possible.  
+- Prefer iteration and modularization over code duplication.  
+
+## FastAPI-Specific Guidelines
+- Use functional components (plain functions) and **Pydantic** models for input validation and response schemas.  
+- Declare routes declaratively with clear return-type annotations.  
+- Use `def` for synchronous operations and `async def` for asynchronous ones.  
+- Minimize `@app.on_event("startup")` / `("shutdown")`; prefer **lifespan context managers**.  
+- Add middleware for logging, error monitoring and performance optimization.  
+- Optimize for performance with async I/O, caching (Redis, in-memory), and lazy loading.  
+- Raise `HTTPException` for expected errors and map them to specific responses.  
+- Centralize unexpected-error handling in middleware.  
+- Always use `BaseModel` for consistent I/O validation.  
+
+## Performance Optimization
+- Avoid blocking I/O; use async DB/API calls.  
+- Cache static / frequently accessed data (e.g., Redis).  
+- Use Pydantic efficiently for (de)serialization.  
+- Lazy-load large datasets or heavy responses.  
+
+## Key Conventions
+- Leverage FastAPI’s **dependency injection** for shared state/resources.  
+- Keep an eye on API metrics (response time, latency, throughput).  
+- Limit blocking in routes:  
+  - Prefer async & non-blocking flows.  
+  - Delegate DB/API calls to dedicated async helpers.  
+  - Keep route + dependency graph clear for readability and maintenance.  
+- Use descriptive variable names with auxiliary verbs (`is_active`, `has_permission`).  
+- Use `lower_snake_case` for directories/files (e.g., `routers/user_routes.py`).  
+- Favor **named exports** for routes & utilities.  
+- Follow the *Receive an Object, Return an Object* (RORO) pattern.  
+
+## Python / FastAPI Essentials
+- `def` for pure functions, `async def` for async ops.  
+- Annotate every function; prefer **Pydantic** models over raw dicts for inputs.  
+- File structure: exported router ➜ sub-routes ➜ utilities ➜ static ➜ types (models, schemas).  
+- No braces in Python `if`/`for`/`while`; keep single-line bodies on one line.  
+
+## Import & Typing Best Practices
+### Imports
+- **Tres grupos** (separados por línea en blanco):  
+  1. -‐ stdlib -‐  
+  2. -‐ third-party -‐  
+  3. -‐ local / app --  
+- Orden alfabético y una sola línea por import. Deja que **Ruff/isort** (regla `I001`) los ordene con `ruff --fix`.  
+- Evita `from … import *`; importa nombres explícitos.  
+- Usa **imports absolutos** para módulos de primer/tercer nivel; reserva `from .sub` para la propia app.  
+- Haz imports perezosos dentro de funciones solo si el módulo es pesado o genera dependencias cíclicas.
+
+### Tipado moderno (Python ≥ 3.9)
+- Generics **PEP 585** nativos: `list[int]`, `dict[str, Any]`, `tuple[str, ...]` → nunca `List`, `Dict`.  
+- Uniones **PEP 604**: `str | None` en lugar de `Optional[str]`.  
+- Usa `typing.Annotated` para metadatos (`Annotated[int, Range(0, 120)]`).  
+- Estructuras ligeras: `@dataclass(slots=True)` o `typing.TypedDict`.  
+- Emplea `typing.Self` para métodos fluidos, `Literal` para valores finitos, `Final` para constantes.  
+- Describe comportamiento con **Protocol** en vez de herencia nula.  
+- Prefiere `collections.abc.Iterable`, `Mapping`, etc. sobre los equivalentes en `typing`.  
+- Reduce `Any` al mínimo y activa el modo estricto de Pyrefly para detección temprana de errores.  
+- Encadena excepciones en bloques `except` (`raise CustomError(...) from err`) para cumplir `B904`.
+
+## Native Python Features to Prefer
+- `pathlib.Path` sobre `os.path` para rutas.  
+- `enum.Enum` para listas de constantes.  
+- **f-strings** para interpolación (`f"{user=}"`).  
+- `subprocess.run()` en lugar de `os.system()`.  
+- `contextlib.contextmanager` y `ExitStack` para recursos complejos.  
+- `time.perf_counter()` o `perf_counter_ns()` para mediciones precisas.  
+- **Walrus** (`:=`) cuando mejora legibilidad (`if (m := regex.match(s)):`).  
+- **Pattern matching** (`match / case`, Py 3.10+) para flujos de control finitos.  
