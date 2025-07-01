@@ -3,8 +3,16 @@
 Configuración centralizada del sistema RAG
 """
 
+import logging
 import os
 from dataclasses import dataclass
+from typing import Optional
+
+from pydantic import Field
+from pydantic_settings import BaseSettings
+
+# Configuración de logging
+logging.basicConfig(level=logging.INFO)
 
 
 @dataclass
@@ -23,12 +31,21 @@ class VoyageConfig:
             raise ValueError("VOYAGE_API_KEY es requerido")
 
 
-@dataclass
-class QdrantConfig:
+class QdrantConfig(BaseSettings):
     """Configuración para Qdrant"""
 
-    url: str = "http://localhost:6333"
-    collection_name: str = "documents"
+    url: str = Field(
+        "http://localhost:6333",
+        description="URL del servidor Qdrant",
+    )
+    api_key: Optional[str] = Field(
+        None,
+        description="API Key para Qdrant Cloud (opcional)",
+    )
+    collection_name: str = Field(
+        "document_chunks",
+        description="Nombre de la colección a usar",
+    )
     vector_size: int = 1024
     distance_metric: str = "COSINE"
     recreate_collection: bool = False
@@ -64,6 +81,7 @@ class RAGConfig:
 
         qdrant_config = QdrantConfig(
             url=os.getenv("QDRANT_URL", "http://localhost:6333"),
+            api_key=os.getenv("QDRANT_API_KEY"),
             collection_name=os.getenv("QDRANT_COLLECTION", "documents"),
             recreate_collection=os.getenv("QDRANT_RECREATE", "false").lower() == "true",
         )
@@ -76,9 +94,7 @@ class RAGConfig:
             use_gpu_ocr=os.getenv("USE_GPU_OCR", "false").lower() == "true",
         )
 
-        return cls(
-            voyage=voyage_config, qdrant=qdrant_config, processing=processing_config
-        )
+        return cls(voyage=voyage_config, qdrant=qdrant_config, processing=processing_config)
 
     @classmethod
     def default(cls) -> "RAGConfig":
