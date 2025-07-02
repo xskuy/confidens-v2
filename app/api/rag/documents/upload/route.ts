@@ -1,70 +1,111 @@
 import { auth } from '@/app/(auth)/auth';
 import type { NextRequest } from 'next/server';
 
-const FASTAPI_URL = process.env.RAG_API_URL || 'http://127.0.0.1:8000';
+const RAG_API_URL = process.env.RAG_API_URL || 'http://127.0.0.1:8000';
 
 export async function POST(request: NextRequest) {
-  // Verificar sesión del usuario
+  // Verificar autenticación
   const session = await auth();
   if (!session?.user?.id) {
     return new Response('Unauthorized', { status: 401 });
   }
 
   try {
-    // Extraer los archivos del FormData
+    // Extraer archivos del FormData
     const formData = await request.formData();
     const files = formData.getAll('files') as File[];
 
     if (!files || files.length === 0) {
-      return new Response('No se enviaron archivos', { status: 400 });
+      return new Response('No files provided', { status: 400 });
     }
 
     const results: unknown[] = [];
 
     for (const file of files) {
-      // Solo procesamos PDFs por ahora
+      // Validar que sea PDF
       const isPdf =
         file.type === 'application/pdf' ||
         file.name.toLowerCase().endsWith('.pdf');
 
       if (!isPdf) {
-        continue; // ignorar otros tipos por ahora
+        results.push({
+          fileName: file.name,
+          success: false,
+          error: 'Only PDF files are supported',
+        });
+        continue;
       }
 
-      // Construir payload multipart para FastAPI
-      const fastapiForm = new FormData();
-      fastapiForm.append('pdf_file', file, file.name);
-      fastapiForm.append('title', file.name.replace(/\.pdf$/i, ''));
-      fastapiForm.append('author', session.user.email || 'Unknown');
-      fastapiForm.append('version', '1.0.0');
-      fastapiForm.append('source', 'upload');
+      try {
+        // Crear FormData para FastAPI
+        const fastapiFormData = new FormData();
+        fastapiFormData.append('file', file, file.name);
 
-      const resp = await fetch(`${FASTAPI_URL}/api/ingest/pdf`, {
-        method: 'POST',
-        body: fastapiForm,
-      });
+        // Llamar a la API FastAPI
+        const response = await fetch(
+          `${RAG_API_URL}/api/rag/documents/upload`,
+          {
+            method: 'POST',
+            body: fastapiFormData,
+          },
+        );
 
-      if (!resp.ok) {
-        const errText = await resp.text();
-        return new Response(`Error desde RAG server: ${errText}`, {
-          status: 500,
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`FastAPI upload error for ${file.name}:`, errorText);
+
+          results.push({
+            fileName: file.name,
+            success: false,
+            error: `Upload failed: ${errorText}`,
+          });
+          continue;
+        }
+
+        const result = await response.json();
+
+        results.push({
+          fileName: file.name,
+          success: true,
+          documentId: result.document_id,
+          chunksCount: result.chunks_count,
+          message: result.message,
+        });
+      } catch (fileError) {
+        console.error(`Error processing file ${file.name}:`, fileError);
+        results.push({
+          fileName: file.name,
+          success: false,
+          error: 'Processing error',
         });
       }
-
-      const json = await resp.json();
-      results.push(json);
     }
+
+    // Verificar si al menos un archivo se procesó exitosamente
+    const successCount = results.filter((r: any) => r.success).length;
 
     return Response.json(
       {
-        success: true,
+        success: successCount > 0,
         processed: results.length,
+        successful: successCount,
         results,
       },
-      { status: 200 },
+      {
+        status: successCount > 0 ? 200 : 400,
+      },
     );
   } catch (error) {
-    console.error('Error subiendo archivos:', error);
-    return new Response('Error interno del servidor', { status: 500 });
+    console.error('Upload error:', error);
+
+    // Error de conexión con FastAPI
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      return new Response(
+        'RAG server unavailable. Please ensure FastAPI server is running.',
+        { status: 503 },
+      );
+    }
+
+    return new Response('Internal server error', { status: 500 });
   }
 }

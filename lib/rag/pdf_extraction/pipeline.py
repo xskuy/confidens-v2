@@ -1,9 +1,10 @@
-import fitz  # PyMuPDF
-import json
-import re
-import os
-import io
 import argparse
+import io
+import json
+import os
+import re
+
+import fitz  # PyMuPDF
 import numpy as np
 from PIL import Image
 
@@ -169,23 +170,13 @@ def process_pdf(doc, output_path):
             if block["type"] != 0:
                 continue
 
-            block_text_content = "".join(
-                span["text"] for line in block["lines"] for span in line["spans"]
-            ).strip()
-            if (
-                block_text_content.isdigit()
-                and block["bbox"][3] > page_rect.height - 80
-            ):
+            block_text_content = "".join(span["text"] for line in block["lines"] for span in line["spans"]).strip()
+            if block_text_content.isdigit() and block["bbox"][3] > page_rect.height - 80:
                 continue
 
-            block_full_text = "\n".join(
-                "".join(s["text"] for s in l["spans"]) for l in block["lines"]
-            )
+            block_full_text = "\n".join("".join(s["text"] for s in l["spans"]) for l in block["lines"])
             lines_in_block = block_full_text.split("\n")
-            is_toc_like = (
-                len(lines_in_block) > 1
-                and len(HEADING_PATTERN.findall(block_full_text)) > 1
-            )
+            is_toc_like = len(lines_in_block) > 1 and len(HEADING_PATTERN.findall(block_full_text)) > 1
 
             if is_toc_like:
                 process_lines = lines_in_block
@@ -211,9 +202,7 @@ def process_pdf(doc, output_path):
                     continue
 
                 # 2 · Vaciar la pila al detectar el Índice de Contenido
-                if (
-                    "Índice de Contenido" in line_text or "Indice" in line_text
-                ) and toc_page_num is None:
+                if ("Índice de Contenido" in line_text or "Indice" in line_text) and toc_page_num is None:
                     toc_page_num = page_num
                     section_stack = []
                     parent_path = None
@@ -252,9 +241,7 @@ def process_pdf(doc, output_path):
                 is_heading = False
                 numeric_match = HEADING_PATTERN.match(line_text)
 
-                if numeric_match and is_potential_heading(
-                    line_text, line_font_size, body_font_size, heading_font_size
-                ):
+                if numeric_match and is_potential_heading(line_text, line_font_size, body_font_size, heading_font_size):
                     raw_num = numeric_match.group(1)
                     number_str = re.sub(r"[.\-]+$", "", raw_num)  # ej. "1.-" -> "1"
                     level = number_str.count(".") + 1
@@ -269,11 +256,7 @@ def process_pdf(doc, output_path):
                             section_stack = []
                         found_first_numeric_heading = True
 
-                is_bold_style = (
-                    line_font_size + 0.5 >= heading_font_size
-                    or line_text.isupper()
-                    or line_text.istitle()
-                )
+                is_bold_style = line_font_size + 0.5 >= heading_font_size or line_text.isupper() or line_text.istitle()
                 if not is_heading and is_bold_style and not found_first_numeric_heading:
                     # Synthetic heading for cover page etc.
                     is_heading = True
@@ -287,9 +270,7 @@ def process_pdf(doc, output_path):
                         section_stack.pop()
 
                     parent_path = section_stack[-1]["path"] if section_stack else None
-                    section_path = (
-                        f"{parent_path}/{number_str}" if parent_path else number_str
-                    )
+                    section_path = f"{parent_path}/{number_str}" if parent_path else number_str
 
                     section_stack.append({"level": level, "path": section_path})
 
@@ -330,10 +311,200 @@ def process_pdf(doc, output_path):
     print("---------------------------\n")
 
 
+def extract_blocks(doc):
+    """
+    Extract structured blocks from a PDF document.
+
+    Args:
+        doc: PyMuPDF document object
+
+    Returns:
+        List of block dictionaries
+    """
+    all_blocks = []
+    block_id_counter = 0
+    section_stack = []
+    body_font_size, heading_font_size = analyze_font_sizes(doc)
+    found_first_numeric_heading = False
+    toc_page_num = None
+
+    for page_num, page in enumerate(doc, 1):
+        page_rect = page.rect
+        page_area = page_rect.width * page_rect.height
+
+        # 3 · Opcional: reiniciar section_stack al cambiar de página antes del primer heading numérico
+        if page_num > 1 and not found_first_numeric_heading:
+            section_stack = []
+
+        current_heading_path = section_stack[-1]["path"] if section_stack else None
+
+        # Rule #7: Filter out large, page-sized images.
+        image_infos = page.get_image_info(xrefs=True)
+        for img_info in image_infos:
+            bbox = img_info["bbox"]
+            img_area = (bbox[2] - bbox[0]) * (bbox[3] - bbox[1])
+            if page_area > 0 and img_area / page_area > 0.90:
+                continue
+
+            try:
+                img_bytes = doc.extract_image(img_info["xref"])["image"]
+                ocr_text = get_text_from_image(img_bytes)
+            except Exception:
+                ocr_text = ""  # Could not extract image
+
+            all_blocks.append(
+                {
+                    "page": page_num,
+                    "block_id": block_id_counter,
+                    "type": "image",
+                    "parent": current_heading_path,
+                    "bbox": [round(c) for c in bbox],
+                    "ocr": ocr_text,
+                }
+            )
+            block_id_counter += 1
+
+        blocks = page.get_text("dict").get("blocks", [])
+        for block in blocks:
+            if block["type"] != 0:
+                continue
+
+            block_text_content = "".join(span["text"] for line in block["lines"] for span in line["spans"]).strip()
+            if block_text_content.isdigit() and block["bbox"][3] > page_rect.height - 80:
+                continue
+
+            block_full_text = "\n".join("".join(s["text"] for s in l["spans"]) for l in block["lines"])
+            lines_in_block = block_full_text.split("\n")
+            is_toc_like = len(lines_in_block) > 1 and len(HEADING_PATTERN.findall(block_full_text)) > 1
+
+            if is_toc_like:
+                process_lines = lines_in_block
+            else:
+                process_lines = [block_full_text]
+
+            for line_text in process_lines:
+                if not line_text.strip():
+                    continue
+
+                if TOC_LINE.search(line_text):
+                    parent_path = section_stack[-1]["path"] if section_stack else None
+                    all_blocks.append(
+                        {
+                            "page": page_num,
+                            "block_id": block_id_counter,
+                            "type": "text",
+                            "parent": parent_path,
+                            "text": line_text.strip(),
+                        }
+                    )
+                    block_id_counter += 1
+                    continue
+
+                # 2 · Vaciar la pila al detectar el Índice de Contenido
+                if ("Índice de Contenido" in line_text or "Indice" in line_text) and toc_page_num is None:
+                    toc_page_num = page_num
+                    section_stack = []
+                    parent_path = None
+                    all_blocks.append(
+                        {
+                            "page": page_num,
+                            "block_id": block_id_counter,
+                            "type": "text",
+                            "parent": parent_path,
+                            "text": line_text.strip(),
+                        }
+                    )
+                    block_id_counter += 1
+                    continue
+
+                # Ignore any potential headings on the table of contents page
+                if page_num == toc_page_num:
+                    parent_path = section_stack[-1]["path"] if section_stack else None
+                    all_blocks.append(
+                        {
+                            "page": page_num,
+                            "block_id": block_id_counter,
+                            "type": "text",
+                            "parent": None,
+                            "text": line_text.strip(),
+                        }
+                    )
+                    block_id_counter += 1
+                    continue
+
+                try:
+                    line_font_size = round(block["lines"][0]["spans"][0]["size"])
+                except (IndexError, KeyError):
+                    line_font_size = body_font_size
+
+                is_heading = False
+                numeric_match = HEADING_PATTERN.match(line_text)
+
+                if numeric_match and is_potential_heading(line_text, line_font_size, body_font_size, heading_font_size):
+                    raw_num = numeric_match.group(1)
+                    number_str = re.sub(r"[.\-]+$", "", raw_num)  # ej. "1.-" -> "1"
+                    level = number_str.count(".") + 1
+
+                    # Rule #2: Ignore level 1 items that are not significantly larger than body
+                    if level == 1 and line_font_size <= body_font_size:
+                        is_heading = False
+                    else:
+                        is_heading = True
+                        title = numeric_match.group(2).strip()
+                        if not found_first_numeric_heading:
+                            section_stack = []
+                        found_first_numeric_heading = True
+
+                is_bold_style = line_font_size + 0.5 >= heading_font_size or line_text.isupper() or line_text.istitle()
+                if not is_heading and is_bold_style and not found_first_numeric_heading:
+                    # Synthetic heading for cover page etc.
+                    is_heading = True
+                    title = line_text
+                    level = section_stack[-1]["level"] + 1 if section_stack else 1
+                    number_str = f"u{block_id_counter}"
+
+                if is_heading:
+                    # This part only runs for numeric or synthetic headings
+                    while section_stack and section_stack[-1]["level"] >= level:
+                        section_stack.pop()
+
+                    parent_path = section_stack[-1]["path"] if section_stack else None
+                    section_path = f"{parent_path}/{number_str}" if parent_path else number_str
+
+                    section_stack.append({"level": level, "path": section_path})
+
+                    all_blocks.append(
+                        {
+                            "page": page_num,
+                            "block_id": block_id_counter,
+                            "type": "heading",
+                            "level": level,
+                            "parent": parent_path,
+                            "section_path": section_path,
+                            "text": f"{number_str} {title}" if numeric_match else title,
+                        }
+                    )
+                else:
+                    # Just normal text
+                    parent_path = section_stack[-1]["path"] if section_stack else None
+                    all_blocks.append(
+                        {
+                            "page": page_num,
+                            "block_id": block_id_counter,
+                            "type": "text",
+                            "parent": parent_path,
+                            "text": line_text.strip(),
+                        }
+                    )
+                block_id_counter += 1
+
+    return all_blocks
+
+
 def create_dummy_pdf():
     """Creates a dummy PDF with structured content for testing."""
-    from reportlab.pdfgen import canvas
     from reportlab.lib.pagesizes import letter
+    from reportlab.pdfgen import canvas
 
     try:
         c = canvas.Canvas("test.pdf", pagesize=letter)
@@ -368,21 +539,15 @@ def create_dummy_pdf():
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Process a PDF to extract structured content as JSONL."
-    )
-    parser.add_argument(
-        "input_pdf", nargs="?", default=None, help="Path to the input PDF file."
-    )
+    parser = argparse.ArgumentParser(description="Process a PDF to extract structured content as JSONL.")
+    parser.add_argument("input_pdf", nargs="?", default=None, help="Path to the input PDF file.")
     parser.add_argument(
         "-o",
         "--output",
         help="Path to the output JSONL file. If not specified, output is saved to lib/rag/output/.",
     )
     parser.add_argument("--gpu", action="store_true", help="Enable GPU for PaddleOCR.")
-    parser.add_argument(
-        "--create-dummy", action="store_true", help="Create a dummy PDF for testing."
-    )
+    parser.add_argument("--create-dummy", action="store_true", help="Create a dummy PDF for testing.")
 
     args = parser.parse_args()
 
@@ -391,9 +556,7 @@ def main():
         return
 
     if not args.input_pdf:
-        parser.error(
-            "the following arguments are required: input_pdf (unless --create-dummy is used)"
-        )
+        parser.error("the following arguments are required: input_pdf (unless --create-dummy is used)")
 
     if not os.path.exists(args.input_pdf):
         print(f"Error: Input PDF file not found at '{args.input_pdf}'")

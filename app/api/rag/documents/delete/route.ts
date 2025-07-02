@@ -2,10 +2,10 @@ import { auth } from '@/app/(auth)/auth';
 import type { NextRequest } from 'next/server';
 
 interface DeleteDocumentRequest {
-  resource_id: string;
+  document_id: string;
 }
 
-const FASTAPI_URL = process.env.RAG_API_URL || 'http://127.0.0.1:8000';
+const RAG_API_URL = process.env.RAG_API_URL || 'http://127.0.0.1:8000';
 
 export async function DELETE(request: NextRequest) {
   const session = await auth();
@@ -18,35 +18,33 @@ export async function DELETE(request: NextRequest) {
     const data: DeleteDocumentRequest = await request.json();
 
     // Validación de campos requeridos
-    if (!data.resource_id) {
-      return new Response('Missing required field: resource_id', {
+    if (!data.document_id?.trim()) {
+      return new Response('Missing required field: document_id', {
         status: 400,
       });
     }
 
-    // Hacer request al servidor FastAPI
-    const response = await fetch(`${FASTAPI_URL}/api/delete`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
+    // Llamar a la API FastAPI
+    const response = await fetch(
+      `${RAG_API_URL}/api/rag/documents/${data.document_id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       },
-      body: JSON.stringify({
-        resource_id: data.resource_id,
-      }),
-    });
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('FastAPI error:', errorText);
+      console.error('FastAPI delete error:', errorText);
 
-      // Manejar error 404 específicamente
+      // Manejar errores específicos
       if (response.status === 404) {
         return new Response('Document not found', { status: 404 });
       }
 
-      return new Response('Failed to delete document via FastAPI', {
-        status: 500,
-      });
+      return new Response('Failed to delete document', { status: 500 });
     }
 
     const result = await response.json();
@@ -54,22 +52,20 @@ export async function DELETE(request: NextRequest) {
     return Response.json(
       {
         success: true,
-        message: result.message,
-        resourceId: result.resource_id,
-        chunksDeleted: result.chunks_deleted,
+        message: result.message || 'Document deleted successfully',
+        documentId: data.document_id,
+        deletedChunks: result.deleted_chunks || 0,
       },
       { status: 200 },
     );
   } catch (error) {
-    console.error('Error deleting document:', error);
+    console.error('Delete document error:', error);
 
-    // Verificar si es un error de conexión con FastAPI
+    // Error de conexión con FastAPI
     if (error instanceof TypeError && error.message.includes('fetch')) {
       return new Response(
-        'RAG server is not available. Please ensure the FastAPI server is running on port 8000.',
-        {
-          status: 503,
-        },
+        'RAG server unavailable. Please ensure FastAPI server is running.',
+        { status: 503 },
       );
     }
 

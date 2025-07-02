@@ -34,6 +34,15 @@ def classify_line(line: str) -> dict:
         return {"type": "text", "content": line}
 
 
+def structure_text_content(text_content: str) -> list:
+    """
+    Toma el contenido de texto limpio y lo estructura en un árbol jerárquico.
+    """
+    lines = text_content.split("\n\n")
+    classified_lines = [classify_line(line) for line in lines if line.strip()]
+    return build_tree(classified_lines)
+
+
 def build_tree(classified_lines: list) -> list:
     """
     Builds a hierarchical tree from a list of classified lines.
@@ -107,11 +116,9 @@ def main():
     try:
         with open(args.input_txt, encoding="utf-8") as f:
             # Assume paragraphs are separated by double newlines from the previous script
-            lines = f.read().split("\n\n")
+            cleaned_text = f.read()
 
-        classified_lines = [classify_line(line) for line in lines if line.strip()]
-
-        document_tree = build_tree(classified_lines)
+        document_tree = structure_text_content(cleaned_text)
 
         with open(output_path, "w", encoding="utf-8") as f_out:
             json.dump(document_tree, f_out, indent=2, ensure_ascii=False)

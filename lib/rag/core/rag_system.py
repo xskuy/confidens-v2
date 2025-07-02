@@ -4,11 +4,12 @@ Sistema RAG completo - Integración de Voyage AI y Qdrant
 """
 
 import logging
-from typing import Any, Optional
+from typing import Any, List, Optional
 
-from config.settings import RAGConfig
-from core.qdrant_client import QdrantClient
-from core.voyage_client import VoyageClient
+from ..api.schemas import DocumentDetails
+from ..config.settings import RAGConfig
+from .qdrant_client import QdrantClient
+from .voyage_client import VoyageClient
 
 logger = logging.getLogger(__name__)
 
@@ -153,6 +154,68 @@ class RAGSystem:
             logger.error(f"Error en búsqueda: {e}")
             return []
 
+    def list_documents(self) -> List[DocumentDetails]:
+        """Lists all unique documents in the Qdrant collection."""
+        all_points = []
+        next_offset = None
+
+        while True:
+            # The scroll method returns a tuple: (list[Record], str | None)
+            points, next_offset = self.qdrant_client.scroll(
+                collection_name=self.config.QDRANT_COLLECTION_NAME,
+                limit=250,  # Adjust limit as needed
+                with_payload=True,
+                with_vectors=False,
+                offset=next_offset,
+            )
+            all_points.extend(points)
+            if not next_offset:
+                break
+
+        unique_documents = {}
+        for point in all_points:
+            doc_id = point.payload.get("document_id")
+            if doc_id and doc_id not in unique_documents:
+                # Create a serializable payload, excluding non-serializable types
+                serializable_payload = {
+                    k: v for k, v in point.payload.items() if isinstance(v, (str, int, float, bool, list, dict))
+                }
+                unique_documents[doc_id] = DocumentDetails(id=doc_id, payload=serializable_payload)
+
+        return list(unique_documents.values())
+
+    def delete_documents_by_ids(self, ids: list[str]) -> bool:
+        """
+        Eliminar documentos por sus IDs
+
+        Args:
+            ids: Lista de IDs de los documentos a eliminar
+
+        Returns:
+            True si la eliminación fue exitosa
+        """
+        try:
+            return self.qdrant_client.delete_documents(ids)
+        except Exception as e:
+            logger.error(f"Error eliminando documentos por IDs: {e}")
+            return False
+
+    def delete_documents_by_metadata(self, filter_conditions: dict[str, Any]) -> bool:
+        """
+        Eliminar documentos por filtro de metadatos
+
+        Args:
+            filter_conditions: Diccionario con el filtro
+
+        Returns:
+            True si la eliminación fue exitosa
+        """
+        try:
+            return self.qdrant_client.delete_by_metadata(filter_conditions)
+        except Exception as e:
+            logger.error(f"Error eliminando documentos por metadatos: {e}")
+            return False
+
     def get_system_info(self) -> dict[str, Any]:
         """
         Obtener información del sistema RAG
@@ -181,6 +244,7 @@ class RAGSystem:
         self,
         chunks: list[dict[str, Any]],
         batch_size: Optional[int] = None,
+        document_id: Optional[str] = None,
     ) -> bool:
         """
         Procesar chunks de documentos (con metadatos enriquecidos)
@@ -188,6 +252,7 @@ class RAGSystem:
         Args:
             chunks: Lista de chunks con formato {text, metadata}
             batch_size: Tamaño del lote para procesamiento
+            document_id: ID único del documento al que pertenecen los chunks
 
         Returns:
             True si el procesamiento fue exitoso
@@ -222,6 +287,9 @@ class RAGSystem:
                         "parent": chunk.get("parent"),
                         "original_text": chunk.get("text", ""),
                     }
+                    if document_id:
+                        meta["document_id"] = document_id
+
                     # Agregar otros metadatos si existen
                     for key in ["section_path", "bbox", "confidence"]:
                         if key in chunk:

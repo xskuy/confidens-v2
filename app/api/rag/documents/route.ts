@@ -1,18 +1,12 @@
 import { auth } from '@/app/(auth)/auth';
 import type { NextRequest } from 'next/server';
 
-interface IngestDocumentRequest {
-  title: string;
-  author: string;
-  content_type: string;
-  version: string;
-  content: string;
-  source: string;
-}
+// Este endpoint ahora solo redirige a la API FastAPI
+// La lógica de procesamiento está completamente en FastAPI
 
-const FASTAPI_URL = process.env.RAG_API_URL || 'http://127.0.0.1:8000';
+const RAG_API_URL = process.env.RAG_API_URL || 'http://127.0.0.1:8000';
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -20,40 +14,36 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const data: IngestDocumentRequest = await request.json();
+    // Extraer parámetros de query
+    const { searchParams } = new URL(request.url);
+    const page = searchParams.get('page') || '1';
+    const limit = searchParams.get('limit') || '10';
 
-    // Validación de campos requeridos
-    if (!data.title || !data.content || !data.source) {
-      return new Response('Missing required fields: title, content, source', {
-        status: 400,
-      });
-    }
-
-    // Valores por defecto
-    const documentData = {
-      title: data.title,
-      author: data.author || session.user.email || 'Unknown',
-      content_type: data.content_type || 'document',
-      version: data.version || '1.0.0',
-      content: data.content,
-      source: data.source,
-    };
-
-    // Hacer request al servidor FastAPI
-    const response = await fetch(`${FASTAPI_URL}/api/ingest`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    // Llamar a la API FastAPI
+    const response = await fetch(
+      `${RAG_API_URL}/api/rag/documents?page=${page}&limit=${limit}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       },
-      body: JSON.stringify(documentData),
-    });
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('FastAPI error:', errorText);
-      return new Response('Failed to ingest document via FastAPI', {
-        status: 500,
-      });
+      console.error('FastAPI documents error:', errorText);
+
+      return Response.json(
+        {
+          success: false,
+          documents: [],
+          totalDocuments: 0,
+          error: 'fetch_failed',
+          message: 'Failed to retrieve documents',
+        },
+        { status: 200 },
+      );
     }
 
     const result = await response.json();
@@ -61,25 +51,30 @@ export async function POST(request: NextRequest) {
     return Response.json(
       {
         success: true,
-        message: result.message,
-        resourceId: result.resource_id,
-        chunksCount: result.chunks_count,
+        documents: result.documents || [],
+        totalDocuments: result.total_documents || 0,
+        pagination: result.pagination || null,
       },
       { status: 200 },
     );
   } catch (error) {
-    console.error('Error in document ingestion:', error);
+    console.error('Documents GET error:', error);
 
-    // Verificar si es un error de conexión con FastAPI
     if (error instanceof TypeError && error.message.includes('fetch')) {
-      return new Response(
-        'RAG server is not available. Please ensure the FastAPI server is running on port 8000.',
+      return Response.json(
         {
-          status: 503,
+          success: false,
+          documents: [],
+          totalDocuments: 0,
+          error: 'connection_failed',
+          message: 'RAG server unavailable',
         },
+        { status: 200 },
       );
     }
 
     return new Response('Internal server error', { status: 500 });
   }
 }
+
+// POST method removed - use /upload endpoint instead

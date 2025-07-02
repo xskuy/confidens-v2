@@ -30,16 +30,15 @@ export const ragSearch = tool({
       }
 
       // Hacer request al servidor FastAPI con parámetros optimizados para más contexto
-      const response = await fetch(`${FASTAPI_URL}/api/search`, {
+      const response = await fetch(`${FASTAPI_URL}/api/rag/search`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           query: query.trim(),
-          k_final: 15, // Aumentado para capturar más fragmentos
-          min_sigmoid: 0.1, // Muy permisivo para no perder información relevante
-          max_per_doc: 8, // Más chunks por documento
+          k: 15, // Aumentado para capturar más fragmentos
+          threshold: 0.1, // Muy permisivo para no perder información relevante
         }),
         signal: AbortSignal.timeout(30000), // Timeout de 30 segundos
       });

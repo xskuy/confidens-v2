@@ -8,8 +8,28 @@ import os
 from dataclasses import dataclass
 from typing import Optional
 
+from dotenv import load_dotenv
 from pydantic import Field
 from pydantic_settings import BaseSettings
+
+# Cargar variables de entorno desde el archivo .env.local en la raíz del proyecto
+# Buscar el archivo .env.local desde diferentes ubicaciones posibles
+possible_dotenv_paths = [
+    os.path.join(os.getcwd(), ".env.local"),  # Desde directorio actual
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".env.local")),  # Relativo al archivo
+    "/Users/xskuy/confidens-v2/.env.local",  # Path absoluto como fallback
+]
+
+dotenv_loaded = False
+for dotenv_path in possible_dotenv_paths:
+    if os.path.exists(dotenv_path):
+        load_dotenv(dotenv_path=dotenv_path)
+        print(f"✅ Variables de entorno cargadas desde: {dotenv_path}")
+        dotenv_loaded = True
+        break
+
+if not dotenv_loaded:
+    print("⚠️ No se pudo encontrar el archivo .env.local")
 
 # Configuración de logging
 logging.basicConfig(level=logging.INFO)

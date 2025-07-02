@@ -231,6 +231,54 @@ class QdrantClient:
             logger.error(f"Error en búsqueda: {e}")
             return []
 
+    def scroll(
+        self,
+        limit: int = 10,
+        offset: Optional[Any] = None,
+        filter_conditions: Optional[dict[str, Any]] = None,
+    ) -> tuple[list[dict[str, Any]], Optional[Any]]:
+        """
+        Listar documentos usando paginación (scroll)
+
+        Args:
+            limit: Número de resultados por página
+            offset: ID del último punto de la página anterior para continuar
+            filter_conditions: Condiciones de filtro opcionales
+
+        Returns:
+            Tupla con la lista de documentos y el offset para la siguiente página
+        """
+        try:
+            query_filter = None
+            if filter_conditions:
+                conditions = []
+                for key, value in filter_conditions.items():
+                    conditions.append(FieldCondition(key=key, match=MatchValue(value=value)))
+                query_filter = Filter(must=conditions)
+
+            records, next_page_offset = self.client.scroll(
+                collection_name=self.collection_name,
+                limit=limit,
+                offset=offset,
+                with_payload=True,
+                with_vectors=False,
+                filter=query_filter,
+            )
+
+            documents = [
+                {
+                    "id": record.id,
+                    "payload": record.payload,
+                }
+                for record in records
+            ]
+
+            return documents, next_page_offset
+
+        except Exception as e:
+            logger.error(f"Error en scroll: {e}")
+            return [], None
+
     def get_collection_info(self) -> Optional[dict[str, Any]]:
         """
         Obtener información de la colección
@@ -248,28 +296,57 @@ class QdrantClient:
                 "status": info.status,
             }
         except Exception as e:
-            logger.error(f"Error obteniendo información de colección: {e}")
+            logger.error(f"Error obteniendo información de la colección: {e}")
             return None
 
     def delete_documents(self, ids: list[str]) -> bool:
         """
-        Eliminar documentos por ID
+        Eliminar documentos por sus IDs
 
         Args:
-            ids: Lista de IDs a eliminar
+            ids: Lista de IDs de los documentos a eliminar
 
         Returns:
-            True si los documentos fueron eliminados exitosamente
+            True si la eliminación fue exitosa
         """
+        if not ids:
+            return True
         try:
             self.client.delete(
                 collection_name=self.collection_name,
                 points_selector=ids,
             )
-            logger.info(f"Documentos eliminados: {len(ids)} documentos")
+            logger.info(f"Documentos eliminados exitosamente: {len(ids)} IDs")
             return True
         except Exception as e:
             logger.error(f"Error eliminando documentos: {e}")
+            return False
+
+    def delete_by_metadata(self, filter_conditions: dict[str, Any]) -> bool:
+        """
+        Eliminar documentos basado en un filtro de metadatos
+
+        Args:
+            filter_conditions: Diccionario con el filtro de metadatos
+
+        Returns:
+            True si la eliminación fue exitosa
+        """
+        try:
+            conditions = [
+                FieldCondition(key=key, match=MatchValue(value=value)) for key, value in filter_conditions.items()
+            ]
+
+            self.client.delete(
+                collection_name=self.collection_name,
+                points_selector=Filter(must=conditions),
+            )
+
+            logger.info(f"Documentos eliminados con filtro: {filter_conditions}")
+            return True
+
+        except Exception as e:
+            logger.error(f"Error eliminando por metadatos: {e}")
             return False
 
     def validate_connection(self) -> bool:
@@ -331,7 +408,7 @@ def create_qdrant_client(url: str = "http://localhost:6333", collection_name: st
     Returns:
         Cliente de Qdrant configurado
     """
-    from config.settings import QdrantConfig
+    from ..config.settings import QdrantConfig
 
     config = QdrantConfig(url=url, collection_name=collection_name)
     return QdrantClient(config)

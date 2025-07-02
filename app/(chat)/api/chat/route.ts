@@ -176,7 +176,7 @@ export async function POST(request: Request) {
           group_by_doc: true,
         };
 
-        const response = await fetch(`${FASTAPI_URL}/api/search`, {
+        const response = await fetch(`${FASTAPI_URL}/api/rag/search`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -192,13 +192,20 @@ export async function POST(request: Request) {
 
         const result = await response.json();
 
-        if (!result.success || !result.results || result.results.length === 0) {
+        // FastAPI devuelve directamente un array de resultados
+        if (!Array.isArray(result) || result.length === 0) {
           console.log('No se encontraron resultados RAG relevantes');
           return null;
         }
 
-        console.log(`✅ RAG encontró ${result.results.length} resultados`);
-        return result.context;
+        console.log(`✅ RAG encontró ${result.length} resultados`);
+
+        // Combinar el texto de todos los resultados para crear el contexto
+        const context = result
+          .map((item, index) => `[${index + 1}] ${item.text}`)
+          .join('\n\n');
+
+        return context;
       } catch (error) {
         console.error('Error en búsqueda RAG:', error);
         return null;

@@ -163,7 +163,7 @@ export function RagTest() {
     setError(null);
 
     try {
-      const response = await fetch('/api/rag/documents/list');
+      const response = await fetch('/api/rag/documents');
 
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -197,7 +197,7 @@ export function RagTest() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          resource_id: resourceId,
+          document_id: resourceId,
         }),
       });
 

@@ -36,9 +36,16 @@ if ! command -v pnpm &> /dev/null; then
     exit 1
 fi
 
+# Verificar que existe el archivo .env.local
+if [ ! -f ".env.local" ]; then
+    echo -e "${RED}❌ Error: No se encontró el archivo .env.local en la raíz del proyecto${NC}"
+    echo -e "${YELLOW}💡 Asegúrate de tener configurado VOYAGE_API_KEY en .env.local${NC}"
+    exit 1
+fi
+
 # Configurar entorno Python
 echo -e "${BLUE}🔍 Configurando entorno Python...${NC}"
-cd rag-python
+cd lib/rag
 
 # Crear entorno virtual si no existe
 if [ ! -d ".venv" ]; then
@@ -48,26 +55,37 @@ fi
 
 # Verificar/instalar dependencias
 echo -e "${YELLOW}📦 Instalando dependencias de Python...${NC}"
-uv pip install -r requirements.txt
+if [ -f "requirements.txt" ]; then
+    uv pip install -r requirements.txt
+else
+    echo -e "${YELLOW}⚠️  No se encontró requirements.txt, instalando dependencias básicas...${NC}"
+    uv pip install fastapi uvicorn python-multipart qdrant-client voyageai paddlepaddle paddleocr
+fi
 
-cd ..
+cd ../..
 
 echo -e "${GREEN}✅ Dependencias verificadas${NC}"
 echo ""
 
 # Iniciar FastAPI en background
 echo -e "${BLUE}🐍 Iniciando servidor FastAPI (Puerto 8000)...${NC}"
-cd rag-python
-source .venv/bin/activate && python scripts/main_server.py &
+cd lib/rag
+source .venv/bin/activate && cd ../.. && PYTHONPATH=. uvicorn lib.rag.api.main:app --host 0.0.0.0 --port 8000 --reload &
 FASTAPI_PID=$!
-cd ..
 
 # Esperar un poco para que FastAPI se inicie
-sleep 3
+sleep 5
 
 # Verificar que FastAPI esté corriendo
 if ps -p $FASTAPI_PID > /dev/null; then
     echo -e "${GREEN}✅ FastAPI iniciado (PID: $FASTAPI_PID)${NC}"
+    
+    # Verificar que responda
+    if curl -s http://localhost:8000/api/rag/health > /dev/null; then
+        echo -e "${GREEN}✅ FastAPI responde correctamente${NC}"
+    else
+        echo -e "${YELLOW}⚠️  FastAPI iniciado pero no responde aún (puede estar cargando modelos)${NC}"
+    fi
 else
     echo -e "${RED}❌ Error: FastAPI no se pudo iniciar${NC}"
     exit 1
@@ -97,8 +115,10 @@ echo -e "📱 ${BLUE}Next.js App:${NC}      http://localhost:3000"
 echo -e "🐍 ${BLUE}FastAPI Server:${NC}   http://localhost:8000"
 echo -e "📖 ${BLUE}API Docs:${NC}         http://localhost:8000/docs"
 echo -e "🧪 ${BLUE}Prueba de RAG:${NC}    http://localhost:3000/rag-test"
+echo -e "💬 ${BLUE}Chat con RAG:${NC}     http://localhost:3000"
 echo ""
 echo -e "${YELLOW}💡 Presiona Ctrl+C para detener ambos servidores${NC}"
+echo -e "${YELLOW}📝 Nota: FastAPI puede tardar unos minutos en cargar todos los modelos${NC}"
 echo ""
 
 # Esperar a que los procesos terminen

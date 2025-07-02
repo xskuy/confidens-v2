@@ -1,8 +1,8 @@
+import argparse
 import json
+import os
 import re
 import unicodedata
-import argparse
-import os
 
 
 def normalize(text: str) -> str:
@@ -50,6 +50,67 @@ def is_noise(line: str) -> bool:
 # —----------------------------------------------
 
 
+def clean_blocks(blocks: list[dict]) -> str:
+    """
+    Clean and normalize text blocks extracted from PDF.
+
+    Args:
+        blocks: List of block dictionaries from PDF extraction
+
+    Returns:
+        Cleaned text as a single string
+    """
+    full_document_parts = []
+    paragraph_buffer = []
+
+    for block in blocks:
+        text_content = ""
+        is_heading = block.get("type") == "heading"
+        is_text = block.get("type") == "text"
+        is_image = block.get("type") == "image"
+
+        # When a new heading or image appears, the preceding paragraph (if any) is complete.
+        if is_heading or is_image:
+            if paragraph_buffer:
+                # Normalize and append the completed paragraph
+                full_document_parts.append(" ".join(paragraph_buffer))
+                paragraph_buffer = []
+
+        if is_heading or is_text:
+            text_content = block.get("text", "")
+        elif is_image:
+            text_content = block.get("ocr", "")
+
+        if not text_content.strip():
+            continue
+
+        # Normalize and check for noise
+        text_content = normalize(text_content)
+        text_content = fix_numbers(text_content)
+
+        if DECOR_RE.fullmatch(text_content):
+            continue
+
+        if is_noise(text_content):
+            continue
+
+        if is_heading or is_image:
+            full_document_parts.append(text_content)
+        elif is_text:
+            paragraph_buffer.append(text_content)
+            # Simple heuristic: flush buffer if text ends a sentence.
+            if text_content.strip().endswith((".", ":", "!", "?", ";", ")")):
+                full_document_parts.append(" ".join(paragraph_buffer))
+                paragraph_buffer = []
+
+    # Flush any remaining text in the buffer
+    if paragraph_buffer:
+        full_document_parts.append(" ".join(paragraph_buffer))
+
+    # Return the cleaned text
+    return "\n\n".join(full_document_parts)
+
+
 def main():
     """
     Main function to parse arguments and run the text cleaning process.
@@ -82,7 +143,7 @@ def main():
     paragraph_buffer = []
 
     try:
-        with open(args.input_jsonl, "r", encoding="utf-8") as f:
+        with open(args.input_jsonl, encoding="utf-8") as f:
             for line in f:
                 block = json.loads(line)
 
@@ -98,9 +159,7 @@ def main():
                         full_document_parts.append(" ".join(paragraph_buffer))
                         paragraph_buffer = []
 
-                if is_heading:
-                    text_content = block.get("text", "")
-                elif is_text:
+                if is_heading or is_text:
                     text_content = block.get("text", "")
                 elif is_image:
                     text_content = block.get("ocr", "")
@@ -141,7 +200,7 @@ def main():
 
     except json.JSONDecodeError as e:
         print(f"Error reading JSONL file: {e}")
-    except IOError as e:
+    except OSError as e:
         print(f"Error writing to output file: {e}")
 
 
