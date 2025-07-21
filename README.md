@@ -1,6 +1,10 @@
 # Confidens v2
 
 <p align="center">
+  <img src="@confidens.png" alt="Confidens Logo" width="200"/>
+</p>
+
+<p align="center">
     Plataforma avanzada de chat y análisis de datos basada en Next.js 15 y la AI SDK que permite construir experiencias de IA conversacional potentes e intuitivas.
 </p>
 
@@ -10,7 +14,7 @@
   <a href="#arquitectura"><strong>Arquitectura</strong></a> ·
   <a href="#instalación-y-desarrollo"><strong>Instalación</strong></a> ·
   <a href="#sistema-rag"><strong>Sistema RAG</strong></a> ·
-  <a href="#convenciones-de-desarrollo"><strong>Convenciones</strong></a>
+  <a href="#convenciones-de-desarrollo"><stronimage.pngg>Convenciones</stronimage.pngg></a>
 </p>
 <br/>
 

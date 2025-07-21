@@ -42,8 +42,8 @@ function PureMessages({
       id="chat-scroll-container"
       ref={messagesContainerRef}
       className={cn(
-        'flex flex-col min-w-0 gap-6 flex-1 overflow-y-auto overscroll-none',
-        messages.length === 0 ? '' : 'pt-4',
+        'flex flex-col min-w-0 gap-6 flex-1 overscroll-none',
+        messages.length === 0 ? '' : 'overflow-y-auto pt-4',
       )}
     >
       {messages.length === 0 && <Greeting />}
