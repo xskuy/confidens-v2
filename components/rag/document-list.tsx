@@ -81,12 +81,13 @@ export function DocumentList({
     return message || statusTexts[status];
   };
 
-  const filteredDocuments = documents.filter(
-    (doc) =>
-      doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doc.source.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doc.author.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const filteredDocuments = documents.filter((doc) => {
+    const query = searchQuery.toLowerCase();
+    const titleMatch = doc.title?.toLowerCase().includes(query) ?? false;
+    const sourceMatch = doc.source?.toLowerCase().includes(query) ?? false;
+    const authorMatch = doc.author?.toLowerCase().includes(query) ?? false;
+    return titleMatch || sourceMatch || authorMatch;
+  });
 
   const formatFileSize = (chunks: number) => {
     // Estimación aproximada: 1 chunk ≈ 1KB

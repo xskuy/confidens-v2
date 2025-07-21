@@ -1,7 +1,0 @@
-{"page": 1, "block_id": 0, "type": "heading", "level": 1, "parent": null, "bbox": [72, 55, 182, 77], "text": "1 Introducción"}
-{"page": 1, "block_id": 1, "type": "text", "parent": null, "bbox": [72, 87, 304, 104], "text": "Este es el primer párrafo de la introducción."}
-{"page": 1, "block_id": 2, "type": "heading", "level": 2, "parent": null, "bbox": [72, 125, 179, 144], "text": "1.1 Sub-sección"}
-{"page": 1, "block_id": 3, "type": "text", "parent": null, "bbox": [72, 155, 239, 172], "text": "Texto dentro de la sub-sección."}
-{"page": 1, "block_id": 4, "type": "text", "parent": null, "bbox": [80, 277, 208, 294], "text": "Fake image placeholder"}
-{"page": 2, "block_id": 5, "type": "heading", "level": 1, "parent": null, "bbox": [72, 55, 190, 77], "text": "2 Conclusiones"}
-{"page": 2, "block_id": 6, "type": "text", "parent": null, "bbox": [72, 87, 265, 104], "text": "Este es el texto de las conclusiones."}
