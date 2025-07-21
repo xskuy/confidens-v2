@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import type { User } from 'next-auth';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { MoreHorizontal, Trash2 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,6 +16,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useSidebar } from '@/components/ui/sidebar';
 import type { Chat } from '@/lib/db/schema';
 import { fetcher } from '@/lib/utils';
@@ -85,6 +92,10 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
     fetcher,
     {
       fallbackData: { chats: [], hasMore: false },
+      errorRetryCount: 0, // No reintentar cuando falle
+      shouldRetryOnError: false, // No reintentar automáticamente
+      revalidateOnFocus: false, // No revalidar cuando la ventana recibe foco
+      revalidateOnReconnect: false, // No revalidar cuando se reconecte
     },
   );
 
@@ -183,36 +194,35 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                       href={`/chat/${chat.id}`}
                       onClick={() => setOpenMobile(false)}
                       className={`
-                        flex items-center py-4 px-3 text-lg w-full rounded-md hover:bg-sidebar-accent
+                        flex items-center py-2 px-3 text-sm w-full rounded-md hover:bg-sidebar-accent
                         ${chat.id === id ? 'bg-sidebar-accent text-sidebar-accent-foreground' : ''}
                       `}
                     >
                       <span className="truncate">{chat.title}</span>
                     </Link>
                     <div className="opacity-0 group-hover/menu-item:opacity-100 transition-opacity">
-                      {/* Three dots menu */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDeleteId(chat.id);
-                          setShowDeleteDialog(true);
-                        }}
-                        className="p-2 hover:bg-sidebar-accent rounded-md"
-                      >
-                        <svg
-                          className="size-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 6v0m0 6v0m0 6v0"
-                          />
-                        </svg>
-                      </button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            className="p-2 hover:bg-sidebar-accent rounded-md"
+                          >
+                            <MoreHorizontal className="size-4" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuItem
+                            className="cursor-pointer text-destructive focus:bg-destructive/15 focus:text-destructive"
+                            onClick={() => {
+                              setDeleteId(chat.id);
+                              setShowDeleteDialog(true);
+                            }}
+                          >
+                            <Trash2 className="mr-2 size-4" />
+                            Eliminar chat
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
                 </div>
@@ -234,35 +244,35 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                       href={`/chat/${chat.id}`}
                       onClick={() => setOpenMobile(false)}
                       className={`
-                        flex items-center py-4 px-3 text-lg w-full rounded-md hover:bg-sidebar-accent
+                        flex items-center py-2 px-3 text-sm w-full rounded-md hover:bg-sidebar-accent
                         ${chat.id === id ? 'bg-sidebar-accent text-sidebar-accent-foreground' : ''}
                       `}
                     >
                       <span className="truncate">{chat.title}</span>
                     </Link>
                     <div className="opacity-0 group-hover/menu-item:opacity-100 transition-opacity">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDeleteId(chat.id);
-                          setShowDeleteDialog(true);
-                        }}
-                        className="p-2 hover:bg-sidebar-accent rounded-md"
-                      >
-                        <svg
-                          className="size-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 6v0m0 6v0m0 6v0"
-                          />
-                        </svg>
-                      </button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            className="p-2 hover:bg-sidebar-accent rounded-md"
+                          >
+                            <MoreHorizontal className="size-4" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuItem
+                            className="cursor-pointer text-destructive focus:bg-destructive/15 focus:text-destructive"
+                            onClick={() => {
+                              setDeleteId(chat.id);
+                              setShowDeleteDialog(true);
+                            }}
+                          >
+                            <Trash2 className="mr-2 size-4" />
+                            Eliminar chat
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
                 </div>
@@ -284,35 +294,35 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                       href={`/chat/${chat.id}`}
                       onClick={() => setOpenMobile(false)}
                       className={`
-                        flex items-center py-4 px-3 text-lg w-full rounded-md hover:bg-sidebar-accent
+                        flex items-center py-2 px-3 text-sm w-full rounded-md hover:bg-sidebar-accent
                         ${chat.id === id ? 'bg-sidebar-accent text-sidebar-accent-foreground' : ''}
                       `}
                     >
                       <span className="truncate">{chat.title}</span>
                     </Link>
                     <div className="opacity-0 group-hover/menu-item:opacity-100 transition-opacity">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDeleteId(chat.id);
-                          setShowDeleteDialog(true);
-                        }}
-                        className="p-2 hover:bg-sidebar-accent rounded-md"
-                      >
-                        <svg
-                          className="size-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 6v0m0 6v0m0 6v0"
-                          />
-                        </svg>
-                      </button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            className="p-2 hover:bg-sidebar-accent rounded-md"
+                          >
+                            <MoreHorizontal className="size-4" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuItem
+                            className="cursor-pointer text-destructive focus:bg-destructive/15 focus:text-destructive"
+                            onClick={() => {
+                              setDeleteId(chat.id);
+                              setShowDeleteDialog(true);
+                            }}
+                          >
+                            <Trash2 className="mr-2 size-4" />
+                            Eliminar chat
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
                 </div>
@@ -334,35 +344,35 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                       href={`/chat/${chat.id}`}
                       onClick={() => setOpenMobile(false)}
                       className={`
-                        flex items-center py-4 px-3 text-lg w-full rounded-md hover:bg-sidebar-accent
+                        flex items-center py-2 px-3 text-sm w-full rounded-md hover:bg-sidebar-accent
                         ${chat.id === id ? 'bg-sidebar-accent text-sidebar-accent-foreground' : ''}
                       `}
                     >
                       <span className="truncate">{chat.title}</span>
                     </Link>
                     <div className="opacity-0 group-hover/menu-item:opacity-100 transition-opacity">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDeleteId(chat.id);
-                          setShowDeleteDialog(true);
-                        }}
-                        className="p-2 hover:bg-sidebar-accent rounded-md"
-                      >
-                        <svg
-                          className="size-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 6v0m0 6v0m0 6v0"
-                          />
-                        </svg>
-                      </button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            className="p-2 hover:bg-sidebar-accent rounded-md"
+                          >
+                            <MoreHorizontal className="size-4" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuItem
+                            className="cursor-pointer text-destructive focus:bg-destructive/15 focus:text-destructive"
+                            onClick={() => {
+                              setDeleteId(chat.id);
+                              setShowDeleteDialog(true);
+                            }}
+                          >
+                            <Trash2 className="mr-2 size-4" />
+                            Eliminar chat
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
                 </div>
@@ -384,35 +394,35 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
                       href={`/chat/${chat.id}`}
                       onClick={() => setOpenMobile(false)}
                       className={`
-                        flex items-center py-4 px-3 text-lg w-full rounded-md hover:bg-sidebar-accent
+                        flex items-center py-2 px-3 text-sm w-full rounded-md hover:bg-sidebar-accent
                         ${chat.id === id ? 'bg-sidebar-accent text-sidebar-accent-foreground' : ''}
                       `}
                     >
                       <span className="truncate">{chat.title}</span>
                     </Link>
                     <div className="opacity-0 group-hover/menu-item:opacity-100 transition-opacity">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDeleteId(chat.id);
-                          setShowDeleteDialog(true);
-                        }}
-                        className="p-2 hover:bg-sidebar-accent rounded-md"
-                      >
-                        <svg
-                          className="size-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 6v0m0 6v0m0 6v0"
-                          />
-                        </svg>
-                      </button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            className="p-2 hover:bg-sidebar-accent rounded-md"
+                          >
+                            <MoreHorizontal className="size-4" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuItem
+                            className="cursor-pointer text-destructive focus:bg-destructive/15 focus:text-destructive"
+                            onClick={() => {
+                              setDeleteId(chat.id);
+                              setShowDeleteDialog(true);
+                            }}
+                          >
+                            <Trash2 className="mr-2 size-4" />
+                            Eliminar chat
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
                 </div>
@@ -425,16 +435,16 @@ export function SidebarHistory({ user }: { user: User | undefined }) {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle>¿Estás completamente seguro?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your
-              chat and remove it from our servers.
+              Esta acción no se puede deshacer. Esto eliminará permanentemente
+              tu chat y lo eliminará de nuestros servidores.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete}>
-              Continue
+              Eliminar
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

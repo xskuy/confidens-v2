@@ -1,6 +1,10 @@
 # Confidens v2
 
 <p align="center">
+  <img src="@confidens.png" alt="Confidens Logo" width="200"/>
+</p>
+
+<p align="center">
     Plataforma avanzada de chat y análisis de datos basada en Next.js 15 y la AI SDK que permite construir experiencias de IA conversacional potentes e intuitivas.
 </p>
 
@@ -10,7 +14,7 @@
   <a href="#arquitectura"><strong>Arquitectura</strong></a> ·
   <a href="#instalación-y-desarrollo"><strong>Instalación</strong></a> ·
   <a href="#sistema-rag"><strong>Sistema RAG</strong></a> ·
-  <a href="#convenciones-de-desarrollo"><strong>Convenciones</strong></a>
+  <a href="#convenciones-de-desarrollo"><stronimage.pngg>Convenciones</stronimage.pngg></a>
 </p>
 <br/>
 
@@ -172,31 +176,57 @@ QDRANT_COLLECTION="documents"
 
 ### Instalación
 
+#### Opción 1: Inicio Automático (Recomendado) 🚀
+
 ```bash
 # 1. Instalar dependencias JavaScript
 pnpm install
 
-# 2. Instalar dependencias Python (requiere uv)
-cd lib/rag
-uv sync
+# 2. Configurar bases de datos
+pnpm db:migrate        # Base de datos principal
+pnpm db:migrate:rag    # Base de datos RAG
 
 # 3. Iniciar servicios con Docker (opcional)
 docker-compose up -d qdrant
 
-# 4. Configurar bases de datos
-pnpm db:migrate        # Base de datos principal
-pnpm db:migrate:rag    # Base de datos RAG
-
-# 5. Iniciar desarrollo
-pnpm dev               # Frontend (puerto 3000)
-pnpm rag:dev          # API RAG (puerto 8000)
+# 4. ¡Inicio automático de todo!
+./start-dev.sh
 ```
+
+**El script `start-dev.sh` hace todo automáticamente:**
+- ✅ Verifica dependencias (uv, pnpm)
+- ✅ Configura entorno Python y instala dependencias
+- ✅ Inicia FastAPI (puerto 8000) en background
+- ✅ Inicia Next.js (puerto 3000) en background  
+- ✅ Maneja ambos procesos con un solo Ctrl+C
+- ✅ Muestra URLs útiles al completar
+
+#### Opción 2: Manual (Si necesitas control individual)
+
+```bash
+# Terminal 1: API RAG
+cd lib/rag && uv sync && cd ../..
+pnpm rag:dev          # FastAPI (puerto 8000)
+
+# Terminal 2: Frontend  
+pnpm dev              # Next.js (puerto 3000)
+```
+
+**Una vez iniciado, tendrás acceso a:**
+- 📱 **App Principal**: http://localhost:3000
+- 🧪 **Prueba de RAG**: http://localhost:3000/rag-test  
+- 🐍 **FastAPI**: http://localhost:8000
+- 📖 **Documentación API**: http://localhost:8000/docs
 
 ### Comandos de Desarrollo
 
 ```bash
-# Frontend
-pnpm dev              # Servidor de desarrollo
+# Inicio rápido (Recomendado)
+./start-dev.sh        # Inicia FastAPI + Next.js automáticamente
+
+# Desarrollo individual
+pnpm dev              # Solo Next.js (puerto 3000)
+pnpm rag:dev          # Solo FastAPI (puerto 8000)
 pnpm build            # Construir para producción
 pnpm start            # Servidor de producción
 
@@ -211,7 +241,6 @@ pnpm db:generate      # Generar migraciones
 pnpm db:push          # Aplicar cambios directos
 
 # Sistema RAG
-pnpm rag:dev          # API RAG en desarrollo
 pnpm rag:test         # Probar conexiones RAG
 pnpm test:rag         # Pruebas de búsqueda híbrida
 ```

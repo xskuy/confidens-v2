@@ -1,55 +1,76 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RagHeader } from '@/components/rag/rag-header';
 import { DocumentUpload } from '@/components/rag/document-upload';
 import { DocumentList } from '@/components/rag/document-list';
-import { SearchSection } from '@/components/rag/search-section';
-import type {
-  Document,
-  UploadedFile,
-  SearchResult,
-} from '@/components/rag/types';
+import type { Document, UploadedFile } from '@/components/rag/types';
 
 export function RagTest() {
-  const searchParams = useSearchParams();
   const [documents, setDocuments] = useState<Document[]>([]);
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
-  const [searchLoading, setSearchLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('upload');
-
-  // Manejar cambio de pestañas según URL
-  useEffect(() => {
-    const tab = searchParams.get('tab');
-    if (tab) {
-      setActiveTab(tab);
-    }
-  }, [searchParams]);
 
   // Cargar documentos al montar el componente
   useEffect(() => {
     handleListDocuments();
   }, []);
 
-  const handleSearch = async (query: string) => {
-    setSearchLoading(true);
+  const handleDocumentUpload = async (data: { files: UploadedFile[] }) => {
+    if (data.files.length === 0) {
+      setError('No se recibió el archivo PDF');
+      return;
+    }
+
+    const pdfFile = data.files[0]; // Solo procesamos un archivo
+
+    if (
+      !pdfFile.file.type.includes('pdf') &&
+      !pdfFile.file.name.toLowerCase().endsWith('.pdf')
+    ) {
+      setError('El archivo debe ser un PDF');
+      return;
+    }
+
+    setLoading(true);
     setError(null);
 
+    // Agregar documento con estado pendiente
+    const pendingDoc: Document = {
+      id: `pending-${Date.now()}`,
+      title: pdfFile.file.name,
+      author: 'Procesando...',
+      source: 'upload',
+      created_at: new Date().toISOString(),
+      content_preview: 'Archivo en procesamiento...',
+      chunks_count: 0,
+      status: 'pending' as const,
+      statusMessage: 'En cola...',
+    };
+
+    setDocuments((prev) => [pendingDoc, ...prev]);
+
     try {
-      const response = await fetch('/api/rag/search', {
+      // Actualizar estado a procesando
+      setDocuments((prev) =>
+        prev.map((doc) =>
+          doc.id === pendingDoc.id
+            ? {
+                ...doc,
+                status: 'processing' as const,
+                statusMessage: 'Extrayendo texto...',
+              }
+            : doc,
+        ),
+      );
+
+      const formData = new FormData();
+      formData.append('files', pdfFile.file, pdfFile.file.name);
+
+      const response = await fetch('/api/rag/documents/upload', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query,
-          k: 10,
-        }),
+        body: formData,
       });
 
       if (!response.ok) {
@@ -57,151 +78,23 @@ export function RagTest() {
       }
 
       const result = await response.json();
-      setSearchResults(result.results || []);
+
+      // Remover documento pendiente y refrescar lista
+      setDocuments((prev) => prev.filter((doc) => doc.id !== pendingDoc.id));
+      await handleListDocuments();
     } catch (err) {
-      setError(
-        `Error en búsqueda: ${err instanceof Error ? err.message : 'Error desconocido'}`,
-      );
-    } finally {
-      setSearchLoading(false);
-    }
-  };
-
-  const handleDocumentUpload = async (data: {
-    mode: 'manual' | 'files';
-    manual?: { title: string; content: string; source: string };
-    files?: UploadedFile[];
-  }) => {
-    if (data.mode === 'manual' && data.manual) {
-      const { title, content, source } = data.manual;
-      if (!title || !content || !source) {
-        setError('Por favor completa todos los campos para la ingesta');
-        return;
-      }
-    } else if (data.mode === 'files' && data.files) {
-      if (data.files.length === 0) {
-        setError('Por favor sube al menos un archivo');
-        return;
-      }
-    }
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      if (data.mode === 'manual' && data.manual) {
-        const response = await fetch('/api/rag/documents', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data.manual),
-        });
-
-        if (!response.ok) {
-          throw new Error(`Error ${response.status}: ${response.statusText}`);
-        }
-
-        const result = await response.json();
-        console.log('Ingesta exitosa:', result);
-
-        // Actualizar lista de documentos
-        await handleListDocuments();
-      } else {
-        if (!data.files) {
-          setError('No se recibieron archivos');
-          return;
-        }
-
-        const totalFiles = data.files.length;
-        const pdfFiles = data.files.filter(
-          (f) =>
-            f.file.type === 'application/pdf' ||
-            f.file.name.toLowerCase().endsWith('.pdf'),
-        );
-
-        if (pdfFiles.length === 0) {
-          setError('No se encontraron archivos PDF para procesar');
-          return;
-        }
-
-        // Agregar documentos con estado pendiente a la lista
-        const pendingDocs: Document[] = pdfFiles.map((pdfFile, index) => ({
-          id: `pending-${Date.now()}-${index}`,
-          title: pdfFile.file.name,
-          author: 'Procesando...',
-          source: 'upload',
-          created_at: new Date().toISOString(),
-          content_preview: 'Archivo en procesamiento...',
-          chunks_count: 0,
-          status: 'pending' as const,
-          statusMessage: 'En cola...',
-        }));
-
-        setDocuments((prev) => [...pendingDocs, ...prev]);
-
-        // Procesar archivos uno por uno
-        for (let i = 0; i < pdfFiles.length; i++) {
-          const pdfFile = pdfFiles[i];
-          const pendingDocId = pendingDocs[i].id;
-
-          try {
-            // Actualizar estado a procesando
-            setDocuments((prev) =>
-              prev.map((doc) =>
-                doc.id === pendingDocId
-                  ? {
-                      ...doc,
-                      status: 'processing' as const,
-                      statusMessage: 'Extrayendo texto...',
-                    }
-                  : doc,
-              ),
-            );
-
-            const formData = new FormData();
-            formData.append('files', pdfFile.file, pdfFile.file.name);
-
-            const response = await fetch('/api/rag/documents/upload', {
-              method: 'POST',
-              body: formData,
-            });
-
-            if (!response.ok) {
-              throw new Error(
-                `Error ${response.status}: ${response.statusText}`,
-              );
-            }
-
-            const result = await response.json();
-
-            // Remover documento pendiente y refrescar lista
-            setDocuments((prev) =>
-              prev.filter((doc) => doc.id !== pendingDocId),
-            );
-            await handleListDocuments();
-          } catch (err) {
-            // Marcar como fallido
-            setDocuments((prev) =>
-              prev.map((doc) =>
-                doc.id === pendingDocId
-                  ? {
-                      ...doc,
-                      status: 'failed' as const,
-                      statusMessage:
-                        err instanceof Error
-                          ? err.message
-                          : 'Error desconocido',
-                    }
-                  : doc,
-              ),
-            );
-          }
-        }
-      }
-    } catch (err) {
-      setError(
-        `Error en ingesta: ${err instanceof Error ? err.message : 'Error desconocido'}`,
+      // Marcar como fallido
+      setDocuments((prev) =>
+        prev.map((doc) =>
+          doc.id === pendingDoc.id
+            ? {
+                ...doc,
+                status: 'failed' as const,
+                statusMessage:
+                  err instanceof Error ? err.message : 'Error desconocido',
+              }
+            : doc,
+        ),
       );
     } finally {
       setLoading(false);
@@ -300,40 +193,22 @@ export function RagTest() {
           </Card>
         )}
 
-        <div className="max-w-6xl mx-auto">
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="upload">Subir Documentos</TabsTrigger>
-              <TabsTrigger value="search">Buscar</TabsTrigger>
-              <TabsTrigger value="manage">Gestionar</TabsTrigger>
-            </TabsList>
+        {/* Sección de subida */}
+        <div className="max-w-2xl mx-auto mb-8">
+          <DocumentUpload onSubmit={handleDocumentUpload} loading={loading} />
+        </div>
 
-            <TabsContent value="upload" className="space-y-6">
-              <div className="max-w-2xl mx-auto">
-                <DocumentUpload
-                  onSubmit={handleDocumentUpload}
-                  loading={loading}
-                />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="search" className="space-y-6">
-              <SearchSection
-                onSearch={handleSearch}
-                searchResults={searchResults}
-                loading={searchLoading}
-              />
-            </TabsContent>
-
-            <TabsContent value="manage" className="space-y-6">
-              <DocumentList
-                documents={documents}
-                onRefresh={handleListDocuments}
-                onDelete={handleDeleteDocument}
-                loading={loading}
-              />
-            </TabsContent>
-          </Tabs>
+        {/* Sección de documentos existentes - ancho completo */}
+        <div className="border-t pt-8 w-full">
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold">Documentos Existentes</h2>
+          </div>
+          <DocumentList
+            documents={documents}
+            onRefresh={handleListDocuments}
+            onDelete={handleDeleteDocument}
+            loading={loading}
+          />
         </div>
       </div>
     </div>

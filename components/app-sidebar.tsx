@@ -3,42 +3,38 @@
 
 import type { User } from 'next-auth';
 import { useRouter, usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
-
-import { PlusIcon, LogoIcon } from '@/components/icons';
+import { useEffect, useState } from 'react';
 import {
   MessageCircle,
   FolderOpen,
+  Settings,
   CheckSquare,
   Package,
   Clock,
-  ChevronDown,
-  ChevronRight,
+  LifeBuoy,
+  Send,
 } from 'lucide-react';
-import { SidebarHistory } from '@/components/sidebar-history';
-import { NavUser } from './nav-user';
-import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+
+import { LogoIcon } from '@/components/icons';
+import { NavMain } from '@/components/nav-main';
+import { NavSecondary } from '@/components/nav-secondary';
+import { NavUser } from '@/components/nav-user';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
+  SidebarMenuButton,
   useSidebar,
 } from '@/components/ui/sidebar';
-import Link from 'next/link';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 export function AppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
   const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
-  const [historyOpen, setHistoryOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -53,132 +49,89 @@ export function AppSidebar({ user }: { user: User | undefined }) {
       }
     : null;
 
-  const navItems = [
-    {
-      title: 'Chat',
-      icon: MessageCircle,
-      url: '/',
-      isActive: pathname === '/' || pathname.startsWith('/chat'),
-    },
-    {
-      title: 'Files',
-      icon: FolderOpen,
-      url: '/rag-test',
-      isActive: pathname.startsWith('/rag-test'),
-    },
-    {
-      title: 'Tasks',
-      icon: CheckSquare,
-      url: '/tasks',
-      isActive: pathname === '/tasks',
-    },
-    {
-      title: 'Projects',
-      icon: Package,
-      url: '/projects',
-      isActive: pathname === '/projects',
-    },
-  ];
+  const data = {
+    navMain: [
+      {
+        title: 'Nuevo Chat',
+        url: '/',
+        icon: MessageCircle,
+        isActive: pathname === '/' || pathname.startsWith('/chat'),
+      },
+      {
+        title: 'Documentos RAG',
+        url: '/rag-test',
+        icon: FolderOpen,
+        isActive: pathname.startsWith('/rag-test'),
+      },
+      {
+        title: 'Proyectos',
+        url: '/projects',
+        icon: Package,
+        isActive: pathname === '/projects',
+      },
+      {
+        title: 'Tareas',
+        url: '/tasks',
+        icon: CheckSquare,
+        isActive: pathname === '/tasks',
+      },
+      {
+        title: 'Historial',
+        url: '#',
+        icon: Clock,
+        isActive: false,
+        items: 'history' as const, // Marcador especial para renderizar historial
+      },
+    ],
+    navSecondary: [
+      {
+        title: 'Configuración',
+        url: '/settings',
+        icon: Settings,
+      },
+      {
+        title: 'Soporte',
+        url: '#',
+        icon: LifeBuoy,
+      },
+      {
+        title: 'Feedback',
+        url: '#',
+        icon: Send,
+      },
+    ],
+  };
 
   return (
-    <Sidebar variant="inset" className="border-r-0 shadow-none">
-      <SidebarHeader className="border-b border-r-0">
+    <Sidebar variant="inset">
+      <SidebarHeader>
         <SidebarMenu>
-          <div className="flex flex-row justify-between items-center">
-            <Link
-              href="/"
-              onClick={() => {
-                setOpenMobile(false);
-              }}
-              className="flex flex-row gap-3 items-center"
-            >
-              <LogoIcon size={28} />
-              <span className="text-lg font-semibold hover:bg-muted rounded-md cursor-pointer">
-                Confidens
-              </span>
-            </Link>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  type="button"
-                  className="p-2 h-fit"
-                  onClick={() => {
-                    setOpenMobile(false);
-                    router.push('/');
-                    router.refresh();
-                  }}
-                >
-                  <PlusIcon />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent align="end">New Chat</TooltipContent>
-            </Tooltip>
-          </div>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" asChild>
+              <Link
+                href="/"
+                onClick={() => setOpenMobile(false)}
+                className="flex items-center gap-2"
+              >
+                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                  <LogoIcon size={16} />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">Confidens</span>
+                  <span className="truncate text-xs">AI Platform</span>
+                </div>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-
-      <SidebarContent className="border-r-0">
-        {/* Main Navigation */}
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={item.isActive}
-                    tooltip={item.title}
-                  >
-                    <Link
-                      href={item.url}
-                      onClick={() => setOpenMobile(false)}
-                      className="flex items-center gap-3 py-4 px-3 text-lg"
-                    >
-                      <item.icon className="size-6" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* History Section with Accordion */}
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  isActive={false}
-                  tooltip="History"
-                  className="flex items-center gap-3 w-full py-4 px-3 text-lg"
-                  onClick={() => setHistoryOpen(!historyOpen)}
-                >
-                  <Clock className="size-6" />
-                  <span>History</span>
-                  {isClient && historyOpen ? (
-                    <ChevronDown className="size-6 ml-auto" />
-                  ) : (
-                    <ChevronRight className="size-6 ml-auto" />
-                  )}
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-            {isClient && historyOpen && (
-              <div className="ml-4 mt-2">
-                <SidebarHistory user={user} />
-              </div>
-            )}
-          </SidebarGroupContent>
-        </SidebarGroup>
+      <SidebarContent>
+        <NavMain items={data.navMain} user={user} />
+        <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
-
-      <SidebarFooter className="border-r-0 border-t">
+      <SidebarFooter>
         {navUserData && <NavUser user={navUserData} />}
       </SidebarFooter>
-      <SidebarRail />
     </Sidebar>
   );
 }
