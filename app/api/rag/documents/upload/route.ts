@@ -41,6 +41,10 @@ export async function POST(request: NextRequest) {
         const fastapiFormData = new FormData();
         fastapiFormData.append('file', file, file.name);
 
+        // Agregar información del usuario autenticado
+        const userFullName = `${session.user.name || 'Usuario'}`;
+        fastapiFormData.append('author', userFullName);
+
         // Llamar a la API FastAPI
         const response = await fetch(
           `${RAG_API_URL}/api/rag/documents/upload`,

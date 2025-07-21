@@ -1,21 +1,71 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RagHeader } from '@/components/rag/rag-header';
 import { DocumentUpload } from '@/components/rag/document-upload';
 import { DocumentList } from '@/components/rag/document-list';
-import type { Document, UploadedFile } from '@/components/rag/types';
+import { SearchSection } from '@/components/rag/search-section';
+import type {
+  Document,
+  UploadedFile,
+  SearchResult,
+} from '@/components/rag/types';
 
 export function RagTest() {
+  const searchParams = useSearchParams();
   const [documents, setDocuments] = useState<Document[]>([]);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState('upload');
+
+  // Manejar cambio de pestañas según URL
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   // Cargar documentos al montar el componente
   useEffect(() => {
     handleListDocuments();
   }, []);
+
+  const handleSearch = async (query: string) => {
+    setSearchLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/rag/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query,
+          k: 10,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      setSearchResults(result.results || []);
+    } catch (err) {
+      setError(
+        `Error en búsqueda: ${err instanceof Error ? err.message : 'Error desconocido'}`,
+      );
+    } finally {
+      setSearchLoading(false);
+    }
+  };
 
   const handleDocumentUpload = async (data: {
     mode: 'manual' | 'files';
@@ -170,7 +220,11 @@ export function RagTest() {
       }
 
       const result = await response.json();
-      setDocuments(result.documents);
+      const formattedDocuments = result.documents.map((doc: any) => ({
+        ...doc.payload,
+        id: doc.id,
+      }));
+      setDocuments(formattedDocuments);
     } catch (err) {
       setError(
         `Error al listar documentos: ${err instanceof Error ? err.message : 'Error desconocido'}`,
@@ -246,16 +300,41 @@ export function RagTest() {
           </Card>
         )}
 
-        <div className="max-w-2xl mx-auto">
-          <DocumentUpload onSubmit={handleDocumentUpload} loading={loading} />
-        </div>
+        <div className="max-w-6xl mx-auto">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="upload">Subir Documentos</TabsTrigger>
+              <TabsTrigger value="search">Buscar</TabsTrigger>
+              <TabsTrigger value="manage">Gestionar</TabsTrigger>
+            </TabsList>
 
-        <DocumentList
-          documents={documents}
-          onRefresh={handleListDocuments}
-          onDelete={handleDeleteDocument}
-          loading={loading}
-        />
+            <TabsContent value="upload" className="space-y-6">
+              <div className="max-w-2xl mx-auto">
+                <DocumentUpload
+                  onSubmit={handleDocumentUpload}
+                  loading={loading}
+                />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="search" className="space-y-6">
+              <SearchSection
+                onSearch={handleSearch}
+                searchResults={searchResults}
+                loading={searchLoading}
+              />
+            </TabsContent>
+
+            <TabsContent value="manage" className="space-y-6">
+              <DocumentList
+                documents={documents}
+                onRefresh={handleListDocuments}
+                onDelete={handleDeleteDocument}
+                loading={loading}
+              />
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </div>
   );

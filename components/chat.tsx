@@ -13,8 +13,6 @@ import { Messages } from './messages';
 import type { VisibilityType } from './visibility-selector';
 import { useArtifactSelector } from '@/hooks/use-artifact';
 import { toast } from 'sonner';
-import { unstable_serialize } from 'swr/infinite';
-import { getChatHistoryPaginationKey } from './sidebar-history';
 import type { PowerLevel } from '@/lib/ai/ai-models.config';
 import { useDevMode } from '@/context/dev-mode';
 
@@ -74,7 +72,6 @@ export function Chat({
     sendExtraMessageFields: true,
     generateId: generateUUID,
     onFinish: () => {
-      mutate(unstable_serialize(getChatHistoryPaginationKey));
       setIsRagSearching(false);
     },
     onError: (e) => {

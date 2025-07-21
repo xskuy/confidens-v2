@@ -16,6 +16,7 @@ try:
         FieldCondition,
         Filter,
         MatchValue,
+        PayloadSchemaType,
         PointStruct,
         SearchRequest,
         VectorParams,
@@ -43,7 +44,7 @@ class QdrantClient:
         self.client = QdrantClientBase(
             url=config.url,
             api_key=config.api_key,
-            timeout=60.0,
+            timeout=60,
         )
         self.collection_name = config.collection_name
 
@@ -91,6 +92,14 @@ class QdrantClient:
                         distance=distance,
                     ),
                 )
+
+                # Crear índice en el campo 'document_id' para borrados eficientes
+                self.client.create_payload_index(
+                    collection_name=self.collection_name,
+                    field_name="document_id",
+                    field_schema=PayloadSchemaType.KEYWORD,
+                )
+
                 logger.info(f"Colección creada exitosamente: {self.collection_name}")
             else:
                 logger.info(f"Colección ya existe: {self.collection_name}")
@@ -199,10 +208,7 @@ class QdrantClient:
             # Preparar filtros si se proporcionan
             query_filter = None
             if filter_conditions:
-                conditions = []
-                for key, value in filter_conditions.items():
-                    conditions.append(FieldCondition(key=key, match=MatchValue(value=value)))
-                query_filter = Filter(must=conditions)
+                query_filter = self._prepare_filter(filter_conditions)
 
             # Realizar búsqueda
             search_result = self.client.search(
@@ -236,72 +242,80 @@ class QdrantClient:
         limit: int = 10,
         offset: Optional[Any] = None,
         filter_conditions: Optional[dict[str, Any]] = None,
-    ) -> tuple[list[dict[str, Any]], Optional[Any]]:
+        with_payload: bool = True,
+        with_vectors: bool = False,
+    ) -> tuple[list[Any], Optional[Any]]:
         """
-        Listar documentos usando paginación (scroll)
+        Recorrer todos los puntos de la colección.
 
         Args:
-            limit: Número de resultados por página
-            offset: ID del último punto de la página anterior para continuar
-            filter_conditions: Condiciones de filtro opcionales
+            limit: Tamaño de la página
+            offset: Offset para empezar a paginar
+            filter_conditions: Filtros opcionales
+            with_payload: Si True, incluye el payload
+            with_vectors: Si True, incluye los vectores
 
         Returns:
-            Tupla con la lista de documentos y el offset para la siguiente página
+            Tupla con lista de puntos y el próximo offset
         """
         try:
+            # Preparar filtros si se proporcionan
             query_filter = None
             if filter_conditions:
-                conditions = []
-                for key, value in filter_conditions.items():
-                    conditions.append(FieldCondition(key=key, match=MatchValue(value=value)))
-                query_filter = Filter(must=conditions)
+                query_filter = self._prepare_filter(filter_conditions)
 
-            records, next_page_offset = self.client.scroll(
+            # Usar el método de scroll de la librería
+            points, next_offset = self.client.scroll(
                 collection_name=self.collection_name,
+                scroll_filter=query_filter,
                 limit=limit,
                 offset=offset,
-                with_payload=True,
-                with_vectors=False,
-                filter=query_filter,
+                with_payload=with_payload,
+                with_vectors=with_vectors,
             )
 
-            documents = [
-                {
-                    "id": record.id,
-                    "payload": record.payload,
-                }
-                for record in records
-            ]
-
-            return documents, next_page_offset
+            return points, next_offset
 
         except Exception as e:
-            logger.error(f"Error en scroll: {e}")
+            logger.error(f"Error haciendo scroll en la colección: {e}")
             return [], None
 
     def get_collection_info(self) -> Optional[dict[str, Any]]:
         """
-        Obtener información de la colección
+        Obtener información sobre la colección
 
         Returns:
-            Información de la colección o None si hay error
+            Diccionario con información de la colección
         """
         try:
-            info = self.client.get_collection(self.collection_name)
-            return {
-                "name": info.config.params.vectors.size if hasattr(info.config.params, "vectors") else "N/A",
-                "vectors_count": info.vectors_count,
-                "indexed_vectors_count": info.indexed_vectors_count,
-                "points_count": info.points_count,
-                "status": info.status,
-            }
+            info: CollectionInfo = self.client.get_collection(self.collection_name)
+            return info.model_dump()
         except Exception as e:
             logger.error(f"Error obteniendo información de la colección: {e}")
             return None
 
+    def _prepare_filter(self, filter_conditions: dict[str, Any]) -> Optional[Filter]:
+        """
+        Prepara un objeto de filtro para las consultas de Qdrant.
+
+        Args:
+            filter_conditions: Diccionario con condiciones de filtrado.
+
+        Returns:
+            Un objeto `Filter` o `None` si no hay condiciones.
+        """
+        if not filter_conditions:
+            return None
+
+        conditions = []
+        for key, value in filter_conditions.items():
+            conditions.append(FieldCondition(key=key, match=MatchValue(value=value)))
+
+        return Filter(must=conditions) if conditions else None
+
     def delete_documents(self, ids: list[str]) -> bool:
         """
-        Eliminar documentos por sus IDs
+        Eliminar documentos por su ID
 
         Args:
             ids: Lista de IDs de los documentos a eliminar

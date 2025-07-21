@@ -54,7 +54,7 @@ export const AI_MODELS_CONFIGURATION: Record<PowerLevel, AIModelConfig> = {
     modelName: 'grok-3-mini-beta',
     description:
       'Equilibrio entre rapidez y profundidad, ideal para tareas complejas y respuestas elaboradas.',
-    supportsReasoning: true,
+    supportsReasoning: true,  
     providerOptions: {
       thinkingConfig: {
         thinkingBudget: 2048,

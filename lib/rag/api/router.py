@@ -5,7 +5,7 @@ Rutas de la API para el sistema RAG
 
 import logging
 
-from fastapi import APIRouter, Body, Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, UploadFile
 
 from ..core.rag_system import RAGSystem
 from ..orchestration import run_full_pipeline_from_bytes
@@ -79,6 +79,7 @@ def list_documents(
 @router.post("/documents/upload", status_code=201)
 async def upload_document(
     file: UploadFile = File(...),
+    author: str = Form("Sistema"),  # Parámetro opcional con valor por defecto
     rag_system: RAGSystem = Depends(get_rag_system),
 ):
     """Sube un documento (PDF) para ser procesado e indexado."""
@@ -89,13 +90,14 @@ async def upload_document(
         file_bytes = await file.read()
 
         # Ejecutar el pipeline completo de procesamiento
-        document_id, chunks = run_full_pipeline_from_bytes(file_bytes, file.filename)
+        filename = str(file.filename) if file.filename else "documento.pdf"
+        document_id, chunks = run_full_pipeline_from_bytes(file_bytes, filename)
 
         if not chunks:
             raise HTTPException(status_code=400, detail="No se pudo extraer contenido del PDF.")
 
-        # Procesar los chunks con el sistema RAG
-        success = rag_system.process_document_chunks(chunks=chunks, document_id=document_id)
+        # Procesar los chunks con el sistema RAG, pasando el autor
+        success = rag_system.process_document_chunks(chunks=chunks, document_id=document_id, author=author)
 
         if not success:
             raise HTTPException(status_code=500, detail="Error al procesar los chunks del documento.")
@@ -122,3 +124,25 @@ def delete_document(
     except Exception as e:
         logger.error(f"Error eliminando documento {document_id}: {e}")
         raise HTTPException(status_code=500, detail="Error interno al eliminar documento.")
+
+
+@router.delete("/documents/clear", response_model=DeleteResponse)
+def clear_all_documents(
+    rag_system: RAGSystem = Depends(get_rag_system),
+):
+    """Limpia completamente la colección de documentos y la recrea con índices."""
+    try:
+        # Limpiar la colección completamente
+        success = rag_system.qdrant_client.clear_collection()
+        if not success:
+            raise HTTPException(status_code=500, detail="Error al limpiar la colección.")
+
+        # Recrear la colección con índices
+        success = rag_system.qdrant_client.create_collection(force_recreate=True)
+        if not success:
+            raise HTTPException(status_code=500, detail="Error al recrear la colección.")
+
+        return {"success": True, "message": "Colección limpiada y recreada exitosamente."}
+    except Exception as e:
+        logger.error(f"Error limpiando colección: {e}")
+        raise HTTPException(status_code=500, detail="Error interno al limpiar colección.")

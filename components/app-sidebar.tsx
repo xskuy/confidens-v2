@@ -3,9 +3,18 @@
 
 import type { User } from 'next-auth';
 import { useRouter, usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 import { PlusIcon, LogoIcon } from '@/components/icons';
-import { Upload } from 'lucide-react';
+import {
+  MessageCircle,
+  FolderOpen,
+  CheckSquare,
+  Package,
+  Clock,
+  ChevronDown,
+  ChevronRight,
+} from 'lucide-react';
 import { SidebarHistory } from '@/components/sidebar-history';
 import { NavUser } from './nav-user';
 import { Button } from '@/components/ui/button';
@@ -20,7 +29,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-  SidebarSeparator,
   useSidebar,
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
@@ -30,6 +38,12 @@ export function AppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
   const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const navUserData = user
     ? {
@@ -38,6 +52,33 @@ export function AppSidebar({ user }: { user: User | undefined }) {
         avatar: user.image ?? `https://avatar.vercel.sh/${user.email}`,
       }
     : null;
+
+  const navItems = [
+    {
+      title: 'Chat',
+      icon: MessageCircle,
+      url: '/',
+      isActive: pathname === '/' || pathname.startsWith('/chat'),
+    },
+    {
+      title: 'Files',
+      icon: FolderOpen,
+      url: '/rag-test',
+      isActive: pathname.startsWith('/rag-test'),
+    },
+    {
+      title: 'Tasks',
+      icon: CheckSquare,
+      url: '/tasks',
+      isActive: pathname === '/tasks',
+    },
+    {
+      title: 'Projects',
+      icon: Package,
+      url: '/projects',
+      isActive: pathname === '/projects',
+    },
+  ];
 
   return (
     <Sidebar variant="inset" className="border-r-0 shadow-none">
@@ -78,34 +119,60 @@ export function AppSidebar({ user }: { user: User | undefined }) {
       </SidebarHeader>
 
       <SidebarContent className="border-r-0">
-        {/* RAG System Section */}
+        {/* Main Navigation */}
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={item.isActive}
+                    tooltip={item.title}
+                  >
+                    <Link
+                      href={item.url}
+                      onClick={() => setOpenMobile(false)}
+                      className="flex items-center gap-3 py-4 px-3 text-lg"
+                    >
+                      <item.icon className="size-6" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* History Section with Accordion */}
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  asChild
-                  isActive={pathname === '/rag-test'}
-                  tooltip="Sistema RAG - Base de Conocimiento"
+                  isActive={false}
+                  tooltip="History"
+                  className="flex items-center gap-3 w-full py-4 px-3 text-lg"
+                  onClick={() => setHistoryOpen(!historyOpen)}
                 >
-                  <Link
-                    href="/rag-test"
-                    onClick={() => setOpenMobile(false)}
-                    className="flex items-center gap-2"
-                  >
-                    <Upload className="size-4" />
-                    <span>Sistema RAG</span>
-                  </Link>
+                  <Clock className="size-6" />
+                  <span>History</span>
+                  {isClient && historyOpen ? (
+                    <ChevronDown className="size-6 ml-auto" />
+                  ) : (
+                    <ChevronRight className="size-6 ml-auto" />
+                  )}
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
+            {isClient && historyOpen && (
+              <div className="ml-4 mt-2">
+                <SidebarHistory user={user} />
+              </div>
+            )}
           </SidebarGroupContent>
         </SidebarGroup>
-
-        <SidebarSeparator />
-
-        {/* Chat History Section */}
-        <SidebarHistory user={user} />
       </SidebarContent>
 
       <SidebarFooter className="border-r-0 border-t">
