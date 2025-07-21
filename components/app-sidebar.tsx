@@ -2,9 +2,10 @@
 'use client';
 
 import type { User } from 'next-auth';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 import { PlusIcon, LogoIcon } from '@/components/icons';
+import { Upload } from 'lucide-react';
 import { SidebarHistory } from '@/components/sidebar-history';
 import { NavUser } from './nav-user';
 import { Button } from '@/components/ui/button';
@@ -12,9 +13,14 @@ import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarRail,
+  SidebarSeparator,
   useSidebar,
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
@@ -22,6 +28,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 export function AppSidebar({ user }: { user: User | undefined }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { setOpenMobile } = useSidebar();
 
   const navUserData = user
@@ -69,9 +76,38 @@ export function AppSidebar({ user }: { user: User | undefined }) {
           </div>
         </SidebarMenu>
       </SidebarHeader>
+
       <SidebarContent className="border-r-0">
+        {/* RAG System Section */}
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === '/rag-test'}
+                  tooltip="Sistema RAG - Base de Conocimiento"
+                >
+                  <Link
+                    href="/rag-test"
+                    onClick={() => setOpenMobile(false)}
+                    className="flex items-center gap-2"
+                  >
+                    <Upload className="size-4" />
+                    <span>Sistema RAG</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarSeparator />
+
+        {/* Chat History Section */}
         <SidebarHistory user={user} />
       </SidebarContent>
+
       <SidebarFooter className="border-r-0 border-t">
         {navUserData && <NavUser user={navUserData} />}
       </SidebarFooter>

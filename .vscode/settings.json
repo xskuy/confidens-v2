@@ -11,7 +11,12 @@
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "eslint.workingDirectories": [
-    { "pattern": "app/*" },
-    { "pattern": "packages/*" }
-  ]
+    {
+      "pattern": "app/*"
+    },
+    {
+      "pattern": "packages/*"
+    }
+  ],
+  "python.analysis.typeCheckingMode": "basic"
 }

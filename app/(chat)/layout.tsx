@@ -28,9 +28,7 @@ export default async function Layout({
           <AppSidebar user={session?.user} />
           {/* Aplicamos las mismas clases que funcionaron en settings */}
           <SidebarInset className="my-2 mr-2 rounded-xl overflow-hidden">
-            <div className="flex flex-col bg-background h-full overflow-y-auto">
-              {children}
-            </div>
+            <div className="flex flex-col bg-background h-full">{children}</div>
           </SidebarInset>
         </DevModeProvider>
       </SidebarProvider>

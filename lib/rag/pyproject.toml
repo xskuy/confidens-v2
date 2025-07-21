@@ -1,0 +1,102 @@
+# Unified Python style & lint configuration — 2025 baseline
+# Put this file at the project root so Ruff, Black, etc. pick it up automatically.
+
+########################
+# Ruff (linter + import‑sorter)
+########################
+[tool.ruff]
+# Target the oldest interpreter you support.
+target-version = "py39"
+line-length = 120
+extend-exclude = [
+  "build",
+  "dist",
+  ".venv",
+  "__pycache__",
+]
+[tool.ruff.per-file-ignores]
+"tests/*.py" = ["S101", "PLR2004", "PLR0913"]
+
+[tool.ruff.lint]
+# Core rule sets
+select = [
+  "E",    # pycodestyle errors
+  "F",    # pyflakes
+  "I",    # import‑order (isort)
+  "B",    # bugbear
+  "UP",   # pyupgrade (modern syntax → evita List/Dict, etc.)
+  "S",    # bandit (security)
+  "SIM",  # flake8‑simplify
+  "C90",  # mccabe complexity
+  "PLC", "PLE", "PLR", "PLW", # pylint mirrors
+  "RUF",  # Ruff‑specific rules
+]
+# Example: permit long URLs/docstrings.
+ignore = ["E501"]
+# Allow autofix for everything Ruff can handle.
+fixable = ["ALL"]
+
+########################
+# Black (code formatter)
+########################
+[tool.black]
+line-length = 120
+target-version = ["py39"]
+skip-string-normalization = false
+
+########################
+# isort (only needed si no usas Ruff para ordenar)
+########################
+[tool.isort]
+profile = "black"
+line_length = 120
+known_first_party = ["confidens_v2", "rag"]
+
+########################
+# Pyrefly (type checker estricto)
+########################
+[tool.pyrefly]
+python_version = "3.9"
+strict = true
+
+########################
+# Mypy (opcional si prefieres otro checker)
+########################
+[tool.mypy]
+python_version = "3.9"
+strict = true
+plugins = ["pydantic.mypy"]
+
+########################
+# Pre‑commit hooks (ejemplo)
+########################
+[tool.pre-commit]
+repos = [
+  { repo = "https://github.com/astral-sh/ruff-pre-commit", rev = "v0.4.5", hooks = [{ id = "ruff" }] },
+  { repo = "https://github.com/psf/black",               rev = "24.4.2", hooks = [{ id = "black" }] },
+]
+
+########################
+# Pytest (testing framework)
+########################
+[tool.pytest.ini_options]
+addopts = "-ra -q --cov=. --cov-report=term-missing --cov-report=html"
+testpaths = ["tests"]
+xfail_strict = true
+filterwarnings = [
+    "ignore::pytest.PytestReturnNotNoneWarning",
+    "ignore::urllib3.exceptions.NotOpenSSLWarning",
+]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+########################
+# Coverage (code coverage)
+########################
+[tool.coverage.run]
+branch = true
+source = ["core", "config", "utils", "api"]
+
+[tool.coverage.report]
+fail_under = 80     # CI falla si baja de 80%

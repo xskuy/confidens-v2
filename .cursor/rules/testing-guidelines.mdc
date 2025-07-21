@@ -1,7 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 # Guía de Pruebas
 
@@ -81,3 +81,60 @@ test.describe('Autenticación de usuario', () => {
 * Seguir el formato: `<contexto>-<tipo>-<acción opcional>`: `user-input-email`, `submit-button`
 * Tratar test-ids como parte de la API pública del componente
 * No usar test-ids para lógica de la aplicación, solo para testing
+
+## Python Testing Guide
+
+### Herramientas base
+| Propósito | Paquete |
+|-----------|---------|
+| Descubrimiento / ejecución | **pytest** |
+| Cobertura | **coverage.py** + `pytest-cov` |
+| Tests en paralelo | `pytest-xdist` |
+| Property-based / fuzzing | **Hypothesis** |
+| Fixtures de tiempo/red/ficheros | `freezegun`, `pytest-httpx`, `pytest-mock` |
+| Matriz de versiones / deps | **tox** (o **nox**) |
+
+### Instalación recomendada
+```bash
+pip install pytest pytest-cov pytest-xdist hypothesis
+
+project/
+│
+├─ src/mi_paquete/           # código de producción
+└─ tests/
+   ├─ unit/                  # test_*.py (rápidos, sin E/S)
+   ├─ integration/           # test_*.py (requieren I/O, DB, API)
+   └─ conftest.py            # fixtures compartidas
+Elemento	Convención
+Archivos	test_<módulo>.py (snake_case)
+Clases	Test<Componente> (no usar __init__)
+Funciones	def test_<comportamiento>_cuando_<condición>()
+Fixtures	@pytest.fixture(scope="module") o más fino
+Buenas prácticas
+Aislar tests: sin dependencias entre ellos; usa fixtures para preparar/limpiar estado.
+
+Evitar sleeps: espera a eventos (wait_for, polling) o usa freezegun.
+
+Mock controlado: pytest-mock / monkeypatch para APIs externas; Hypothesis para inputs aleatorios.
+
+Parametriza: @pytest.mark.parametrize evita loops manuales.
+
+Cobertura por flujo crítico: céntrate en lógica de negocio; no persigas 100 % si no aporta valor.
+
+Paraleliza: pytest -n auto para acelerar suites grandes.
+
+Matrices en CI: define entornos en tox.ini y ejecuta tox -p auto o usa nox.
+
+Ejemplo mínimo (tests/unit/test_sum.py)
+python
+Copy
+Edit
+import pytest
+
+@pytest.mark.parametrize(("a", "b", "resultado"), [
+    (1,  1, 2),
+    (2, -1, 1),
+    (0,  0, 0),
+])
+def test_suma(a: int, b: int, resultado: int) -> None:
+    assert a + b == resultado

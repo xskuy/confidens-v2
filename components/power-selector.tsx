@@ -234,7 +234,7 @@ export default function PowerSelector({
             onClick={() => setOpen(!open)}
             type="button"
             className={`
-              p-3 rounded-2xl backdrop-blur-xl bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] flex items-center justify-center gap-2 transition-[transform,background-color,border-color,box-shadow] duration-150 ease-out text-xs w-28 shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] text-muted-foreground hover:text-foreground group hover:scale-105 active:scale-[0.95]
+              px-3 py-2 rounded-full backdrop-blur-xl bg-white/[0.04] dark:bg-white/[0.03] border border-white/[0.08] dark:border-white/[0.06] hover:bg-white/[0.08] dark:hover:bg-white/[0.06] hover:border-white/[0.12] dark:hover:border-white/[0.10] flex items-center gap-1.5 transition-[transform,background-color,border-color,box-shadow] duration-150 ease-out text-xs shadow-[0_4px_20px_rgba(0,0,0,0.15),0_1px_1px_rgba(255,255,255,0.05)_inset] hover:shadow-[0_8px_32px_rgba(0,0,0,0.25)] text-muted-foreground hover:text-foreground group hover:scale-105 active:scale-[0.95]
               ${
                 isHighPowerSelected
                   ? 'bg-gradient-to-r from-amber-600/[0.25] via-yellow-500/[0.20] to-amber-700/[0.25] text-amber-800 dark:text-amber-200 border-amber-400/[0.30] hover:border-amber-300/[0.40] shadow-[0_4px_20px_rgba(245,158,11,0.25),0_1px_1px_rgba(255,255,255,0.08)_inset] hover:shadow-[0_8px_32px_rgba(245,158,11,0.35)]'
