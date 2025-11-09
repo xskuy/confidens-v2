@@ -44,15 +44,15 @@ function StaticPowerDisplay({ selectedPower }: { selectedPower: PowerLevel }) {
   const details = powerLevelDetails[selectedPower] || powerLevelDetails.medium;
 
   return (
-    <div className="relative z-10 flex items-center justify-center gap-1 font-medium text-muted-foreground group-hover:text-foreground w-20">
-      <span className={`flex items-center ${details.colorIcon}`}>
-        {React.cloneElement(details.icon as React.ReactElement, {
-          className: 'size-4',
-        })}
-      </span>
-      <span className="text-xs whitespace-nowrap flex items-center">
-        {details.label}
-      </span>
+    <div className="relative z-10 flex items-center justify-center font-medium text-muted-foreground group-hover:text-foreground w-24">
+      <div className="flex items-center gap-1">
+        <span className={`flex items-center ${details.colorIcon}`}>
+          {React.cloneElement(details.icon as React.ReactElement, {
+            className: 'size-4',
+          })}
+        </span>
+        <span className="text-xs">{details.label}</span>
+      </div>
     </div>
   );
 }

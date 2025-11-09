@@ -235,18 +235,9 @@ body {
     color: #ffffff !important;
 }
 
-/* Mejoras sutiles para el sidebar - solo hover y espaciado */
+/* Mejoras sutiles para el sidebar - solo espaciado */
 [data-sidebar="menu-item"] {
     margin-bottom: 0.3rem; /* Muy poco espacio extra entre chats */
-}
-
-[data-sidebar="menu-button"]:hover {
-    background-color: hsl(0 0% 20%) !important; /* Un poco más de luz en hover */
-}
-
-/* Para modo claro */
-:root [data-sidebar="menu-button"]:hover {
-    background-color: hsl(0 0% 23%) !important; /* Más blanco en modo claro */
 }
 
 /* Animación sutil para el botón de high power */

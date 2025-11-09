@@ -4,11 +4,14 @@ Sistema RAG completo - Integración de Voyage AI y Qdrant
 """
 
 import logging
-from typing import Any, Optional
+import uuid
+from datetime import datetime
+from typing import Any, List, Optional
 
-from config.settings import RAGConfig
-from core.qdrant_client import QdrantClient
-from core.voyage_client import VoyageClient
+from ..api.schemas import DocumentDetails
+from ..config.settings import RAGConfig
+from .qdrant_client import QdrantClient
+from .voyage_client import VoyageClient
 
 logger = logging.getLogger(__name__)
 
@@ -153,6 +156,76 @@ class RAGSystem:
             logger.error(f"Error en búsqueda: {e}")
             return []
 
+    def list_documents(self) -> List[DocumentDetails]:
+        """Lists all unique documents in the Qdrant collection."""
+        try:
+            # Get all points in a single call with a larger limit
+            points, _ = self.qdrant_client.scroll(
+                limit=1000,  # Increased limit to reduce API calls
+                with_payload=True,
+                with_vectors=False,
+            )
+
+            unique_documents = {}
+            for point in points:
+                doc_id = point.payload.get("document_id")
+                if not doc_id:
+                    continue
+
+                if doc_id not in unique_documents:
+                    # Create a serializable payload from the first chunk
+                    serializable_payload = {
+                        k: v for k, v in point.payload.items() if isinstance(v, (str, int, float, bool, list, dict))
+                    }
+                    unique_documents[doc_id] = DocumentDetails(
+                        id=doc_id,
+                        payload={
+                            **serializable_payload,
+                            "chunks_count": 0,
+                        },
+                    )
+
+                # Increment chunk count for the document
+                unique_documents[doc_id].payload["chunks_count"] += 1
+
+            return list(unique_documents.values())
+
+        except Exception as e:
+            logger.error(f"Error listing documents: {e}")
+            return []
+
+    def delete_documents_by_ids(self, ids: list[str]) -> bool:
+        """
+        Eliminar documentos por sus IDs
+
+        Args:
+            ids: Lista de IDs de los documentos a eliminar
+
+        Returns:
+            True si la eliminación fue exitosa
+        """
+        try:
+            return self.qdrant_client.delete_documents(ids)
+        except Exception as e:
+            logger.error(f"Error eliminando documentos por IDs: {e}")
+            return False
+
+    def delete_documents_by_metadata(self, filter_conditions: dict[str, Any]) -> bool:
+        """
+        Eliminar documentos por filtro de metadatos
+
+        Args:
+            filter_conditions: Diccionario con el filtro
+
+        Returns:
+            True si la eliminación fue exitosa
+        """
+        try:
+            return self.qdrant_client.delete_by_metadata(filter_conditions)
+        except Exception as e:
+            logger.error(f"Error eliminando documentos por metadatos: {e}")
+            return False
+
     def get_system_info(self) -> dict[str, Any]:
         """
         Obtener información del sistema RAG
@@ -181,72 +254,71 @@ class RAGSystem:
         self,
         chunks: list[dict[str, Any]],
         batch_size: Optional[int] = None,
+        document_id: Optional[str] = None,
+        author: Optional[str] = None,
     ) -> bool:
         """
-        Procesar chunks de documentos (con metadatos enriquecidos)
+        Procesa los chunks de un documento y los agrega al sistema RAG.
 
         Args:
-            chunks: Lista de chunks con formato {text, metadata}
-            batch_size: Tamaño del lote para procesamiento
+            chunks: Lista de chunks, donde cada chunk es un diccionario
+                    que debe contener 'text' y opcionalmente 'metadata'.
+            batch_size: Tamaño del lote para procesar embeddings.
+            document_id: ID único para asociar todos los chunks.
+            author: Nombre del autor del documento.
 
         Returns:
-            True si el procesamiento fue exitoso
+            True si el procesamiento fue exitoso.
         """
         try:
-            batch_size = batch_size or self.config.processing.batch_size
+            if not chunks:
+                logger.warning("No se proporcionaron chunks para procesar.")
+                return False
 
-            logger.info(f"Procesando {len(chunks)} chunks en lotes de {batch_size}")
+            processing_batch_size = batch_size or self.config.processing.batch_size
+            doc_id = document_id or str(uuid.uuid4())
+            doc_author = author or "Sistema"
+            logger.info(f"Procesando {len(chunks)} chunks para el documento ID: {doc_id}")
 
-            # Procesar en lotes
-            for i in range(0, len(chunks), batch_size):
-                batch = chunks[i : i + batch_size]
+            num_batches = (len(chunks) + processing_batch_size - 1) // processing_batch_size
 
-                # Extraer textos y metadatos
-                texts = []
-                metadata = []
-                ids = []
+            for i in range(num_batches):
+                batch_start = i * processing_batch_size
+                batch_end = batch_start + processing_batch_size
+                batch_chunks = chunks[batch_start:batch_end]
 
-                for j, chunk in enumerate(batch):
-                    # Usar enriched_text si está disponible, sino text
-                    text = chunk.get("enriched_text", chunk.get("text", ""))
-                    if not text or len(text.strip()) < self.config.processing.min_chunk_length:
-                        continue
+                texts_to_embed = [chunk["text"] for chunk in batch_chunks]
 
-                    texts.append(text)
+                # Crear metadatos enriquecidos
+                metadata_list = []
+                for chunk in batch_chunks:
+                    meta = chunk.get("metadata", {})
+                    meta["document_id"] = doc_id
 
-                    # Preparar metadatos
-                    meta = {
-                        "page": chunk.get("page"),
-                        "block_id": chunk.get("block_id"),
-                        "type": chunk.get("type"),
-                        "parent": chunk.get("parent"),
-                        "original_text": chunk.get("text", ""),
-                    }
-                    # Agregar otros metadatos si existen
-                    for key in ["section_path", "bbox", "confidence"]:
-                        if key in chunk:
-                            meta[key] = chunk[key]
+                    # Correctly get title from file_name inside metadata
+                    title = meta.get("file_name", "Documento sin título")
+                    meta["title"] = title
 
-                    metadata.append(meta)
+                    meta["author"] = doc_author  # Usar el autor proporcionado
+                    meta["created_at"] = datetime.utcnow().isoformat()
+                    metadata_list.append(meta)
 
-                    # Generar ID único
-                    chunk_id = chunk.get("id", f"chunk_{i}_{j}")
-                    ids.append(chunk_id)
+                logger.info(f"Procesando lote {i + 1}/{num_batches}: {len(batch_chunks)} chunks")
 
-                if texts:
-                    # Agregar lote al sistema
-                    success = self.add_documents(texts=texts, metadata=metadata, ids=ids)
-                    if not success:
-                        logger.error(f"Error procesando lote {i // batch_size + 1}")
-                        return False
+                success = self.add_documents(
+                    texts=texts_to_embed,
+                    metadata=metadata_list,
+                )
 
-                    logger.info(f"Lote {i // batch_size + 1} procesado: {len(texts)} chunks")
+                if not success:
+                    logger.error(f"Error procesando el lote {i + 1}")
+                    return False
 
             logger.info("Procesamiento de chunks completado exitosamente")
             return True
 
         except Exception as e:
-            logger.error(f"Error procesando chunks: {e}")
+            logger.error(f"Error en el procesamiento de chunks: {e}")
             return False
 
     def semantic_search_with_context(
